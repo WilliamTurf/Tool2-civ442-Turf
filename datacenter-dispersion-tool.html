@@ -969,8 +969,8 @@ function gaussian_conc(x_m, y_m, Q, H_eff, u, stab) {
   const sz = sigma_z(x_m, stab);
   if (sy <= 0 || sz <= 0 || u <= 0) return 0;
   const C = (Q / (Math.PI * sy * sz * u))
-    * Math.exp(-y_m**2 / (2 * sy**2))
-    * (Math.exp(-(H_eff)**2 / (2 * sz**2)) + Math.exp(-(H_eff)**2 / (2 * sz**2)));
+    * Math.exp(-(y_m**2) / (2 * sy**2))
+    * (Math.exp(-((H_eff)**2) / (2 * sz**2)) + Math.exp(-((H_eff)**2) / (2 * sz**2)));
   // z=0 ground level: both terms equal
   return C * 1e6; // convert g/m³ → µg/m³
 }
@@ -982,8 +982,8 @@ function gaussian_conc_correct(x_m, y_m, Q, H_eff, u, stab) {
   if (sy <= 0 || sz <= 0 || u <= 0) return 0;
   // z=0
   const C = (Q / (Math.PI * sy * sz * u))
-    * Math.exp(-y_m**2 / (2 * sy**2))
-    * Math.exp(-H_eff**2 / (2 * sz**2));
+    * Math.exp(-(y_m**2) / (2 * sy**2))
+    * Math.exp(-(H_eff**2) / (2 * sz**2));
   return C * 1e6 * 2; // factor 2 for ground reflection
 }
 
