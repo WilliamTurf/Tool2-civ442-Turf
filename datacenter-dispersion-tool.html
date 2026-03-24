@@ -652,21 +652,32 @@
           <div class="naaqs-status" id="naaqs-gas">—</div>
         </div>
       </div>
-
-      <div class="viz-card wide">
-        <div class="viz-card-header">
-          <h3>2D Plume Footprint — Top-down View (centerline ± 3σ_y)</h3>
-          <span style="font-size:11px;color:var(--text3);font-family:var(--mono);">Source at origin · Wind→</span>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+        <div class="viz-card">
+          <div class="viz-card-header"><h3 style="color:var(--coal);">■ COAL — UNCONTROLLED</h3></div>
+          <div class="viz-card-body" style="padding:0;">
+            <canvas id="map-coal" width="380" height="380" style="width:100%;display:block;"></canvas>
+          </div>
         </div>
-        <div class="viz-card-body" style="padding:0;">
-          <canvas id="map-canvas" width="800" height="340"></canvas>
+        <div class="viz-card">
+          <div class="viz-card-header"><h3 style="color:var(--baghouse);">■ COAL + BAGHOUSE</h3></div>
+          <div class="viz-card-body" style="padding:0;">
+            <canvas id="map-baghouse" width="380" height="380" style="width:100%;display:block;"></canvas>
+          </div>
         </div>
-        <div class="legend">
-          <div class="legend-item"><div class="legend-dot" style="background:var(--coal);"></div>Coal (uncontrolled)</div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--baghouse);"></div>Coal + Baghouse</div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--gas);"></div>Natural Gas</div>
-          <div class="legend-item"><div class="legend-dot" style="background:#fff;opacity:.3;"></div>Town receptor</div>
+        <div class="viz-card">
+          <div class="viz-card-header"><h3 style="color:var(--gas);">■ NATURAL GAS CC</h3></div>
+          <div class="viz-card-body" style="padding:0;">
+            <canvas id="map-gas" width="380" height="380" style="width:100%;display:block;"></canvas>
+          </div>
         </div>
+      </div>
+      <div class="legend" style="margin-top:10px;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:10px 16px;flex-wrap:wrap;gap:16px;">
+        <div class="legend-item">🏭 Power Plant</div>
+        <div class="legend-item">🏘 Millbrook (town)</div>
+        <div class="legend-item">🖥 Nexus DC</div>
+        <div class="legend-item">🌾 Harrow Farm</div>
+        <div class="legend-item" style="margin-left:auto;font-size:11px;color:var(--text3);font-family:var(--mono);">Plume opacity ∝ PM₂.₅ · Wind→downwind</div>
       </div>
     </div>
 
@@ -1154,123 +1165,300 @@ function toCanvasXY(val, min, max, canMin, canMax) {
 }
 
 // ══════════════════════════════════════════════
-//  DRAW MAP
+//  FICTITIOUS MAP — fixed world coords (meters)
+//  Origin (0,0) = power plant location
+//  +X = East, +Y = North (canvas Y is flipped)
+//
+//  Fixed locations:
+//    Power Plant:  (0, 0)
+//    Town Millbrook: derived from state.townDist along wind direction
+//    Data Center:  (1800, 1200)   NE of plant
+//    Farm:         (-2500, 2000)  NW of plant
 // ══════════════════════════════════════════════
-function drawMap() {
-  const canvas = document.getElementById('map-canvas');
+
+// Map view: centered on plant, showing ~20km x 20km world
+const MAP_WORLD = 14000; // half-extent in meters shown each side
+
+function worldToCanvas(wx, wy, W, H) {
+  // Canvas center = plant at (0,0)
+  // +X right, +Y down (flip Y)
+  const cx = W / 2, cy = H / 2;
+  const scale = Math.min(W, H) / (MAP_WORLD * 2);
+  return [cx + wx * scale, cy - wy * scale, scale];
+}
+
+function drawBaseMap(ctx, W, H) {
+  // Background: flat terrain
+  ctx.fillStyle = '#1a2210';
+  ctx.fillRect(0, 0, W, H);
+
+  const scale = Math.min(W, H) / (MAP_WORLD * 2);
+  const cx = W / 2, cy = H / 2;
+
+  // Draw farmland patches (NW quadrant)
+  const farmFields = [
+    { x: -3500, y: 1500, w: 3000, h: 2000 },
+    { x: -3000, y: 3200, w: 2000, h: 1200 },
+  ];
+  farmFields.forEach(f => {
+    const [px, py] = [cx + f.x * scale, cy - (f.y + f.h) * scale];
+    const fw = f.w * scale, fh = f.h * scale;
+    // alternating stripe pattern
+    ctx.fillStyle = '#1e2e10';
+    ctx.fillRect(px, py, fw, fh);
+    for (let i = 0; i < fh; i += 6) {
+      ctx.fillStyle = i % 12 === 0 ? '#243515' : '#1c2b0f';
+      ctx.fillRect(px, py + i, fw, 6);
+    }
+    ctx.strokeStyle = '#2a4015';
+    ctx.lineWidth = 0.5;
+    ctx.strokeRect(px, py, fw, fh);
+  });
+
+  // River / stream (diagonal NE-SW)
+  ctx.beginPath();
+  ctx.moveTo(cx + (-6000) * scale, cy - (-1000) * scale);
+  ctx.bezierCurveTo(
+    cx + (-3000) * scale, cy - (1500) * scale,
+    cx + (1000) * scale,  cy - (500) * scale,
+    cx + (5000) * scale,  cy - (3000) * scale
+  );
+  ctx.strokeStyle = '#1a3a5c';
+  ctx.lineWidth = 5;
+  ctx.stroke();
+  ctx.strokeStyle = '#1e4a70';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Road network
+  const roads = [
+    // Main highway E-W
+    { pts: [[-8000,0],[8000,0]] },
+    // Road N-S through town
+    { pts: [[2500,-6000],[2500,6000]] },
+    // Diagonal to farm
+    { pts: [[-500,0],[-2500,2000],[-3500,2800]] },
+    // Road to DC
+    { pts: [[0,0],[1800,1200]] },
+  ];
+  roads.forEach(r => {
+    ctx.beginPath();
+    r.pts.forEach(([rx,ry], i) => {
+      const px = cx + rx * scale, py2 = cy - ry * scale;
+      i === 0 ? ctx.moveTo(px, py2) : ctx.lineTo(px, py2);
+    });
+    ctx.strokeStyle = '#2a3240';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.strokeStyle = '#3a4458';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([6,6]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  });
+
+  // Grid lines (subtle)
+  ctx.strokeStyle = 'rgba(42,48,80,0.3)';
+  ctx.lineWidth = 0.5;
+  for (let gx = -MAP_WORLD; gx <= MAP_WORLD; gx += 2000) {
+    const px = cx + gx * scale;
+    ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, H); ctx.stroke();
+  }
+  for (let gy = -MAP_WORLD; gy <= MAP_WORLD; gy += 2000) {
+    const py2 = cy - gy * scale;
+    ctx.beginPath(); ctx.moveTo(0, py2); ctx.lineTo(W, py2); ctx.stroke();
+  }
+}
+
+function drawMapForType(canvasId, plantType, plume_color) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
   const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
-  clearCanvas(canvas, ctx);
 
-  const { H_eff, Q, types, colors, concTown } = compute();
+  const { H_eff, Q, concTown } = compute();
   const { windSpeed, windDir, stability, townDist } = state;
 
-  const maxRange = Math.min(townDist * 2.5, 20000);
-  const cx = W * 0.18, cy = H / 2;
-  const scaleX = (W - cx - 30) / maxRange;
-  const scaleY = H / (maxRange * 0.6);
+  const scale = Math.min(W, H) / (MAP_WORLD * 2);
+  const cx = W / 2, cy = H / 2;
 
-  // Draw in wind direction
-  const windRad = (270 - windDir) * Math.PI / 180;
-  const dx = Math.cos(windRad), dy = -Math.sin(windRad);
-  const perpX = -dy, perpY = dx;
+  // Clear & base map
+  clearCanvas(canvas, ctx);
+  drawBaseMap(ctx, W, H);
 
-  // Concentration field for each type as plume width fill
-  const typesList = types;
-  typesList.forEach((t, ti) => {
-    const col = colors[t];
-    const n = 80;
-    for (let i = 1; i <= n; i++) {
-      const x_m = (i / n) * maxRange;
-      const sy = sigma_y(x_m, stability);
-      const conc_cl = gaussian_conc_correct(x_m, 0, Q[t], H_eff, windSpeed, stability);
-      if (conc_cl < 0.01) continue;
-      // Draw plume width at ±2σ_y, colored by concentration
-      const alpha = Math.min(0.4, conc_cl / (concTown[t] * 5 + 1) * 0.6);
-      ctx.strokeStyle = col.replace('#','rgba(').replace(/(..)(..)(..)/, (_,r,g,b)=>
-        `${parseInt(r,16)},${parseInt(g,16)},${parseInt(b,16)}`
-      );
-      // simple: draw line in wind direction with width ~sy
-      const px = cx + dx * x_m * scaleX;
-      const py = cy + dy * x_m * scaleX;
-      const hw = Math.max(1, sy * scaleY * (ti === 0 ? 1 : ti===1 ? 0.75 : 0.5));
-      ctx.strokeStyle = col;
-      ctx.globalAlpha = alpha;
-      ctx.lineWidth = hw * 2;
-      ctx.beginPath();
-      ctx.moveTo(px + perpX * hw, py + perpY * hw);
-      ctx.lineTo(px - perpX * hw, py - perpY * hw);
-      ctx.stroke();
-    }
-  });
+  // ── Wind direction (meteorological: FROM direction)
+  // Wind blows FROM windDir, so plumes go TO (windDir + 180)
+  const plume_dir_rad = ((windDir + 180) % 360) * Math.PI / 180;
+  const dx = Math.sin(plume_dir_rad);   // East component (canvas +X)
+  const dy = Math.cos(plume_dir_rad);   // North component (canvas -Y)
+  const perpX = -dy, perpY = dx;        // crosswind unit vector
+
+  // ── Draw Gaussian plume as filled gradient band
+  const maxDist = MAP_WORLD * 1.8;
+  const nSlices = 120;
+  const Q_val = Q[plantType];
+
+  // Find max conc for alpha normalization
+  let maxC = 0;
+  for (let i = 1; i <= nSlices; i++) {
+    const x_m = (i / nSlices) * maxDist;
+    const c = gaussian_conc_correct(x_m, 0, Q_val, H_eff, windSpeed, stability);
+    if (c > maxC) maxC = c;
+  }
+  maxC = Math.max(maxC, 0.001);
+
+  // Draw as filled polygon slices
+  for (let i = 1; i <= nSlices; i++) {
+    const x_m = (i / nSlices) * maxDist;
+    const x_prev = ((i - 1) / nSlices) * maxDist;
+    const sy_cur  = sigma_y(x_m, stability);
+    const sy_prev = sigma_y(Math.max(x_prev, 1), stability);
+    const hw_cur  = sy_cur  * scale * 2.5;
+    const hw_prev = sy_prev * scale * 2.5;
+
+    const conc = gaussian_conc_correct(x_m, 0, Q_val, H_eff, windSpeed, stability);
+    const alpha = Math.min(0.65, (conc / maxC) * 0.7);
+    if (alpha < 0.002) continue;
+
+    // World positions
+    const wx_cur  = dx * x_m,    wy_cur  = dy * x_m;
+    const wx_prev = dx * x_prev, wy_prev = dy * x_prev;
+
+    // Canvas positions
+    const px_cur  = cx + wx_cur  * scale, py_cur  = cy - wy_cur  * scale;
+    const px_prev = cx + wx_prev * scale, py_prev = cy - wy_prev * scale;
+
+    // Crosswind canvas offsets
+    const cpx = perpX * scale, cpy = -perpY * scale;
+
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = plume_color;
+    ctx.beginPath();
+    ctx.moveTo(px_prev + cpx * hw_prev, py_prev + cpy * hw_prev);
+    ctx.lineTo(px_cur  + cpx * hw_cur,  py_cur  + cpy * hw_cur);
+    ctx.lineTo(px_cur  - cpx * hw_cur,  py_cur  - cpy * hw_cur);
+    ctx.lineTo(px_prev - cpx * hw_prev, py_prev - cpy * hw_prev);
+    ctx.closePath();
+    ctx.fill();
+  }
   ctx.globalAlpha = 1;
 
-  // Draw centerlines
-  typesList.forEach((t, ti) => {
-    const col = colors[t];
-    const offset = (ti - 1) * 3;
-    ctx.strokeStyle = col;
-    ctx.lineWidth = 1.5;
-    ctx.setLineDash([4,4]);
-    ctx.globalAlpha = 0.7;
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    const ex = cx + dx * maxRange * scaleX;
-    const ey = cy + dy * maxRange * scaleX;
-    ctx.lineTo(ex + perpX*offset, ey + perpY*offset);
-    ctx.stroke();
-  });
+  // Centerline dashed
+  ctx.setLineDash([4, 4]);
+  ctx.strokeStyle = plume_color;
+  ctx.lineWidth = 1;
+  ctx.globalAlpha = 0.5;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.lineTo(cx + dx * maxDist * scale, cy - dy * maxDist * scale);
+  ctx.stroke();
   ctx.setLineDash([]);
   ctx.globalAlpha = 1;
 
-  // Draw town marker
-  const tx = cx + dx * townDist * scaleX;
-  const ty = cy + dy * townDist * scaleX;
-  ctx.beginPath();
-  ctx.arc(tx, ty, 14, 0, Math.PI*2);
-  ctx.fillStyle = 'rgba(255,255,255,0.08)';
-  ctx.strokeStyle = 'rgba(255,255,255,0.4)';
-  ctx.lineWidth = 1;
-  ctx.fill(); ctx.stroke();
-  ctx.fillStyle = '#e8eaf0';
-  ctx.font = 'bold 10px DM Sans';
-  ctx.textAlign = 'center';
-  ctx.fillText('TOWN', tx, ty-4);
-  ctx.font = '9px Space Mono';
-  ctx.fillStyle = '#8a90a8';
-  ctx.fillText(`${(townDist/1000).toFixed(1)} km`, tx, ty+8);
+  // ── Draw landmarks ──
 
-  // Source marker
-  ctx.beginPath();
-  ctx.arc(cx, cy, 7, 0, Math.PI*2);
-  ctx.fillStyle = '#fff';
+  // Town Millbrook — fixed position east of plant at townDist
+  // Always placed at angle 90° (due East) from plant regardless of wind
+  // but the "receptor distance" is measured along wind direction in model
+  // Visual: place town at fixed map coords (townDist, 0) = due East
+  const townX = townDist, townY = 0;
+  drawLandmark(ctx, cx + townX * scale, cy - townY * scale, '🏘', 'Millbrook', '#e8eaf0', 18);
+
+  // Data Center — NE of plant, fixed
+  const dcX = 1800, dcY = 1200;
+  drawLandmark(ctx, cx + dcX * scale, cy - dcY * scale, '🖥', 'Nexus DC', '#00e5ff', 14);
+
+  // Farm — NW of plant, fixed
+  const farmX = -2800, farmY = 2200;
+  drawLandmark(ctx, cx + farmX * scale, cy - farmY * scale, '🌾', 'Harrow Farm', '#7fff6b', 14);
+
+  // Power Plant — at origin (map center)
+  drawPlantMarker(ctx, cx, cy, plume_color);
+
+  // ── Wind arrow ──
+  const arrowLen = 30;
+  const arrowX = W - 50, arrowY = H - 50;
+  ctx.save();
+  ctx.translate(arrowX, arrowY);
+  ctx.rotate(plume_dir_rad);
   ctx.strokeStyle = '#00e5ff';
   ctx.lineWidth = 2;
-  ctx.fill(); ctx.stroke();
-  ctx.fillStyle = '#0d0f14';
-  ctx.font = 'bold 8px Space Mono';
-  ctx.textAlign = 'center';
-  ctx.fillText('★', cx, cy+3);
-
-  // Scale bar
-  const scaleBar = 5000; // 5 km
-  const sbX = W - 80, sbY = H - 20;
-  ctx.strokeStyle = '#555e7a';
-  ctx.lineWidth = 2;
-  ctx.setLineDash([]);
-  ctx.beginPath();
-  ctx.moveTo(sbX, sbY); ctx.lineTo(sbX + scaleBar*scaleX, sbY);
-  ctx.stroke();
-  ctx.fillStyle = '#555e7a';
+  ctx.beginPath(); ctx.moveTo(0, 12); ctx.lineTo(0, -12); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0, -12); ctx.lineTo(-5, -5); ctx.moveTo(0,-12); ctx.lineTo(5,-5); ctx.stroke();
+  ctx.restore();
+  ctx.fillStyle = '#00e5ff';
   ctx.font = '9px Space Mono';
   ctx.textAlign = 'center';
-  ctx.fillText('5 km', sbX + scaleBar*scaleX/2, sbY-4);
+  ctx.fillText(`${windDir}°`, arrowX, arrowY + 22);
 
-  // Wind arrow label
-  ctx.fillStyle = '#00e5ff';
-  ctx.font = '11px Space Mono';
+  // ── Scale bar ──
+  const sbMeters = 2000;
+  const sbPx = sbMeters * scale;
+  ctx.strokeStyle = '#8a90a8';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(10, H - 12); ctx.lineTo(10 + sbPx, H - 12);
+  ctx.stroke();
+  ctx.fillStyle = '#8a90a8';
+  ctx.font = '9px Space Mono';
   ctx.textAlign = 'left';
-  ctx.fillText(`WIND ${windDir}°`, 10, H-10);
+  ctx.fillText('2 km', 10, H - 3);
+
+  // ── Concentration label at town ──
+  const conc_at_town = gaussian_conc_correct(townDist, 0, Q_val, H_eff, windSpeed, stability);
+  const labelX = cx + townX * scale;
+  const labelY = cy - townY * scale - 28;
+  ctx.fillStyle = conc_at_town > NAAQS_ANNUAL ? '#ff4444' : '#7fff6b';
+  ctx.font = 'bold 10px Space Mono';
+  ctx.textAlign = 'center';
+  ctx.fillText(`${conc_at_town.toFixed(2)} µg/m³`, labelX, labelY);
+}
+
+function drawPlantMarker(ctx, px, py, col) {
+  // Stack symbol
+  ctx.fillStyle = col;
+  ctx.strokeStyle = '#0d0f14';
+  ctx.lineWidth = 1;
+  // Base rectangle
+  ctx.fillRect(px - 6, py - 6, 12, 12);
+  ctx.strokeRect(px - 6, py - 6, 12, 12);
+  // Stack chimney
+  ctx.fillStyle = '#888';
+  ctx.fillRect(px - 2, py - 14, 4, 10);
+  // Smoke puff
+  ctx.fillStyle = 'rgba(200,200,200,0.4)';
+  ctx.beginPath(); ctx.arc(px, py - 18, 4, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(px + 3, py - 22, 3, 0, Math.PI * 2); ctx.fill();
+  // Label
+  ctx.fillStyle = col;
+  ctx.font = 'bold 10px Space Mono';
+  ctx.textAlign = 'center';
+  ctx.fillText('PLANT', px, py + 20);
+}
+
+function drawLandmark(ctx, px, py, emoji, label, col, emojiSize) {
+  ctx.font = `${emojiSize}px serif`;
+  ctx.textAlign = 'center';
+  ctx.fillText(emoji, px, py + emojiSize * 0.4);
+  // Circle
+  ctx.beginPath();
+  ctx.arc(px, py, emojiSize * 0.7, 0, Math.PI * 2);
+  ctx.strokeStyle = col;
+  ctx.lineWidth = 1.5;
+  ctx.globalAlpha = 0.5;
+  ctx.stroke();
+  ctx.globalAlpha = 1;
+  // Label
+  ctx.fillStyle = col;
+  ctx.font = `bold 10px DM Sans`;
+  ctx.textAlign = 'center';
+  ctx.fillText(label, px, py + emojiSize + 6);
+}
+
+function drawMap() {
+  drawMapForType('map-coal',    'coal',    '#ff6b35');
+  drawMapForType('map-baghouse','baghouse','#ffcc00');
+  drawMapForType('map-gas',     'gas',     '#00e5ff');
 }
 
 // ══════════════════════════════════════════════
