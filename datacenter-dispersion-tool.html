@@ -1,1979 +1,1185 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AirSite — Data Center PM Dispersion Tool</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CIVE 442 — Tool 2: Emissions Reduction Design</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
   :root {
-    --bg: #0d0f14;
-    --surface: #141720;
-    --surface2: #1c2030;
-    --surface3: #232840;
-    --border: #2a3050;
-    --accent: #00e5ff;
-    --accent2: #ff6b35;
-    --accent3: #7fff6b;
-    --warn: #ffcc00;
-    --danger: #ff4444;
-    --text: #e8eaf0;
-    --text2: #8a90a8;
-    --text3: #555e7a;
-    --coal: #ff6b35;
-    --baghouse: #ffcc00;
-    --gas: #00e5ff;
-    --mono: 'Space Mono', monospace;
-    --sans: 'DM Sans', sans-serif;
+    --coal: #1a1a1a;
+    --coal-mid: #2e2e2e;
+    --coal-light: #4a4a4a;
+    --gas-blue: #1a4a6e;
+    --gas-mid: #1d6fa4;
+    --gas-light: #4fa3d1;
+    --accent: #c8882a;
+    --accent-light: #e8b468;
+    --bg: #f4f0e8;
+    --bg-warm: #ede8dc;
+    --bg-card: #faf8f4;
+    --text: #1c1c1c;
+    --text-mid: #4a4a4a;
+    --text-light: #7a7a7a;
+    --rule: #d0c8b8;
+    --pm25: #c0392b;
+    --pm10: #e67e22;
+    --serif: 'Libre Baskerville', Georgia, serif;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: var(--sans);
-    font-size: 14px;
-    min-height: 100vh;
+    font-family: var(--serif);
+    line-height: 1.7;
     overflow-x: hidden;
   }
 
-  /* ── Header ── */
-  header {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 16px 32px;
+  /* ── NAV ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--coal);
     display: flex;
     align-items: center;
-    gap: 20px;
-    position: sticky; top: 0; z-index: 100;
+    gap: 0;
+    padding: 0 2rem;
+    height: 52px;
+    border-bottom: 3px solid var(--accent);
   }
-  header .logo {
+  nav .nav-brand {
     font-family: var(--mono);
-    font-size: 18px;
-    color: var(--accent);
-    letter-spacing: -1px;
-    white-space: nowrap;
+    font-size: 0.7rem;
+    color: #888;
+    letter-spacing: 0.08em;
+    margin-right: auto;
+    text-transform: uppercase;
   }
-  header .logo span { color: var(--text2); }
-  header .subtitle {
-    font-size: 12px;
-    color: var(--text2);
-    border-left: 1px solid var(--border);
-    padding-left: 20px;
+  nav a {
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: #aaa;
+    text-decoration: none;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0 1.1rem;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -3px;
+    transition: color 0.2s, border-color 0.2s;
   }
-  header .badge {
-    margin-left: auto;
-    background: rgba(0,229,255,0.1);
-    border: 1px solid rgba(0,229,255,0.3);
-    color: var(--accent);
+  nav a:hover { color: #fff; border-color: var(--accent-light); }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--coal);
+    color: #f0ece4;
+    padding: 5rem 4rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 80px,
+      rgba(255,255,255,0.018) 80px,
+      rgba(255,255,255,0.018) 81px
+    );
+    pointer-events: none;
+  }
+  .hero-tag {
     font-family: var(--mono);
-    font-size: 10px;
-    padding: 4px 10px;
-    border-radius: 2px;
+    font-size: 0.68rem;
+    color: var(--accent);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+  }
+  .hero h1 {
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 700;
+    line-height: 1.2;
+    max-width: 720px;
+    margin-bottom: 1rem;
+  }
+  .hero h1 em { color: var(--accent-light); font-style: italic; }
+  .hero-sub {
+    font-family: var(--sans);
+    font-weight: 300;
+    font-size: 1rem;
+    color: #b0a898;
+    max-width: 560px;
+  }
+  .hero-meta {
+    display: flex;
+    gap: 2.5rem;
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid #333;
+  }
+  .hero-meta-item { display: flex; flex-direction: column; gap: 0.2rem; }
+  .hero-meta-item span:first-child {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    color: #666;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .hero-meta-item span:last-child {
+    font-family: var(--sans);
+    font-size: 0.88rem;
+    color: #d0c8b8;
   }
 
-  /* ── Layout ── */
-  .app { display: grid; grid-template-columns: 320px 1fr; min-height: calc(100vh - 57px); }
+  /* ── SECTION WRAPPER ── */
+  .section {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 4.5rem 2rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .section:last-child { border-bottom: none; }
 
-  /* ── Sidebar ── */
-  .sidebar {
-    background: var(--surface);
-    border-right: 1px solid var(--border);
-    overflow-y: auto;
-    padding: 0;
-  }
-  .sidebar-section {
-    border-bottom: 1px solid var(--border);
-    padding: 20px;
-  }
-  .sidebar-section:last-child { border-bottom: none; }
   .section-label {
     font-family: var(--mono);
-    font-size: 10px;
-    color: var(--accent);
-    letter-spacing: 2px;
+    font-size: 0.64rem;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
-    margin-bottom: 16px;
+    color: var(--accent);
+    margin-bottom: 0.6rem;
+  }
+  .section h2 {
+    font-size: 1.9rem;
+    font-weight: 700;
+    margin-bottom: 1.6rem;
+    line-height: 1.25;
+  }
+  .section p {
+    font-size: 0.97rem;
+    color: var(--text-mid);
+    margin-bottom: 1rem;
+    max-width: 680px;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 1.6rem 1.8rem;
+    margin-bottom: 1.2rem;
+  }
+  .card h3 {
+    font-family: var(--sans);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 0.7rem;
+  }
+  .card p, .card li {
+    font-size: 0.95rem;
+    color: var(--text-mid);
+    margin-bottom: 0.4rem;
+  }
+  .card ul { padding-left: 1.2rem; }
+
+  /* annotation grid for Part 1 */
+  .annotation-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  @media (max-width: 600px) { .annotation-grid { grid-template-columns: 1fr; } }
+
+  .annotation-box {
+    background: var(--bg-warm);
+    border-left: 3px solid var(--accent);
+    padding: 1rem 1.2rem;
+    border-radius: 0 4px 4px 0;
+  }
+  .annotation-box.full { grid-column: 1 / -1; }
+  .annotation-box h4 {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .annotation-box p, .annotation-box li {
+    font-size: 0.92rem;
+    color: var(--text-mid);
+    margin-bottom: 0.3rem;
+  }
+  .annotation-box ul { padding-left: 1.1rem; }
+
+  /* image placeholder */
+  .img-placeholder {
+    background: var(--bg-warm);
+    border: 2px dashed var(--rule);
+    border-radius: 6px;
+    height: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    color: var(--text-light);
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .img-placeholder:hover { border-color: var(--accent); background: #ece5d4; }
+  .img-placeholder .upload-icon { font-size: 2rem; opacity: 0.4; }
+  .img-placeholder img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 0.5rem;
+  }
+  .img-placeholder input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Making Thinking Visible stages */
+  .stages {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+    margin-top: 0.5rem;
+  }
+  @media (max-width: 600px) { .stages { grid-template-columns: 1fr; } }
+  .stage-box {
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .stage-header {
+    background: var(--coal);
+    color: #d0c8b8;
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.6rem 1rem;
+  }
+  .stage-body { padding: 1rem; }
+  .stage-caption {
+    background: var(--bg-warm);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 0.8rem 1rem;
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    color: var(--text-mid);
+    font-style: italic;
+    margin-top: 0.8rem;
+  }
+
+  /* ── TOOL DESCRIPTION ── */
+  .tool-description {
+    background: var(--coal);
+    color: #d0c8b8;
+    border-radius: 6px;
+    padding: 2rem 2.2rem;
+    margin-bottom: 2.4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .tool-description::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--gas-light));
+  }
+  .tool-description h3 {
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-light);
+    margin-bottom: 1rem;
+  }
+  .tool-description p {
+    font-size: 0.93rem;
+    color: #b8b0a0;
+    margin-bottom: 0.75rem;
+    max-width: 100%;
+  }
+  .tool-description p:last-child { margin-bottom: 0; }
+
+  /* ── TOOL INSTRUMENT ── */
+  .tool-instrument {
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .tool-header {
+    background: var(--bg-warm);
+    padding: 1.2rem 1.8rem;
+    border-bottom: 1px solid var(--rule);
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
   }
-  .section-label::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-  .input-row {
-    margin-bottom: 14px;
-  }
-  .input-row label {
-    display: block;
-    font-size: 12px;
-    color: var(--text2);
-    margin-bottom: 5px;
-  }
-  .input-row .val-display {
-    float: right;
+  .tool-header-title {
     font-family: var(--mono);
-    font-size: 12px;
-    color: var(--accent);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-light);
   }
+  .tool-header-badge {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    background: var(--coal);
+    color: var(--accent-light);
+    padding: 0.2rem 0.6rem;
+    border-radius: 3px;
+    letter-spacing: 0.08em;
+  }
+
+  .tool-body { padding: 2rem 1.8rem; }
+
+  /* inputs */
+  .input-section { margin-bottom: 2rem; }
+  .input-section-title {
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .input-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.4rem;
+    margin-bottom: 1.4rem;
+  }
+  @media (max-width: 580px) { .input-row { grid-template-columns: 1fr; } }
+  .input-row.single { grid-template-columns: 1fr; max-width: 460px; }
+
+  .input-group { display: flex; flex-direction: column; gap: 0.5rem; }
+  .input-group label {
+    font-family: var(--sans);
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .input-group .input-sub {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--text-light);
+    margin-top: -0.3rem;
+  }
+
+  .slider-wrap { display: flex; align-items: center; gap: 0.8rem; }
   input[type=range] {
-    width: 100%;
-    appearance: none;
-    height: 3px;
-    background: var(--surface3);
+    flex: 1;
+    -webkit-appearance: none;
+    height: 4px;
+    background: var(--rule);
     border-radius: 2px;
     outline: none;
     cursor: pointer;
   }
   input[type=range]::-webkit-slider-thumb {
-    appearance: none;
-    width: 14px; height: 14px;
-    background: var(--accent);
+    -webkit-appearance: none;
+    width: 16px; height: 16px;
     border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
     cursor: pointer;
-    box-shadow: 0 0 8px rgba(0,229,255,0.5);
+    transition: background 0.15s;
   }
-  select {
-    width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 7px 10px;
-    font-family: var(--sans);
-    font-size: 13px;
-    border-radius: 3px;
-    outline: none;
-    cursor: pointer;
-  }
-  select:focus { border-color: var(--accent); }
-  .info-box {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    padding: 10px 12px;
-    font-size: 12px;
-    color: var(--text2);
-    line-height: 1.6;
-    margin-top: 8px;
-  }
-  .info-box strong { color: var(--text); }
-
-  /* Power summary strip */
-  .power-strip {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-top: 8px;
-  }
-  .power-card {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    padding: 8px 10px;
-  }
-  .power-card .label { font-size: 10px; color: var(--text3); }
-  .power-card .value {
+  input[type=range]::-webkit-slider-thumb:hover { background: var(--accent-light); }
+  .slider-value {
     font-family: var(--mono);
-    font-size: 14px;
+    font-size: 0.88rem;
+    font-weight: 600;
     color: var(--accent);
-    margin-top: 2px;
+    min-width: 52px;
+    text-align: right;
   }
 
-  /* Wind direction dial */
-  .wind-dial-wrap {
-    display: flex; align-items: center; gap: 14px;
+  /* literature values panel */
+  .lit-panel {
+    background: var(--bg-warm);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 2rem;
   }
-  .wind-dial {
-    width: 60px; height: 60px;
-    position: relative;
-    flex-shrink: 0;
-  }
-  .wind-dial svg { width: 100%; height: 100%; }
-  .wind-dir-input { flex: 1; }
-
-  /* ── Main content ── */
-  .main {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  /* Tabs */
-  .tabs {
-    display: flex;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 0 24px;
-    gap: 0;
-  }
-  .tab {
-    padding: 14px 20px;
-    font-size: 13px;
-    color: var(--text2);
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
+  .lit-panel h4 {
     font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 1px;
-    transition: color .2s, border-color .2s;
-    white-space: nowrap;
-  }
-  .tab:hover { color: var(--text); }
-  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-
-  /* Panel */
-  .panel { display: none; padding: 24px; flex: 1; overflow-y: auto; }
-  .panel.active { display: block; }
-
-  /* ── Canvas panels ── */
-  .viz-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 16px;
-  }
-  .viz-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    overflow: hidden;
-  }
-  .viz-card.wide { grid-column: 1 / -1; }
-  .viz-card-header {
-    padding: 10px 16px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .viz-card-header h3 {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--text2);
-    letter-spacing: 1px;
+    font-size: 0.64rem;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 0.9rem;
   }
-  .viz-card-body { padding: 16px; }
-  canvas { display: block; }
-
-  /* Legend */
-  .legend {
-    display: flex; gap: 16px; flex-wrap: wrap;
-    padding: 10px 16px;
-    border-top: 1px solid var(--border);
+  .lit-table { width: 100%; border-collapse: collapse; }
+  .lit-table th {
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-light);
+    text-align: left;
+    padding: 0.35rem 0.6rem;
+    border-bottom: 1px solid var(--rule);
   }
-  .legend-item {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 12px; color: var(--text2);
-  }
-  .legend-dot {
-    width: 12px; height: 3px; border-radius: 2px;
-  }
-
-  /* ── Stats row ── */
-  .stats-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin-bottom: 16px;
-  }
-  .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 14px 16px;
-    position: relative;
-    overflow: hidden;
-  }
-  .stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    width: 3px; height: 100%;
-  }
-  .stat-card.coal::before { background: var(--coal); }
-  .stat-card.baghouse::before { background: var(--baghouse); }
-  .stat-card.gas::before { background: var(--gas); }
-  .stat-card .plant-name {
+  .lit-table td {
     font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 1px;
-    margin-bottom: 8px;
-  }
-  .stat-card.coal .plant-name { color: var(--coal); }
-  .stat-card.baghouse .plant-name { color: var(--baghouse); }
-  .stat-card.gas .plant-name { color: var(--gas); }
-  .stat-card .metric {
-    font-family: var(--mono);
-    font-size: 22px;
+    font-size: 0.78rem;
     color: var(--text);
-    line-height: 1;
+    padding: 0.4rem 0.6rem;
+    border-bottom: 1px solid #e8e0d0;
   }
-  .stat-card .metric-label {
-    font-size: 11px;
-    color: var(--text2);
-    margin-top: 4px;
+  .lit-table tr:last-child td { border-bottom: none; }
+  .lit-table .coal-cell { color: var(--coal-light); font-weight: 600; }
+  .lit-table .gas-cell { color: var(--gas-mid); font-weight: 600; }
+  .lit-cite {
+    font-family: var(--sans);
+    font-size: 0.68rem;
+    color: var(--text-light);
+    margin-top: 0.6rem;
+    font-style: italic;
   }
-  .stat-card .naaqs-status {
-    position: absolute;
-    top: 10px; right: 10px;
-    font-size: 10px;
-    font-family: var(--mono);
-    padding: 2px 6px;
-    border-radius: 2px;
-  }
-  .exceed { background: rgba(255,68,68,0.2); color: var(--danger); border: 1px solid rgba(255,68,68,0.4); }
-  .comply { background: rgba(127,255,107,0.15); color: var(--accent3); border: 1px solid rgba(127,255,107,0.3); }
 
-  /* ── MCDA ── */
-  .mcda-grid {
+  /* outputs */
+  .output-divider {
+    border: none;
+    border-top: 1px solid var(--rule);
+    margin: 2rem 0;
+  }
+  .output-section-title {
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 1.4rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  /* heat input row */
+  .heat-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 16px;
+    gap: 1rem;
+    margin-bottom: 2rem;
   }
-  .mcda-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    overflow: hidden;
+  @media (max-width: 540px) { .heat-row { grid-template-columns: 1fr; } }
+  .heat-card {
+    padding: 1.2rem 1.4rem;
+    border-radius: 6px;
+    border: 1px solid var(--rule);
   }
-  .mcda-card-header {
-    padding: 10px 16px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  .heat-card.coal-card { border-top: 3px solid var(--coal-light); }
+  .heat-card.gas-card { border-top: 3px solid var(--gas-mid); }
+  .heat-card-label {
+    font-family: var(--sans);
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-light);
+    margin-bottom: 0.3rem;
   }
-  .mcda-card-header h3 {
+  .heat-card.coal-card .heat-card-label { color: var(--coal-light); }
+  .heat-card.gas-card .heat-card-label { color: var(--gas-mid); }
+  .heat-card-value {
     font-family: var(--mono);
-    font-size: 11px;
-    color: var(--text2);
-    letter-spacing: 1px;
-  }
-  .weight-badge {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--accent);
-    background: rgba(0,229,255,0.1);
-    padding: 2px 8px;
-    border-radius: 2px;
-  }
-  .mcda-card-body { padding: 14px 16px; }
-
-  .weight-row {
-    display: flex; align-items: center; gap: 10px;
-    margin-bottom: 10px;
-  }
-  .weight-row label { font-size: 12px; color: var(--text2); width: 140px; flex-shrink: 0; }
-  .weight-row input[type=range] { flex: 1; }
-  .weight-row .wval {
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--accent);
-    width: 36px;
-    text-align: right;
-  }
-
-  .score-bars { margin-top: 10px; }
-  .score-bar-row {
-    display: flex; align-items: center; gap: 10px;
-    margin-bottom: 8px;
-  }
-  .score-bar-row .name {
-    font-size: 11px; color: var(--text2);
-    width: 90px; flex-shrink: 0;
-    font-family: var(--mono);
-    letter-spacing: .5px;
-  }
-  .score-bar-track {
-    flex: 1;
-    height: 8px;
-    background: var(--surface3);
-    border-radius: 4px;
-    overflow: hidden;
-  }
-  .score-bar-fill {
-    height: 100%;
-    border-radius: 4px;
-    transition: width .4s ease;
-  }
-  .score-bar-row .sval {
-    font-family: var(--mono);
-    font-size: 11px;
-    width: 28px;
-    text-align: right;
-  }
-
-  .recommendation-box {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 16px 20px;
-    margin-top: 16px;
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-  }
-  .rec-icon {
-    font-size: 28px;
-    flex-shrink: 0;
-    line-height: 1;
-  }
-  .rec-title {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--text3);
-    letter-spacing: 1px;
-    margin-bottom: 4px;
-  }
-  .rec-plant {
-    font-family: var(--mono);
-    font-size: 20px;
-    margin-bottom: 6px;
-  }
-  .rec-reason {
-    font-size: 13px;
-    color: var(--text2);
-    line-height: 1.6;
-  }
-
-  /* ── Cost table ── */
-  .cost-table-wrap { overflow-x: auto; }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-  }
-  thead tr {
-    background: var(--surface2);
-  }
-  th {
-    padding: 10px 14px;
-    text-align: left;
-    font-family: var(--mono);
-    font-size: 10px;
-    color: var(--text2);
-    letter-spacing: 1px;
-    border-bottom: 1px solid var(--border);
-    font-weight: 400;
-  }
-  td {
-    padding: 9px 14px;
-    border-bottom: 1px solid var(--border);
+    font-size: 1.35rem;
+    font-weight: 600;
     color: var(--text);
-    vertical-align: top;
   }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: rgba(255,255,255,0.02); }
-  .cost-coal { color: var(--coal); font-family: var(--mono); font-size: 12px; }
-  .cost-bag { color: var(--baghouse); font-family: var(--mono); font-size: 12px; }
-  .cost-gas { color: var(--gas); font-family: var(--mono); font-size: 12px; }
-  .source-note { font-size: 11px; color: var(--text3); margin-top: 3px; }
-
-  /* ── Validation panel ── */
-  .validation-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 20px;
-    margin-bottom: 16px;
-  }
-  .validation-card h3 {
+  .heat-card-unit {
     font-family: var(--mono);
-    font-size: 12px;
-    color: var(--accent);
-    letter-spacing: 1px;
-    margin-bottom: 12px;
+    font-size: 0.68rem;
+    color: var(--text-light);
+    margin-top: 0.1rem;
   }
-  .check-row {
-    display: flex; align-items: flex-start; gap: 10px;
-    margin-bottom: 10px;
-    font-size: 13px;
-    color: var(--text2);
-    line-height: 1.5;
-  }
-  .check-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
 
-  /* Responsive utility */
-  @media (max-width: 900px) {
-    .app { grid-template-columns: 1fr; }
-    .sidebar { border-right: none; border-bottom: 1px solid var(--border); }
-    .viz-grid { grid-template-columns: 1fr; }
-    .mcda-grid { grid-template-columns: 1fr; }
-    .stats-row { grid-template-columns: 1fr; }
+  /* pm comparison table */
+  .pm-table-wrap {
+    overflow-x: auto;
+    margin-bottom: 2rem;
   }
+  .pm-table { width: 100%; border-collapse: collapse; }
+  .pm-table th {
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 0.7rem 1rem;
+    text-align: left;
+    border-bottom: 2px solid var(--rule);
+    background: var(--bg-warm);
+    color: var(--text-light);
+  }
+  .pm-table th.coal-th { color: var(--coal-light); }
+  .pm-table th.gas-th { color: var(--gas-mid); }
+  .pm-table td {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e8e0d0;
+    vertical-align: middle;
+  }
+  .pm-table tr:last-child td { border-bottom: none; }
+  .pm-table .row-label {
+    font-family: var(--sans);
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .pm-table .pm-tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
+    margin-left: 0.4rem;
+    vertical-align: middle;
+  }
+  .pm-tag.pm25 { background: #fde8e6; color: var(--pm25); }
+  .pm-tag.pm10 { background: #fef0e0; color: var(--pm10); }
+  .coal-val { color: var(--coal-light); }
+  .gas-val { color: var(--gas-mid); }
+  .ratio-val { color: var(--text-light); font-size: 0.78rem; }
+
+  /* bar chart viz */
+  .bar-section { margin-bottom: 2rem; }
+  .bar-chart-label {
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-light);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  .bar-group { margin-bottom: 1rem; }
+  .bar-row { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.5rem; }
+  .bar-row-label {
+    font-family: var(--sans);
+    font-size: 0.75rem;
+    width: 110px;
+    flex-shrink: 0;
+    color: var(--text-mid);
+  }
+  .bar-track {
+    flex: 1;
+    height: 22px;
+    background: var(--bg-warm);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    min-width: 2px;
+  }
+  .bar-fill.coal-pm25 { background: var(--coal-mid); }
+  .bar-fill.coal-pm10 { background: var(--coal-light); }
+  .bar-fill.gas-pm25 { background: var(--gas-mid); }
+  .bar-fill.gas-pm10 { background: var(--gas-light); }
+  .bar-number {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    width: 90px;
+    flex-shrink: 0;
+    color: var(--text);
+  }
+
+  /* ef reference */
+  .ef-panel {
+    background: var(--bg-warm);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 1.2rem 1.5rem;
+    margin-top: 1rem;
+  }
+  .ef-panel h4 {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 0.8rem;
+  }
+  .ef-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--text-mid);
+  }
+  .ef-item strong { color: var(--text); }
+  .ef-cite {
+    font-family: var(--sans);
+    font-size: 0.68rem;
+    color: var(--text-light);
+    margin-top: 0.6rem;
+    font-style: italic;
+  }
+
+  /* ── REFLECTION ── */
+  .reflection-prompt {
+    background: var(--bg-warm);
+    border-left: 3px solid var(--accent);
+    padding: 0.8rem 1.2rem;
+    border-radius: 0 4px 4px 0;
+    margin-bottom: 0.8rem;
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    color: var(--text-mid);
+    font-style: italic;
+  }
+  textarea {
+    width: 100%;
+    min-height: 130px;
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 1rem 1.2rem;
+    font-family: var(--serif);
+    font-size: 0.93rem;
+    color: var(--text);
+    line-height: 1.7;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 1rem;
+  }
+  textarea:focus { border-color: var(--accent); }
+  textarea::placeholder { color: #b0a898; font-style: italic; }
+
+  /* footer */
+  footer {
+    background: var(--coal);
+    color: #555;
+    text-align: center;
+    padding: 1.6rem 2rem;
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+  }
+  footer span { color: #777; }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">AIR<span>SITE</span></div>
-  <div class="subtitle">Data Center PM₂.₅ Dispersion & Alternatives Assessment · CIVE 442</div>
-  <div class="badge">GAUSSIAN PLUME MODEL</div>
-</header>
+<!-- NAV -->
+<nav>
+  <span class="nav-brand">CIVE 442 · Tool 2</span>
+  <a href="#part1">Noticing</a>
+  <a href="#part2">Thinking</a>
+  <a href="#part3">Tool</a>
+  <a href="#part4">Reflection</a>
+</nav>
 
-<div class="app">
-
-  <!-- ═══════════════ SIDEBAR ═══════════════ -->
-  <aside class="sidebar">
-
-    <!-- Data Center Load -->
-    <div class="sidebar-section">
-      <div class="section-label">Data Center Load</div>
-      <div class="input-row">
-        <label>DC Power Demand (MW) <span class="val-display" id="lbl-dc">10</span></label>
-        <input type="range" id="sl-dc" min="1" max="100" value="10" step="1">
-      </div>
-      <div class="input-row">
-        <label>Town Load (MW) <span class="val-display" id="lbl-town">5</span></label>
-        <input type="range" id="sl-town" min="1" max="50" value="5" step="1">
-      </div>
-      <div class="power-strip">
-        <div class="power-card">
-          <div class="label">TOTAL DEMAND</div>
-          <div class="value" id="pw-total">15 MW</div>
-        </div>
-        <div class="power-card">
-          <div class="label">COAL CAPACITY NEEDED</div>
-          <div class="value" id="pw-coal-cap">19 MW</div>
-        </div>
-      </div>
-      <div class="info-box" style="margin-top:10px;">
-        <strong>Basis:</strong> Small DC ~10 MW (hyperscale edge node). US avg town ~5 MW for ~3,500 homes. Coal η=38%, NG η=50%. <em>Sources: EIA 2023, Lawrence Berkeley Lab 2024.</em>
-      </div>
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">CIVE 442 — Air Quality Modeling &amp; Comparative Engineering Design</div>
+  <h1>Tool 2: <em>Emissions Reduction</em><br>Design</h1>
+  <p class="hero-sub">A comparative air quality tool evaluating coal vs. natural gas power generation for an AI data center, based on EPA AP-42 uncontrolled PM emission factors.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item">
+      <span>Points</span><span>40</span>
     </div>
-
-    <!-- Meteorology -->
-    <div class="sidebar-section">
-      <div class="section-label">Meteorology</div>
-      <div class="input-row">
-        <label>Wind Speed, u (m/s) <span class="val-display" id="lbl-ws">5.0</span></label>
-        <input type="range" id="sl-ws" min="0.5" max="15" value="5" step="0.5">
-      </div>
-      <div class="input-row">
-        <label>Wind Direction (°) <span class="val-display" id="lbl-wd">270°</span></label>
-        <div class="wind-dial-wrap">
-          <div class="wind-dial">
-            <svg viewBox="0 0 60 60" id="wind-svg">
-              <circle cx="30" cy="30" r="28" fill="none" stroke="#2a3050" stroke-width="1.5"/>
-              <text x="30" y="8" fill="#555e7a" font-size="7" text-anchor="middle" font-family="Space Mono">N</text>
-              <text x="30" y="56" fill="#555e7a" font-size="7" text-anchor="middle" font-family="Space Mono">S</text>
-              <text x="6" y="33" fill="#555e7a" font-size="7" text-anchor="middle" font-family="Space Mono">W</text>
-              <text x="54" y="33" fill="#555e7a" font-size="7" text-anchor="middle" font-family="Space Mono">E</text>
-              <line id="wind-arrow" x1="30" y1="30" x2="30" y2="10" stroke="#00e5ff" stroke-width="2" stroke-linecap="round"/>
-              <circle cx="30" cy="30" r="3" fill="#00e5ff"/>
-            </svg>
-          </div>
-          <div class="wind-dir-input">
-            <input type="range" id="sl-wd" min="0" max="360" value="270" step="5">
-          </div>
-        </div>
-      </div>
-      <div class="input-row">
-        <label>Pasquill Stability Class</label>
-        <select id="sel-stab">
-          <option value="A">A — Very Unstable (sunny, light wind)</option>
-          <option value="B">B — Unstable</option>
-          <option value="C">C — Slightly Unstable</option>
-          <option value="D" selected>D — Neutral (overcast/windy)</option>
-          <option value="E">E — Slightly Stable</option>
-          <option value="F">F — Stable (clear night, calm)</option>
-        </select>
-      </div>
+    <div class="hero-meta-item">
+      <span>Due</span><span>April 9, 2026</span>
     </div>
-
-    <!-- Stack Parameters -->
-    <div class="sidebar-section">
-      <div class="section-label">Stack Parameters</div>
-      <div class="input-row">
-        <label>Stack Height, H (m) <span class="val-display" id="lbl-sh">80</span></label>
-        <input type="range" id="sl-sh" min="20" max="300" value="80" step="5">
-      </div>
-      <div class="input-row">
-        <label>Stack Diameter, d (m) <span class="val-display" id="lbl-sd">3.0</span></label>
-        <input type="range" id="sl-sd" min="0.5" max="10" value="3" step="0.5">
-      </div>
-      <div class="input-row">
-        <label>Exit Velocity, vs (m/s) <span class="val-display" id="lbl-sv">15</span></label>
-        <input type="range" id="sl-sv" min="5" max="40" value="15" step="1">
-      </div>
-      <div class="input-row">
-        <label>Exit Temp, Ts (°C) <span class="val-display" id="lbl-st">120</span></label>
-        <input type="range" id="sl-st" min="60" max="300" value="120" step="5">
-      </div>
+    <div class="hero-meta-item">
+      <span>Model</span><span>EPA AP-42 Emission Factors</span>
     </div>
-
-    <!-- Town Position -->
-    <div class="sidebar-section">
-      <div class="section-label">Receptor Location</div>
-      <div class="input-row">
-        <label>Town center distance (km) <span class="val-display" id="lbl-td">5.0</span></label>
-        <input type="range" id="sl-td" min="0.5" max="20" value="5" step="0.5">
-      </div>
-      <div class="info-box">
-        Town is modeled as a receptor cluster. NAAQS PM₂.₅ annual standard: <strong>9 µg/m³</strong> (EPA 2024). 24-hr: <strong>35 µg/m³</strong>.
-      </div>
+    <div class="hero-meta-item">
+      <span>Pollutants</span><span>PM<sub>2.5</sub> &amp; PM<sub>10</sub></span>
     </div>
+  </div>
+</div>
 
-  </aside>
+<!-- ═══════════════════════════════════════════ -->
+<!-- PART 1: EMBODIED NOTICING -->
+<!-- ═══════════════════════════════════════════ -->
+<section class="section" id="part1">
+  <div class="section-label">Part 1 · 6 Points</div>
+  <h2>Embodied Noticing</h2>
+  <p>Ground your design problem in a real air quality situation. Upload or sketch the emissions scenario below, then complete each annotation.</p>
 
-  <!-- ═══════════════ MAIN ═══════════════ -->
-  <div class="main">
-    <div class="tabs">
-      <div class="tab active" data-tab="dispersion">DISPERSION MAP</div>
-      <div class="tab" data-tab="profile">DOWNWIND PROFILE</div>
-      <div class="tab" data-tab="mcda">MCDA EVALUATION</div>
-      <div class="tab" data-tab="cost">COST COMPARISON</div>
-      <div class="tab" data-tab="validation">VALIDATION</div>
+  <div class="img-placeholder" id="scenarioImgBox" title="Click to upload scenario image">
+    <input type="file" accept="image/*" onchange="loadImage(event,'scenarioImg','scenarioImgBox')"/>
+    <div class="upload-icon">🏭</div>
+    <span>Click to upload scenario photo or sketch</span>
+    <img id="scenarioImg" style="display:none;"/>
+  </div>
+
+  <div class="annotation-grid">
+    <div class="annotation-box">
+      <h4>Observations (≥ 2)</h4>
+      <ul>
+        <li>[Add observation 1 — what you see or what is known]</li>
+        <li>[Add observation 2]</li>
+      </ul>
     </div>
-
-    <!-- ─── TAB: DISPERSION MAP ─── -->
-    <div class="panel active" id="tab-dispersion">
-      <div class="stats-row">
-        <div class="stat-card coal">
-          <div class="plant-name">COAL — NO CONTROL</div>
-          <div class="metric" id="stat-coal-conc">—</div>
-          <div class="metric-label">µg/m³ at town center</div>
-          <div class="naaqs-status" id="naaqs-coal">—</div>
-        </div>
-        <div class="stat-card baghouse">
-          <div class="plant-name">COAL + BAGHOUSE</div>
-          <div class="metric" id="stat-bag-conc">—</div>
-          <div class="metric-label">µg/m³ at town center</div>
-          <div class="naaqs-status" id="naaqs-bag">—</div>
-        </div>
-        <div class="stat-card gas">
-          <div class="plant-name">NATURAL GAS</div>
-          <div class="metric" id="stat-gas-conc">—</div>
-          <div class="metric-label">µg/m³ at town center</div>
-          <div class="naaqs-status" id="naaqs-gas">—</div>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
-        <div class="viz-card">
-          <div class="viz-card-header"><h3 style="color:var(--coal);">■ COAL — UNCONTROLLED</h3></div>
-          <div class="viz-card-body" style="padding:0;">
-            <canvas id="map-coal" width="380" height="380" style="width:100%;display:block;"></canvas>
-          </div>
-        </div>
-        <div class="viz-card">
-          <div class="viz-card-header"><h3 style="color:var(--baghouse);">■ COAL + BAGHOUSE</h3></div>
-          <div class="viz-card-body" style="padding:0;">
-            <canvas id="map-baghouse" width="380" height="380" style="width:100%;display:block;"></canvas>
-          </div>
-        </div>
-        <div class="viz-card">
-          <div class="viz-card-header"><h3 style="color:var(--gas);">■ NATURAL GAS CC</h3></div>
-          <div class="viz-card-body" style="padding:0;">
-            <canvas id="map-gas" width="380" height="380" style="width:100%;display:block;"></canvas>
-          </div>
-        </div>
-      </div>
-      <div class="legend" style="margin-top:10px;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:10px 16px;flex-wrap:wrap;gap:16px;">
-        <div class="legend-item">🏭 Power Plant</div>
-        <div class="legend-item">🏘 Millbrook (town)</div>
-        <div class="legend-item">🖥 Nexus DC</div>
-        <div class="legend-item">🌾 Harrow Farm</div>
-        <div class="legend-item" style="margin-left:auto;font-size:11px;color:var(--text3);font-family:var(--mono);">Plume opacity ∝ PM₂.₅ · Wind→downwind</div>
-      </div>
+    <div class="annotation-box">
+      <h4>Inferences (≥ 2)</h4>
+      <ul>
+        <li>[Add inference 1 — what you think might be happening]</li>
+        <li>[Add inference 2]</li>
+      </ul>
     </div>
+    <div class="annotation-box">
+      <h4>Explicit Unknown (≥ 1)</h4>
+      <p>[Describe what you do not know and cannot easily determine]</p>
+    </div>
+    <div class="annotation-box">
+      <h4>Engineering Question</h4>
+      <p>[State the engineering question that frames your design problem]</p>
+    </div>
+    <div class="annotation-box full">
+      <h4>Comparison Affordance</h4>
+      <p>[Explain why this scenario supports a meaningful comparison between coal-fired and natural gas power generation as engineering alternatives for the proposed AI data center]</p>
+    </div>
+  </div>
+</section>
 
-    <!-- ─── TAB: DOWNWIND PROFILE ─── -->
-    <div class="panel" id="tab-profile">
-      <div class="viz-card wide" style="margin-bottom:16px;">
-        <div class="viz-card-header">
-          <h3>Centerline Ground-level Concentration vs. Downwind Distance</h3>
-        </div>
-        <div class="viz-card-body" style="padding:0;">
-          <canvas id="profile-canvas" width="800" height="320"></canvas>
-        </div>
-        <div class="legend">
-          <div class="legend-item"><div class="legend-dot" style="background:var(--coal);"></div>Coal</div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--baghouse);"></div>Coal + Baghouse</div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--gas);"></div>Natural Gas</div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--danger);height:1px;width:24px;border-top:2px dashed var(--danger);"></div>NAAQS Annual 9 µg/m³</div>
-        </div>
-      </div>
-      <div class="viz-card wide">
-        <div class="viz-card-header">
-          <h3>Plume Vertical Cross-section at Town Distance</h3>
-        </div>
-        <div class="viz-card-body" style="padding:0;">
-          <canvas id="crosssection-canvas" width="800" height="200"></canvas>
+<!-- ═══════════════════════════════════════════ -->
+<!-- PART 2: MAKING THINKING VISIBLE -->
+<!-- ═══════════════════════════════════════════ -->
+<section class="section" id="part2">
+  <div class="section-label">Part 2 · 5 Points</div>
+  <h2>Making Thinking Visible</h2>
+  <p>Show how you conceptualized the system before building the tool. Stage A is your initial sketch; Stage B is the AI-enhanced diagram.</p>
+
+  <div class="stages">
+    <div class="stage-box">
+      <div class="stage-header">Stage A — Initial Representation</div>
+      <div class="stage-body">
+        <div class="img-placeholder" id="stageABox" title="Upload hand-drawn sketch">
+          <input type="file" accept="image/*" onchange="loadImage(event,'stageAImg','stageABox')"/>
+          <div class="upload-icon">✏️</div>
+          <span>Upload hand-drawn sketch or whiteboard diagram</span>
+          <img id="stageAImg" style="display:none;"/>
         </div>
       </div>
     </div>
+    <div class="stage-box">
+      <div class="stage-header">Stage B — AI-Assisted Enhancement</div>
+      <div class="stage-body">
+        <div class="img-placeholder" id="stageBBox" title="Upload AI-enhanced diagram">
+          <input type="file" accept="image/*" onchange="loadImage(event,'stageBImg','stageBBox')"/>
+          <div class="upload-icon">🤖</div>
+          <span>Upload AI-assisted enhanced diagram</span>
+          <img id="stageBImg" style="display:none;"/>
+        </div>
+        <div class="stage-caption">
+          <strong>Caption:</strong> [Describe what AI tool was used, what you changed, and how the enhanced version improves on the original sketch — 2–3 sentences.]
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <!-- ─── TAB: MCDA ─── -->
-    <div class="panel" id="tab-mcda">
-      <div class="mcda-grid">
-        <div class="mcda-card">
-          <div class="mcda-card-header">
-            <h3>CRITERION WEIGHTS</h3>
-          </div>
-          <div class="mcda-card-body">
-            <p style="font-size:12px;color:var(--text2);margin-bottom:14px;">Adjust weights (must total 100%). Drag to assign priority.</p>
-            <div class="weight-row">
-              <label>Technical Effectiveness</label>
-              <input type="range" id="w-tech" min="0" max="100" value="35" step="5">
-              <span class="wval" id="wv-tech">35%</span>
+<!-- ═══════════════════════════════════════════ -->
+<!-- PART 3: THE TOOL -->
+<!-- ═══════════════════════════════════════════ -->
+<section class="section" id="part3">
+  <div class="section-label">Part 3 · 24 Points</div>
+  <h2>The Tool</h2>
+
+  <!-- TOOL DESCRIPTION -->
+  <div class="tool-description">
+    <h3>Tool Description</h3>
+    <p>
+      This tool estimates uncontrolled particulate matter (PM<sub>2.5</sub> and PM<sub>10</sub>) emission rates from two power plant alternatives — a pulverized coal (dry-bottom) plant and a natural gas combined-cycle (CCGT) plant — sized to meet a user-specified AI data center power demand.
+    </p>
+    <p>
+      The tool requires one primary user input: the data center's electrical power demand in megawatts (MW). Using fixed literature-based thermal efficiencies (heat rates) from the U.S. Energy Information Administration (EIA), the tool converts power demand into plant heat input (MMBtu/hr) for each plant type. For coal, the user may also adjust the coal ash content (weight %), which directly affects the PM emission factor per EPA AP-42 Section 1.1.
+    </p>
+    <p>
+      The modeling approach applies EPA AP-42 emission factors — the standard EPA compilation of air pollutant emission rates — to compute mass emission rates (lb/hr and g/s) for each plant and each pollutant. For coal, PM<sub>10</sub> is computed as 7 × ash fraction × heat input, and PM<sub>2.5</sub> as 25% of PM<sub>10</sub>, per AP-42 Table 1.1-4 size distribution data for dry-bottom PC boilers. For natural gas, all PM is assumed less than 1 µm in diameter (no coarse mineral ash fraction), so PM<sub>10</sub> = PM<sub>2.5</sub> = 0.0075 lb/MMBtu per AP-42 Section 1.4.
+    </p>
+    <p>
+      Outputs are presented as a side-by-side table and a proportional bar chart, allowing direct comparison of PM emission rates under identical power demand conditions. A coal-to-gas ratio is computed for each pollutant to quantify the relative emissions difference. The user should interpret these outputs as uncontrolled mass emission rates — the amount of PM exiting the stack before any control technology (e.g., baghouse, electrostatic precipitator) is applied. Future versions of this tool will add control efficiencies, Gaussian dispersion modeling, and MCDA comparison.
+    </p>
+  </div>
+
+  <!-- TOOL INSTRUMENT -->
+  <div class="tool-instrument">
+    <div class="tool-header">
+      <span class="tool-header-title">PM Emissions Calculator — Coal vs. Natural Gas</span>
+      <span class="tool-header-badge">Uncontrolled · EPA AP-42</span>
+    </div>
+    <div class="tool-body">
+
+      <!-- INPUTS -->
+      <div class="input-section">
+        <div class="input-section-title">User Inputs</div>
+
+        <div class="input-row single">
+          <div class="input-group">
+            <label>Data Center Power Demand</label>
+            <span class="input-sub">Primary sizing input. Determines heat input required for each plant.</span>
+            <div class="slider-wrap">
+              <input type="range" id="powerSlider" min="10" max="1000" step="5" value="100" oninput="updateTool()"/>
+              <span class="slider-value" id="powerVal">100 MW</span>
             </div>
-            <div class="weight-row">
-              <label>Cost & Practicality</label>
-              <input type="range" id="w-cost" min="0" max="100" value="30" step="5">
-              <span class="wval" id="wv-cost">30%</span>
-            </div>
-            <div class="weight-row">
-              <label>Public Health & Safety</label>
-              <input type="range" id="w-health" min="0" max="100" value="25" step="5">
-              <span class="wval" id="wv-health">25%</span>
-            </div>
-            <div class="weight-row">
-              <label>Environmental</label>
-              <input type="range" id="w-env" min="0" max="100" value="10" step="5">
-              <span class="wval" id="wv-env">10%</span>
-            </div>
-            <div class="info-box" id="weight-warning" style="color:var(--warn);border-color:rgba(255,204,0,0.3);display:none;">
-              ⚠ Weights sum to <span id="weight-sum">100</span>%. Normalize to 100% for valid MCDA.
-            </div>
-            <div style="margin-top:12px;">
-              <button onclick="normalizeWeights()" style="background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.3);color:var(--accent);font-family:var(--mono);font-size:11px;padding:6px 14px;border-radius:3px;cursor:pointer;letter-spacing:1px;">NORMALIZE WEIGHTS</button>
-            </div>
+            <span class="input-sub">Range: 10 MW (small facility) → 1,000 MW (hyperscale)</span>
           </div>
         </div>
 
-        <div class="mcda-card">
-          <div class="mcda-card-header">
-            <h3>RAW SCORES (0–10)</h3>
-          </div>
-          <div class="mcda-card-body">
-            <p style="font-size:12px;color:var(--text2);margin-bottom:14px;">Technical score derived from model output. Others from literature-based MCDA matrix.</p>
-            <canvas id="radar-canvas" width="320" height="220"></canvas>
-          </div>
-        </div>
-
-        <div class="mcda-card" style="grid-column:1/-1;">
-          <div class="mcda-card-header">
-            <h3>WEIGHTED COMPOSITE SCORES</h3>
-          </div>
-          <div class="mcda-card-body">
-            <div class="score-bars" id="score-bars"></div>
+        <div class="input-row single">
+          <div class="input-group">
+            <label>Coal Ash Content (weight %)</label>
+            <span class="input-sub">Directly scales coal PM emission factor per AP-42. Applies to coal plant only.</span>
+            <div class="slider-wrap">
+              <input type="range" id="ashSlider" min="6" max="20" step="0.5" value="10" oninput="updateTool()"/>
+              <span class="slider-value" id="ashVal">10 %</span>
+            </div>
+            <span class="input-sub">Source: Typical U.S. coals range 6–20 wt% ash (EIA / USGS coal quality data; AP-42 example calculations).</span>
           </div>
         </div>
       </div>
 
-      <div class="recommendation-box" id="rec-box">
-        <div class="rec-icon">🏆</div>
-        <div>
-          <div class="rec-title">RECOMMENDED ALTERNATIVE</div>
-          <div class="rec-plant" id="rec-plant">—</div>
-          <div class="rec-reason" id="rec-reason">—</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ─── TAB: COST ─── -->
-    <div class="panel" id="tab-cost">
-      <div class="cost-table-wrap">
-        <table>
+      <!-- LITERATURE VALUES -->
+      <div class="lit-panel">
+        <h4>Fixed Literature Values (displayed, not user-adjustable)</h4>
+        <table class="lit-table">
           <thead>
             <tr>
-              <th>COST CATEGORY</th>
-              <th class="cost-coal">COAL (UNCONTROLLED)</th>
-              <th class="cost-bag">COAL + BAGHOUSE</th>
-              <th class="cost-gas">NATURAL GAS CC</th>
-              <th>BASIS / SOURCE</th>
+              <th>Parameter</th>
+              <th class="coal-cell">Coal Plant</th>
+              <th class="gas-cell">Nat. Gas Plant</th>
+              <th>Source</th>
             </tr>
           </thead>
-          <tbody id="cost-tbody">
-          </tbody>
-        </table>
-      </div>
-      <div style="margin-top:16px;" class="info-box">
-        <strong>ROM Cost Note:</strong> All values are rough order-of-magnitude estimates for a ~15–20 MW plant. Costs scale with capacity. Capital costs from EPA Air Pollution Control Cost Manual (7th Ed.), EIA capital cost projections (2023), and EPRI reports. O&amp;M from EPA AP-42 and industry benchmarks. Permitting costs from EPA PSD/Title V permit guidance. All $ in 2024 USD.
-      </div>
-      <div style="margin-top:16px;" class="viz-card wide">
-        <div class="viz-card-header"><h3>TOTAL COST RANGE COMPARISON</h3></div>
-        <div class="viz-card-body" style="padding:0;">
-          <canvas id="cost-canvas" width="800" height="200"></canvas>
-        </div>
-      </div>
-      <div style="margin-top:16px;" class="validation-card">
-        <h3>PRACTICALITY ASSESSMENT</h3>
-        <table>
-          <thead><tr><th>CONSTRAINT</th><th class="cost-coal">COAL</th><th class="cost-bag">COAL + BAGHOUSE</th><th class="cost-gas">NAT GAS</th></tr></thead>
           <tbody>
-            <tr><td>Permitting timeline</td><td>3–5 yrs (PSD + Title V)</td><td>3–5 yrs + baghouse review</td><td>2–3 yrs (cleaner record)</td></tr>
-            <tr><td>Construction lead time</td><td>4–6 years</td><td>4–6 years + 6–12 mo baghouse</td><td>2–4 years (modular CCGT)</td></tr>
-            <tr><td>Fuel infrastructure</td><td>Rail/barge needed</td><td>Rail/barge needed</td><td>Gas pipeline required</td></tr>
-            <tr><td>Ash/waste handling</td><td>Coal ash disposal (RCRA)</td><td>Coal ash + bag cake disposal</td><td>Minimal (CO₂ only)</td></tr>
-            <tr><td>Water use</td><td>High (cooling tower)</td><td>High (cooling tower)</td><td>Moderate</td></tr>
-            <tr><td>Regulatory outlook</td><td>High risk (EPA MATS, CC rules)</td><td>Moderate (MATS compliant)</td><td>Lower risk near-term</td></tr>
-            <tr><td>Most limiting constraint</td><td style="color:var(--danger);">Permitting + regulatory</td><td style="color:var(--warn);">Permitting + ash mgmt</td><td style="color:var(--accent3);">Gas pipeline availability</td></tr>
+            <tr>
+              <td>Plant Type</td>
+              <td class="coal-cell">Pulverized coal, dry-bottom</td>
+              <td class="gas-cell">Combined-cycle (CCGT)</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td>Heat Rate</td>
+              <td class="coal-cell">10,500 Btu/kWh</td>
+              <td class="gas-cell">6,960 Btu/kWh</td>
+              <td>EIA (2022)</td>
+            </tr>
+            <tr>
+              <td>Thermal Efficiency</td>
+              <td class="coal-cell">~32.5%</td>
+              <td class="gas-cell">~49.0%</td>
+              <td>EIA FAQ</td>
+            </tr>
+            <tr>
+              <td>PM<sub>10</sub> EF (uncontrolled)</td>
+              <td class="coal-cell">7A lb/MMBtu <span style="font-size:0.7rem;color:#888">(A = ash fraction)</span></td>
+              <td class="gas-cell">0.0075 lb/MMBtu</td>
+              <td>EPA AP-42 §1.1, §1.4</td>
+            </tr>
+            <tr>
+              <td>PM<sub>2.5</sub> EF (uncontrolled)</td>
+              <td class="coal-cell">25% of PM<sub>10</sub></td>
+              <td class="gas-cell">= PM<sub>10</sub> (all &lt;1 µm)</td>
+              <td>EPA AP-42 §1.1, §1.4</td>
+            </tr>
+            <tr>
+              <td>Heating value (coal)</td>
+              <td class="coal-cell">20.71 MMBtu/ton</td>
+              <td class="gas-cell">—</td>
+              <td>EIA</td>
+            </tr>
+            <tr>
+              <td>Heating value (nat. gas)</td>
+              <td class="coal-cell">—</td>
+              <td class="gas-cell">1,020 Btu/scf</td>
+              <td>EIA</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="lit-cite">
+          References: U.S. EIA, "Heat Rate" FAQ (2022); EPA AP-42, Section 1.1 Table 1.1-4 (bituminous coal, dry-bottom PC boiler, 9/98 ed.); EPA AP-42, Section 1.4 Table 1.4-2 (natural gas, large wall-fired utility boiler).
+        </div>
+      </div>
+
+      <hr class="output-divider"/>
+
+      <!-- OUTPUTS -->
+      <div class="output-section-title">Outputs — Uncontrolled PM Emission Rates</div>
+
+      <!-- Heat Input -->
+      <div class="heat-row">
+        <div class="heat-card coal-card">
+          <div class="heat-card-label">Coal Plant — Heat Input</div>
+          <div class="heat-card-value" id="coalHeat">—</div>
+          <div class="heat-card-unit">MMBtu / hr</div>
+        </div>
+        <div class="heat-card gas-card">
+          <div class="heat-card-label">Nat. Gas Plant — Heat Input</div>
+          <div class="heat-card-value" id="gasHeat">—</div>
+          <div class="heat-card-unit">MMBtu / hr</div>
+        </div>
+      </div>
+
+      <!-- PM Table -->
+      <div class="pm-table-wrap">
+        <table class="pm-table">
+          <thead>
+            <tr>
+              <th>Pollutant</th>
+              <th class="coal-th">Coal (lb/hr)</th>
+              <th class="coal-th">Coal (g/s)</th>
+              <th class="gas-th">Nat. Gas (lb/hr)</th>
+              <th class="gas-th">Nat. Gas (g/s)</th>
+              <th>Coal / Gas Ratio</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="row-label">PM<sub>10</sub> <span class="pm-tag pm10">PM10</span></td>
+              <td class="coal-val" id="coalPM10_lbhr">—</td>
+              <td class="coal-val" id="coalPM10_gs">—</td>
+              <td class="gas-val" id="gasPM10_lbhr">—</td>
+              <td class="gas-val" id="gasPM10_gs">—</td>
+              <td class="ratio-val" id="ratioPM10">—</td>
+            </tr>
+            <tr>
+              <td class="row-label">PM<sub>2.5</sub> <span class="pm-tag pm25">PM2.5</span></td>
+              <td class="coal-val" id="coalPM25_lbhr">—</td>
+              <td class="coal-val" id="coalPM25_gs">—</td>
+              <td class="gas-val" id="gasPM25_lbhr">—</td>
+              <td class="gas-val" id="gasPM25_gs">—</td>
+              <td class="ratio-val" id="ratioPM25">—</td>
+            </tr>
           </tbody>
         </table>
       </div>
-    </div>
 
-    <!-- ─── TAB: VALIDATION ─── -->
-    <div class="panel" id="tab-validation">
-      <div class="validation-card">
-        <h3>MODEL VALIDATION CHECKLIST</h3>
-        <div class="check-row"><span class="check-icon">✅</span> <div><strong>Gaussian Plume Equation:</strong> Implements C(x,y,z) = Q/(π·σ_y·σ_z·u) · exp(−y²/2σ_y²) · [exp(−(z−H_eff)²/2σ_z²) + exp(−(z+H_eff)²/2σ_z²)]. Ground-level (z=0) simplification applied correctly.</div></div>
-        <div class="check-row"><span class="check-icon">✅</span> <div><strong>Briggs Plume Rise:</strong> Momentum and buoyancy flux (F_b, F_m) computed from stack exit velocity, diameter, temperature, and ambient conditions. Final effective height H_eff = H_stack + Δh.</div></div>
-        <div class="check-row"><span class="check-icon">✅</span> <div><strong>Pasquill-Gifford σ parameterization:</strong> Briggs (1973) open-country σ_y and σ_z formulas by stability class. Valid range 0.1–10 km downwind.</div></div>
-        <div class="check-row"><span class="check-icon">✅</span> <div><strong>Emission rates:</strong> Q derived from fuel consumption via heat rate × power demand. PM₁₀/PM₂.₅ emission factors from EPA AP-42 Table 1.1-3 (bituminous coal) and AP-42 Ch. 3.1 (natural gas). Baghouse efficiency 99.5% applied to uncontrolled coal factor.</div></div>
-        <div class="check-row"><span class="check-icon">✅</span> <div><strong>NAAQS comparison:</strong> Hourly concentrations compared to annual PM₂.₅ NAAQS (9 µg/m³) and 24-hr standard (35 µg/m³) per EPA 2024 revision. Note: model output represents a snapshot, not annual average; interpret as screening-level estimate.</div></div>
-        <div class="check-row"><span class="check-icon">⚠️</span> <div><strong>Flat terrain only:</strong> Model assumes flat, unobstructed terrain. No building downwash, terrain-following, or complex topography. Real-world deployment should use AERMOD or CALPUFF for regulatory analysis.</div></div>
-        <div class="check-row"><span class="check-icon">⚠️</span> <div><strong>Steady-state assumption:</strong> Gaussian plume is steady-state; does not capture fumigation, calm conditions (u &lt; 0.5 m/s), or nighttime stable layer breakup.</div></div>
-        <div class="check-row"><span class="check-icon">⚠️</span> <div><strong>PM₂.₅ fraction:</strong> For coal, PM₂.₅ ≈ 70% of PM₁₀ (EPA AP-42 adjustment). For NG, PM₂.₅ ≈ 90% of filtered PM. Baghouse removes PM₁₀ with high efficiency; PM₂.₅ penetration ~5%.</div></div>
-        <div class="check-row"><span class="check-icon">❌</span> <div><strong>Secondary PM not included:</strong> SO₂ and NOₓ secondary aerosol formation not modeled. Coal plants produce significant secondary PM₂.₅. This is a conservative underestimate for coal alternatives.</div></div>
-        <div class="check-row"><span class="check-icon">❌</span> <div><strong>No deposition or chemical transformation:</strong> Dry/wet deposition and chemical decay not implemented. Results overestimate concentrations at very long distances.</div></div>
-      </div>
+      <!-- Bar Chart -->
+      <div class="bar-section">
+        <div class="bar-chart-label">Proportional Comparison (g/s)</div>
 
-      <div class="validation-card">
-        <h3>SENSITIVITY ANALYSIS — KEY PARAMETERS</h3>
-        <canvas id="sensitivity-canvas" width="760" height="200"></canvas>
-      </div>
-
-      <div class="validation-card">
-        <h3>BENCHMARK CHECK — PASQUILL-GIFFORD σ VALUES</h3>
-        <div style="overflow-x:auto;">
-          <table>
-            <thead><tr><th>DISTANCE (km)</th><th>σ_y CLASS A</th><th>σ_y CLASS D</th><th>σ_z CLASS A</th><th>σ_z CLASS D</th><th>SOURCE</th></tr></thead>
-            <tbody id="sigma-tbody"></tbody>
-          </table>
+        <div class="bar-group">
+          <div style="font-family:var(--sans);font-size:0.75rem;color:var(--text-light);margin-bottom:0.4rem;">PM<sub>10</sub></div>
+          <div class="bar-row">
+            <span class="bar-row-label">Coal</span>
+            <div class="bar-track"><div class="bar-fill coal-pm10" id="barCoalPM10" style="width:0%"></div></div>
+            <span class="bar-number" id="barCoalPM10Lbl">—</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-row-label">Nat. Gas</span>
+            <div class="bar-track"><div class="bar-fill gas-pm10" id="barGasPM10" style="width:0%"></div></div>
+            <span class="bar-number" id="barGasPM10Lbl">—</span>
+          </div>
         </div>
-        <div class="info-box" style="margin-top:10px;">These values match Seinfeld &amp; Pandis (2016) Table 18.2 and Wark, Warner &amp; Davis (1998) Appendix B to within ±5%. Briggs formulas used per EPA AERMOD guidance (EPA-454/B-03-001).</div>
-      </div>
-    </div>
 
-  </div><!-- /.main -->
-</div><!-- /.app -->
+        <div class="bar-group">
+          <div style="font-family:var(--sans);font-size:0.75rem;color:var(--text-light);margin-bottom:0.4rem;">PM<sub>2.5</sub></div>
+          <div class="bar-row">
+            <span class="bar-row-label">Coal</span>
+            <div class="bar-track"><div class="bar-fill coal-pm25" id="barCoalPM25" style="width:0%"></div></div>
+            <span class="bar-number" id="barCoalPM25Lbl">—</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-row-label">Nat. Gas</span>
+            <div class="bar-track"><div class="bar-fill gas-pm25" id="barGasPM25" style="width:0%"></div></div>
+            <span class="bar-number" id="barGasPM25Lbl">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- EF reference -->
+      <div class="ef-panel">
+        <h4>Active Emission Factors (current inputs)</h4>
+        <div class="ef-row">
+          <span class="ef-item">Coal PM<sub>10</sub> EF: <strong id="efCoalPM10">—</strong> lb/MMBtu</span>
+          <span class="ef-item">Coal PM<sub>2.5</sub> EF: <strong id="efCoalPM25">—</strong> lb/MMBtu</span>
+          <span class="ef-item">NG PM<sub>10</sub> EF: <strong>0.00750</strong> lb/MMBtu</span>
+          <span class="ef-item">NG PM<sub>2.5</sub> EF: <strong>0.00750</strong> lb/MMBtu</span>
+        </div>
+        <div class="ef-cite">All emission factors uncontrolled. Coal EF = 7 × (ash wt% / 100) lb/MMBtu for PM<sub>10</sub>; PM<sub>2.5</sub> = 25% of PM<sub>10</sub>. Natural gas EF from EPA AP-42 Table 1.4-2; all NG PM assumed &lt;1 µm diameter.</div>
+      </div>
+
+    </div><!-- end tool-body -->
+  </div><!-- end tool-instrument -->
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- PART 4: REFLECTION -->
+<!-- ═══════════════════════════════════════════ -->
+<section class="section" id="part4">
+  <div class="section-label">Part 4 · 5 Points</div>
+  <h2>Reflection</h2>
+  <p>~300 words. Make your judgment visible. Address all three prompts below.</p>
+
+  <div class="reflection-prompt">Which design choice would you defend, and why?</div>
+  <textarea placeholder="Write your response here — defend a specific recommendation based on what the model shows..."></textarea>
+
+  <div class="reflection-prompt">Where does your comparison break down? What would you need to know to be more confident?</div>
+  <textarea placeholder="Identify the assumptions that most limit confidence in the comparison..."></textarea>
+
+  <div class="reflection-prompt">How did AI help you, and where did you intervene, revise, or override it?</div>
+  <textarea placeholder="Describe the AI collaboration process — what it generated, what you changed, and why..."></textarea>
+</section>
+
+<footer>
+  CIVE 442 · Air Quality Modeling &amp; Comparative Engineering Design · Tool 2 · Due April 9, 2026
+  <br/><span>EPA AP-42 §1.1 (Coal) · EPA AP-42 §1.4 (Natural Gas) · EIA Heat Rate Data (2022)</span>
+</footer>
 
 <script>
-// ══════════════════════════════════════════════
-//  CONSTANTS & EMISSION FACTORS (EPA AP-42)
-// ══════════════════════════════════════════════
-const NAAQS_ANNUAL = 9;     // µg/m³ PM2.5 annual (EPA 2024)
-const NAAQS_24HR   = 35;    // µg/m³ PM2.5 24-hr
-
-// AP-42 Table 1.1-3 bituminous coal: uncontrolled PM10 ~ 7.5 A lb/ton
-// Heat content bituminous ~ 24 MMBtu/ton; heat rate coal plant ~9000 BTU/kWh
-// Converts to g/kWh: 7.5 lb/ton * 453.6 g/lb / (24 MMBtu/ton / 0.009 MMBtu/kWh)
-// = 7.5*453.6 / (24/0.009) = 3402 / 2666.7 = 1.276 g/kWh PM10
-const EF_COAL_PM10_uncontrolled = 1.276; // g/kWh PM10
-const PM25_FRACTION_COAL = 0.70;         // PM2.5 / PM10 ratio coal
-const BAGHOUSE_EFF = 0.995;              // 99.5% removal efficiency
-// AP-42 Ch 3.1 NG combustion: PM10 ~ 0.0076 lb/MMBtu = 7.6e-6 lb/Btu
-// at 8000 BTU/kWh: 0.0076 * 8000/1e6 lb/kWh * 453.6 g/lb = 0.0276 g/kWh
-const EF_GAS_PM10 = 0.0276;             // g/kWh PM10
-const PM25_FRACTION_GAS = 0.90;
-
-// Plant efficiencies
-const ETA_COAL = 0.38;
-const ETA_GAS  = 0.50;
-
-// Atmospheric params
-const T_AMB_K = 293; // 20°C ambient
-
-// ══════════════════════════════════════════════
-//  STATE
-// ══════════════════════════════════════════════
-let state = {
-  dcMW: 10, townMW: 5,
-  windSpeed: 5, windDir: 270,
-  stability: 'D',
-  stackH: 80, stackD: 3, stackVs: 15, stackTs: 120+273,
-  townDist: 5000 // meters
-};
-
-// ══════════════════════════════════════════════
-//  SIGMA (Pasquill-Gifford, Briggs open country)
-// ══════════════════════════════════════════════
-const PG_PARAMS = {
-  // [a, b] for σ_y = a*x*(1+b*x)^(-1/2) where x in km — actually use simpler Briggs
-  // Using Briggs (1973) formulas, x in meters
-  // σ_y = a*x^0.9 (simplified), σ_z from table
-  // More accurate: Green's formulas
-};
-
-function sigma_y(x_m, stab) {
-  // Briggs open-country (x in meters, σ in meters)
-  const x = x_m;
-  switch(stab) {
-    case 'A': return 0.22*x*Math.pow(1+0.0001*x,-0.5);
-    case 'B': return 0.16*x*Math.pow(1+0.0001*x,-0.5);
-    case 'C': return 0.11*x*Math.pow(1+0.0001*x,-0.5);
-    case 'D': return 0.08*x*Math.pow(1+0.0001*x,-0.5);
-    case 'E': return 0.06*x*Math.pow(1+0.0001*x,-0.5);
-    case 'F': return 0.04*x*Math.pow(1+0.0001*x,-0.5);
-    default: return 0.08*x*Math.pow(1+0.0001*x,-0.5);
+  // Image upload handler
+  function loadImage(event, imgId, boxId) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const img = document.getElementById(imgId);
+      img.src = e.target.result;
+      img.style.display = 'block';
+      const box = document.getElementById(boxId);
+      const icon = box.querySelector('.upload-icon');
+      const text = box.querySelector('span:not(.upload-icon)');
+      if (icon) icon.style.display = 'none';
+      if (text) text.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
   }
-}
 
-function sigma_z(x_m, stab) {
-  const x = x_m;
-  switch(stab) {
-    case 'A': return 0.20*x;
-    case 'B': return 0.12*x;
-    case 'C': return 0.08*x*Math.pow(1+0.0002*x,-0.5);
-    case 'D': return 0.06*x*Math.pow(1+0.0015*x,-0.5);
-    case 'E': return 0.03*x*Math.pow(1+0.0003*x,-0.5);
-    case 'F': return 0.016*x*Math.pow(1+0.0003*x,-0.5);
-    default: return 0.06*x*Math.pow(1+0.0015*x,-0.5);
-  }
-}
+  // ── EMISSION CALCULATION ENGINE ──
+  // Constants
+  const COAL_HEAT_RATE   = 10500;   // Btu/kWh  (EIA 2022)
+  const GAS_HEAT_RATE    =  6960;   // Btu/kWh  (EIA 2022, CCGT)
+  const LB_TO_GS         = 0.125998; // 1 lb/hr → g/s
+  const GAS_PM_EF        = 0.0075;  // lb/MMBtu, both PM10 and PM2.5 (AP-42 §1.4)
+  const COAL_PM25_FRAC   = 0.25;    // PM2.5 as fraction of PM10 (AP-42 §1.1 size dist.)
 
-// ══════════════════════════════════════════════
-//  BRIGGS PLUME RISE
-// ══════════════════════════════════════════════
-function plume_rise(H_stack, vs, d, Ts_K, u, stability) {
-  const g = 9.81;
-  const Ta = T_AMB_K;
-  // Buoyancy flux
-  const Fb = g * vs * (d/2)**2 * (Ts_K - Ta) / Ts_K;
-  // Momentum flux
-  const Fm = vs**2 * (d/2)**2 * Ta / Ts_K;
-
-  let dh;
-  if (Fb >= 55) {
-    dh = 38.7 * Fb**(3/5) / u;
-  } else if (Fb > 0) {
-    dh = 21.4 * Fb**(3/4) / u;
-  } else {
-    // Purely momentum
-    dh = 3 * vs * d / u;
-  }
-  // Stable atmosphere correction (classes E, F)
-  if (stability === 'E' || stability === 'F') {
-    const s = stability === 'E' ? 2e-4 : 4e-4; // s = g/Ta * dθ/dz
-    dh = 2.6 * Math.pow(Fb / (u * s), 1/3);
-  }
-  return Math.max(0, dh);
-}
-
-// ══════════════════════════════════════════════
-//  EMISSION RATE Q (g/s)
-// ══════════════════════════════════════════════
-function emission_rate(totalMW, ef_pm25_per_kwh) {
-  // totalMW * 1e6 W = MW * 1e6 g·s⁻¹ conceptually
-  // Q [g/s] = Power [kW] * EF [g/kWh] / 3600
-  return totalMW * 1000 * ef_pm25_per_kwh / 3600;
-}
-
-function get_ef_pm25(type) {
-  if (type === 'coal') return EF_COAL_PM10_uncontrolled * PM25_FRACTION_COAL;
-  if (type === 'baghouse') return EF_COAL_PM10_uncontrolled * (1 - BAGHOUSE_EFF) * PM25_FRACTION_COAL;
-  if (type === 'gas') return EF_GAS_PM10 * PM25_FRACTION_GAS;
-}
-
-// ══════════════════════════════════════════════
-//  GAUSSIAN PLUME CONCENTRATION (ground level)
-// ══════════════════════════════════════════════
-function gaussian_conc(x_m, y_m, Q, H_eff, u, stab) {
-  if (x_m <= 0) return 0;
-  const sy = sigma_y(x_m, stab);
-  const sz = sigma_z(x_m, stab);
-  if (sy <= 0 || sz <= 0 || u <= 0) return 0;
-  const C = (Q / (Math.PI * sy * sz * u))
-    * Math.exp(-(y_m**2) / (2 * sy**2))
-    * (Math.exp(-((H_eff)**2) / (2 * sz**2)) + Math.exp(-((H_eff)**2) / (2 * sz**2)));
-  // z=0 ground level: both terms equal
-  return C * 1e6; // convert g/m³ → µg/m³
-}
-
-function gaussian_conc_correct(x_m, y_m, Q, H_eff, u, stab) {
-  if (x_m <= 0) return 0;
-  const sy = sigma_y(x_m, stab);
-  const sz = sigma_z(x_m, stab);
-  if (sy <= 0 || sz <= 0 || u <= 0) return 0;
-  // z=0
-  const C = (Q / (Math.PI * sy * sz * u))
-    * Math.exp(-(y_m**2) / (2 * sy**2))
-    * Math.exp(-(H_eff**2) / (2 * sz**2));
-  return C * 1e6 * 2; // factor 2 for ground reflection
-}
-
-// ══════════════════════════════════════════════
-//  COMPUTED QUANTITIES
-// ══════════════════════════════════════════════
-function compute() {
-  const { dcMW, townMW, windSpeed, windDir, stability, stackH, stackD, stackVs, stackTs, townDist } = state;
-  const totalMW = dcMW + townMW;
-  // Capacity required accounting for efficiency + 20% margin
-  const coalCapMW = totalMW / ETA_COAL * 1.0;
-  const gasCapMW  = totalMW / ETA_GAS  * 1.0;
-
-  const dh = plume_rise(stackH, stackVs, stackD, stackTs+273, windSpeed, stability);
-  const H_eff = stackH + dh;
-
-  const types = ['coal','baghouse','gas'];
-  const colors = { coal: '#ff6b35', baghouse: '#ffcc00', gas: '#00e5ff' };
-  const Q = {};
-  types.forEach(t => {
-    Q[t] = emission_rate(totalMW, get_ef_pm25(t));
-  });
-
-  // Town center concentration (y=0, x=townDist)
-  const concTown = {};
-  types.forEach(t => {
-    concTown[t] = gaussian_conc_correct(townDist, 0, Q[t], H_eff, windSpeed, stability);
-  });
-
-  return { totalMW, coalCapMW, gasCapMW, dh, H_eff, Q, concTown, colors, types };
-}
-
-// ══════════════════════════════════════════════
-//  MCDA SCORES
-// ══════════════════════════════════════════════
-const MCDA_HEALTH = { coal: 2, baghouse: 5, gas: 8 };       // out of 10
-const MCDA_ENV    = { coal: 1, baghouse: 3, gas: 7 };        // env (SO2, CO2, NOx)
-// Cost scores (higher = cheaper/better) — based on capital+O&M
-const MCDA_COST_BASE = { coal: 5, baghouse: 3, gas: 7 };
-
-function mcda_tech_score(concTown) {
-  // Lower concentration → higher score
-  const max = Math.max(concTown.coal, concTown.baghouse, concTown.gas) || 1;
-  return {
-    coal:     10 * (1 - concTown.coal / max),
-    baghouse: 10 * (1 - concTown.baghouse / max),
-    gas:      10 * (1 - concTown.gas / max)
-  };
-}
-
-function weighted_score(tech, weights) {
-  const W = { tech: weights.tech/100, cost: weights.cost/100,
-              health: weights.health/100, env: weights.env/100 };
-  const types = ['coal','baghouse','gas'];
-  const result = {};
-  types.forEach(t => {
-    result[t] = W.tech * tech[t] + W.cost * MCDA_COST_BASE[t]
-              + W.health * MCDA_HEALTH[t] + W.env * MCDA_ENV[t];
-  });
-  return result;
-}
-
-// ══════════════════════════════════════════════
-//  COST DATA
-// ══════════════════════════════════════════════
-const COST_DATA = [
-  {
-    category: 'Capital Equipment',
-    coal:    '$2,500K–$4,000K',
-    baghouse:'$2,500K–$4,000K + $300K–$600K (baghouse)',
-    gas:     '$1,200K–$2,500K',
-    basis:   'EIA Capital Cost Projections 2023 (scaled to ~20 MW); EPRI CCGT cost report'
-  },
-  {
-    category: 'Installation / Civil / Electrical',
-    coal:    '$800K–$1,500K',
-    baghouse:'$900K–$1,700K',
-    gas:     '$500K–$1,000K',
-    basis:   'EPA Air Pollution Control Cost Manual, 7th Ed., Section 6'
-  },
-  {
-    category: 'Annual O&M (fuel + labor)',
-    coal:    '$400K–$700K/yr',
-    baghouse:'$450K–$800K/yr (+ bag replacement $80K–$150K/3yr)',
-    gas:     '$250K–$500K/yr',
-    basis:   'EIA O&M cost factors 2023; EPA AP-42 Ch. 1.1 & 3.1'
-  },
-  {
-    category: 'Permitting & Regulatory Compliance',
-    coal:    '$200K–$500K (PSD + Title V + MATS)',
-    baghouse:'$200K–$500K (PSD + Title V + MATS, baghouse BACT)',
-    gas:     '$100K–$300K (PSD + Title V, less MATS burden)',
-    basis:   'EPA PSD/Title V permit guidance; industry surveys'
-  },
-  {
-    category: 'Ash / Waste Disposal',
-    coal:    '$50K–$150K/yr (RCRA Subtitle D CCR)',
-    baghouse:'$80K–$200K/yr (CCR + baghouse cake)',
-    gas:     '< $10K/yr (negligible solid waste)',
-    basis:   'EPA Coal Combustion Residuals rule; Solid Waste cost benchmarks'
-  },
-  {
-    category: 'Total ROM Lifecycle (20 yr NPV)',
-    coal:    '~$12M–$20M',
-    baghouse:'~$13M–$23M',
-    gas:     '~$7M–$14M',
-    basis:   'Author estimate; 7% discount rate; fuel at EIA 2024 projections'
-  }
-];
-
-// ══════════════════════════════════════════════
-//  UI HELPERS
-// ══════════════════════════════════════════════
-function bindSlider(id, stateKey, labelId, fmt) {
-  const el = document.getElementById(id);
-  el.addEventListener('input', () => {
-    state[stateKey] = parseFloat(el.value);
-    document.getElementById(labelId).textContent = fmt(el.value);
-    refresh();
-  });
-  document.getElementById(labelId).textContent = fmt(el.value);
-}
-
-function bindSelect(id, stateKey) {
-  const el = document.getElementById(id);
-  el.addEventListener('change', () => { state[stateKey] = el.value; refresh(); });
-}
-
-// ══════════════════════════════════════════════
-//  DRAWING UTILS
-// ══════════════════════════════════════════════
-function clearCanvas(canvas, ctx) {
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  ctx.fillStyle = '#141720';
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-}
-
-function drawGrid(ctx, W, H, padL, padB, padR, padT, xMin, xMax, yMin, yMax, xLabel, yLabel) {
-  ctx.strokeStyle = '#232840';
-  ctx.lineWidth = 1;
-  const steps = 5;
-  // vertical grid
-  for (let i=0;i<=steps;i++) {
-    const x = padL + i*(W-padL-padR)/steps;
-    ctx.beginPath(); ctx.moveTo(x,padT); ctx.lineTo(x,H-padB); ctx.stroke();
-    const val = xMin + i*(xMax-xMin)/steps;
-    ctx.fillStyle='#555e7a'; ctx.font='10px Space Mono'; ctx.textAlign='center';
-    ctx.fillText(val.toFixed(val<1?2:1), x, H-padB+14);
-  }
-  // horizontal grid
-  for (let i=0;i<=steps;i++) {
-    const y = H-padB - i*(H-padB-padT)/steps;
-    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(W-padR,y); ctx.stroke();
-    const val = yMin + i*(yMax-yMin)/steps;
-    ctx.fillStyle='#555e7a'; ctx.font='10px Space Mono'; ctx.textAlign='right';
-    ctx.fillText(val.toFixed(val<1?2:1), padL-6, y+4);
-  }
-  // axes labels
-  ctx.fillStyle='#8a90a8'; ctx.font='11px DM Sans';
-  ctx.textAlign='center';
-  ctx.fillText(xLabel, (padL + W-padR)/2, H-2);
-  ctx.save(); ctx.translate(12, (padT+H-padB)/2); ctx.rotate(-Math.PI/2);
-  ctx.fillText(yLabel, 0, 0); ctx.restore();
-}
-
-function toCanvasXY(val, min, max, canMin, canMax) {
-  return canMin + (val-min)/(max-min) * (canMax-canMin);
-}
-
-// ══════════════════════════════════════════════
-//  FICTITIOUS MAP — fixed world coords (meters)
-//  Origin (0,0) = power plant location
-//  +X = East, +Y = North (canvas Y is flipped)
-//
-//  Fixed locations:
-//    Power Plant:  (0, 0)
-//    Town Millbrook: derived from state.townDist along wind direction
-//    Data Center:  (1800, 1200)   NE of plant
-//    Farm:         (-2500, 2000)  NW of plant
-// ══════════════════════════════════════════════
-
-// Map view: centered on plant, showing ~20km x 20km world
-const MAP_WORLD = 14000; // half-extent in meters shown each side
-
-function worldToCanvas(wx, wy, W, H) {
-  // Canvas center = plant at (0,0)
-  // +X right, +Y down (flip Y)
-  const cx = W / 2, cy = H / 2;
-  const scale = Math.min(W, H) / (MAP_WORLD * 2);
-  return [cx + wx * scale, cy - wy * scale, scale];
-}
-
-function drawBaseMap(ctx, W, H) {
-  // Background: flat terrain
-  ctx.fillStyle = '#1a2210';
-  ctx.fillRect(0, 0, W, H);
-
-  const scale = Math.min(W, H) / (MAP_WORLD * 2);
-  const cx = W / 2, cy = H / 2;
-
-  // Draw farmland patches (NW quadrant)
-  const farmFields = [
-    { x: -3500, y: 1500, w: 3000, h: 2000 },
-    { x: -3000, y: 3200, w: 2000, h: 1200 },
-  ];
-  farmFields.forEach(f => {
-    const [px, py] = [cx + f.x * scale, cy - (f.y + f.h) * scale];
-    const fw = f.w * scale, fh = f.h * scale;
-    // alternating stripe pattern
-    ctx.fillStyle = '#1e2e10';
-    ctx.fillRect(px, py, fw, fh);
-    for (let i = 0; i < fh; i += 6) {
-      ctx.fillStyle = i % 12 === 0 ? '#243515' : '#1c2b0f';
-      ctx.fillRect(px, py + i, fw, 6);
-    }
-    ctx.strokeStyle = '#2a4015';
-    ctx.lineWidth = 0.5;
-    ctx.strokeRect(px, py, fw, fh);
-  });
-
-  // River / stream (diagonal NE-SW)
-  ctx.beginPath();
-  ctx.moveTo(cx + (-6000) * scale, cy - (-1000) * scale);
-  ctx.bezierCurveTo(
-    cx + (-3000) * scale, cy - (1500) * scale,
-    cx + (1000) * scale,  cy - (500) * scale,
-    cx + (5000) * scale,  cy - (3000) * scale
-  );
-  ctx.strokeStyle = '#1a3a5c';
-  ctx.lineWidth = 5;
-  ctx.stroke();
-  ctx.strokeStyle = '#1e4a70';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  // Road network
-  const roads = [
-    // Main highway E-W
-    { pts: [[-8000,0],[8000,0]] },
-    // Road N-S through town
-    { pts: [[2500,-6000],[2500,6000]] },
-    // Diagonal to farm
-    { pts: [[-500,0],[-2500,2000],[-3500,2800]] },
-    // Road to DC
-    { pts: [[0,0],[1800,1200]] },
-  ];
-  roads.forEach(r => {
-    ctx.beginPath();
-    r.pts.forEach(([rx,ry], i) => {
-      const px = cx + rx * scale, py2 = cy - ry * scale;
-      i === 0 ? ctx.moveTo(px, py2) : ctx.lineTo(px, py2);
+  function fmt(val, decimals) {
+    return val.toLocaleString('en-US', {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals
     });
-    ctx.strokeStyle = '#2a3240';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    ctx.strokeStyle = '#3a4458';
-    ctx.lineWidth = 1;
-    ctx.setLineDash([6,6]);
-    ctx.stroke();
-    ctx.setLineDash([]);
-  });
-
-  // Grid lines (subtle)
-  ctx.strokeStyle = 'rgba(42,48,80,0.3)';
-  ctx.lineWidth = 0.5;
-  for (let gx = -MAP_WORLD; gx <= MAP_WORLD; gx += 2000) {
-    const px = cx + gx * scale;
-    ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, H); ctx.stroke();
   }
-  for (let gy = -MAP_WORLD; gy <= MAP_WORLD; gy += 2000) {
-    const py2 = cy - gy * scale;
-    ctx.beginPath(); ctx.moveTo(0, py2); ctx.lineTo(W, py2); ctx.stroke();
+
+  function updateTool() {
+    const powerMW = parseFloat(document.getElementById('powerSlider').value);
+    const ashPct  = parseFloat(document.getElementById('ashSlider').value);
+
+    document.getElementById('powerVal').textContent = powerMW + ' MW';
+    document.getElementById('ashVal').textContent   = ashPct.toFixed(1) + ' %';
+
+    // Heat input (MMBtu/hr) = power_kW × heat_rate_Btu_per_kWh / 1,000,000
+    const powerKW     = powerMW * 1000;
+    const coalHeatIn  = powerKW * COAL_HEAT_RATE / 1e6;
+    const gasHeatIn   = powerKW * GAS_HEAT_RATE  / 1e6;
+
+    // Coal emission factors
+    const ashFrac       = ashPct / 100;
+    const coalEF_PM10   = 7 * ashFrac;          // lb/MMBtu  (AP-42 §1.1)
+    const coalEF_PM25   = coalEF_PM10 * COAL_PM25_FRAC;
+
+    // Emission rates (lb/hr)
+    const coalPM10_lbhr = coalHeatIn * coalEF_PM10;
+    const coalPM25_lbhr = coalHeatIn * coalEF_PM25;
+    const gasPM10_lbhr  = gasHeatIn  * GAS_PM_EF;
+    const gasPM25_lbhr  = gasHeatIn  * GAS_PM_EF;
+
+    // Convert to g/s
+    const coalPM10_gs = coalPM10_lbhr * LB_TO_GS;
+    const coalPM25_gs = coalPM25_lbhr * LB_TO_GS;
+    const gasPM10_gs  = gasPM10_lbhr  * LB_TO_GS;
+    const gasPM25_gs  = gasPM25_lbhr  * LB_TO_GS;
+
+    // Ratios
+    const ratioPM10 = gasPM10_gs > 0 ? (coalPM10_gs / gasPM10_gs) : 0;
+    const ratioPM25 = gasPM25_gs > 0 ? (coalPM25_gs / gasPM25_gs) : 0;
+
+    // ── Update DOM ──
+    document.getElementById('coalHeat').textContent = fmt(coalHeatIn, 1);
+    document.getElementById('gasHeat').textContent  = fmt(gasHeatIn, 1);
+
+    document.getElementById('coalPM10_lbhr').textContent = fmt(coalPM10_lbhr, 2);
+    document.getElementById('coalPM10_gs').textContent   = fmt(coalPM10_gs, 3);
+    document.getElementById('gasPM10_lbhr').textContent  = fmt(gasPM10_lbhr, 3);
+    document.getElementById('gasPM10_gs').textContent    = fmt(gasPM10_gs, 4);
+    document.getElementById('ratioPM10').textContent     = fmt(ratioPM10, 0) + '× more';
+
+    document.getElementById('coalPM25_lbhr').textContent = fmt(coalPM25_lbhr, 2);
+    document.getElementById('coalPM25_gs').textContent   = fmt(coalPM25_gs, 3);
+    document.getElementById('gasPM25_lbhr').textContent  = fmt(gasPM25_lbhr, 3);
+    document.getElementById('gasPM25_gs').textContent    = fmt(gasPM25_gs, 4);
+    document.getElementById('ratioPM25').textContent     = fmt(ratioPM25, 0) + '× more';
+
+    document.getElementById('efCoalPM10').textContent = coalEF_PM10.toFixed(4);
+    document.getElementById('efCoalPM25').textContent = coalEF_PM25.toFixed(4);
+
+    // Bar chart — scale relative to max value across all four
+    const maxGs = Math.max(coalPM10_gs, coalPM25_gs, gasPM10_gs, gasPM25_gs);
+
+    function pct(val) { return maxGs > 0 ? Math.min((val / maxGs) * 100, 100) : 0; }
+
+    document.getElementById('barCoalPM10').style.width = pct(coalPM10_gs) + '%';
+    document.getElementById('barGasPM10').style.width  = pct(gasPM10_gs)  + '%';
+    document.getElementById('barCoalPM25').style.width = pct(coalPM25_gs) + '%';
+    document.getElementById('barGasPM25').style.width  = pct(gasPM25_gs)  + '%';
+
+    document.getElementById('barCoalPM10Lbl').textContent = fmt(coalPM10_gs, 2) + ' g/s';
+    document.getElementById('barGasPM10Lbl').textContent  = fmt(gasPM10_gs, 3)  + ' g/s';
+    document.getElementById('barCoalPM25Lbl').textContent = fmt(coalPM25_gs, 2) + ' g/s';
+    document.getElementById('barGasPM25Lbl').textContent  = fmt(gasPM25_gs, 3)  + ' g/s';
   }
-}
 
-function drawMapForType(canvasId, plantType, plume_color) {
-  const canvas = document.getElementById(canvasId);
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
-
-  const { H_eff, Q, concTown } = compute();
-  const { windSpeed, windDir, stability, townDist } = state;
-
-  const scale = Math.min(W, H) / (MAP_WORLD * 2);
-  const cx = W / 2, cy = H / 2;
-
-  // Clear & base map
-  clearCanvas(canvas, ctx);
-  drawBaseMap(ctx, W, H);
-
-  // ── Wind direction (meteorological: FROM direction)
-  // Wind blows FROM windDir, so plumes go TO (windDir + 180)
-  const plume_dir_rad = ((windDir + 180) % 360) * Math.PI / 180;
-  const dx = Math.sin(plume_dir_rad);   // East component (canvas +X)
-  const dy = Math.cos(plume_dir_rad);   // North component (canvas -Y)
-  const perpX = -dy, perpY = dx;        // crosswind unit vector
-
-  // ── Draw Gaussian plume as filled gradient band
-  const maxDist = MAP_WORLD * 1.8;
-  const nSlices = 120;
-  const Q_val = Q[plantType];
-
-  // Find max conc for alpha normalization
-  let maxC = 0;
-  for (let i = 1; i <= nSlices; i++) {
-    const x_m = (i / nSlices) * maxDist;
-    const c = gaussian_conc_correct(x_m, 0, Q_val, H_eff, windSpeed, stability);
-    if (c > maxC) maxC = c;
-  }
-  maxC = Math.max(maxC, 0.001);
-
-  // Draw as filled polygon slices
-  for (let i = 1; i <= nSlices; i++) {
-    const x_m = (i / nSlices) * maxDist;
-    const x_prev = ((i - 1) / nSlices) * maxDist;
-    const sy_cur  = sigma_y(x_m, stability);
-    const sy_prev = sigma_y(Math.max(x_prev, 1), stability);
-    const hw_cur  = sy_cur  * scale * 2.5;
-    const hw_prev = sy_prev * scale * 2.5;
-
-    const conc = gaussian_conc_correct(x_m, 0, Q_val, H_eff, windSpeed, stability);
-    const alpha = Math.min(0.65, (conc / maxC) * 0.7);
-    if (alpha < 0.002) continue;
-
-    // World positions
-    const wx_cur  = dx * x_m,    wy_cur  = dy * x_m;
-    const wx_prev = dx * x_prev, wy_prev = dy * x_prev;
-
-    // Canvas positions
-    const px_cur  = cx + wx_cur  * scale, py_cur  = cy - wy_cur  * scale;
-    const px_prev = cx + wx_prev * scale, py_prev = cy - wy_prev * scale;
-
-    // Crosswind canvas offsets
-    const cpx = perpX * scale, cpy = -perpY * scale;
-
-    ctx.globalAlpha = alpha;
-    ctx.fillStyle = plume_color;
-    ctx.beginPath();
-    ctx.moveTo(px_prev + cpx * hw_prev, py_prev + cpy * hw_prev);
-    ctx.lineTo(px_cur  + cpx * hw_cur,  py_cur  + cpy * hw_cur);
-    ctx.lineTo(px_cur  - cpx * hw_cur,  py_cur  - cpy * hw_cur);
-    ctx.lineTo(px_prev - cpx * hw_prev, py_prev - cpy * hw_prev);
-    ctx.closePath();
-    ctx.fill();
-  }
-  ctx.globalAlpha = 1;
-
-  // Centerline dashed
-  ctx.setLineDash([4, 4]);
-  ctx.strokeStyle = plume_color;
-  ctx.lineWidth = 1;
-  ctx.globalAlpha = 0.5;
-  ctx.beginPath();
-  ctx.moveTo(cx, cy);
-  ctx.lineTo(cx + dx * maxDist * scale, cy - dy * maxDist * scale);
-  ctx.stroke();
-  ctx.setLineDash([]);
-  ctx.globalAlpha = 1;
-
-  // ── Draw landmarks ──
-
-  // Town Millbrook — fixed position east of plant at townDist
-  // Always placed at angle 90° (due East) from plant regardless of wind
-  // but the "receptor distance" is measured along wind direction in model
-  // Visual: place town at fixed map coords (townDist, 0) = due East
-  const townX = townDist, townY = 0;
-  drawLandmark(ctx, cx + townX * scale, cy - townY * scale, '🏘', 'Millbrook', '#e8eaf0', 18);
-
-  // Data Center — NE of plant, fixed
-  const dcX = 1800, dcY = 1200;
-  drawLandmark(ctx, cx + dcX * scale, cy - dcY * scale, '🖥', 'Nexus DC', '#00e5ff', 14);
-
-  // Farm — NW of plant, fixed
-  const farmX = -2800, farmY = 2200;
-  drawLandmark(ctx, cx + farmX * scale, cy - farmY * scale, '🌾', 'Harrow Farm', '#7fff6b', 14);
-
-  // Power Plant — at origin (map center)
-  drawPlantMarker(ctx, cx, cy, plume_color);
-
-  // ── Wind arrow ──
-  const arrowLen = 30;
-  const arrowX = W - 50, arrowY = H - 50;
-  ctx.save();
-  ctx.translate(arrowX, arrowY);
-  ctx.rotate(plume_dir_rad);
-  ctx.strokeStyle = '#00e5ff';
-  ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.moveTo(0, 12); ctx.lineTo(0, -12); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(0, -12); ctx.lineTo(-5, -5); ctx.moveTo(0,-12); ctx.lineTo(5,-5); ctx.stroke();
-  ctx.restore();
-  ctx.fillStyle = '#00e5ff';
-  ctx.font = '9px Space Mono';
-  ctx.textAlign = 'center';
-  ctx.fillText(`${windDir}°`, arrowX, arrowY + 22);
-
-  // ── Scale bar ──
-  const sbMeters = 2000;
-  const sbPx = sbMeters * scale;
-  ctx.strokeStyle = '#8a90a8';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(10, H - 12); ctx.lineTo(10 + sbPx, H - 12);
-  ctx.stroke();
-  ctx.fillStyle = '#8a90a8';
-  ctx.font = '9px Space Mono';
-  ctx.textAlign = 'left';
-  ctx.fillText('2 km', 10, H - 3);
-
-  // ── Concentration label at town ──
-  const conc_at_town = gaussian_conc_correct(townDist, 0, Q_val, H_eff, windSpeed, stability);
-  const labelX = cx + townX * scale;
-  const labelY = cy - townY * scale - 28;
-  ctx.fillStyle = conc_at_town > NAAQS_ANNUAL ? '#ff4444' : '#7fff6b';
-  ctx.font = 'bold 10px Space Mono';
-  ctx.textAlign = 'center';
-  ctx.fillText(`${conc_at_town.toFixed(2)} µg/m³`, labelX, labelY);
-}
-
-function drawPlantMarker(ctx, px, py, col) {
-  // Stack symbol
-  ctx.fillStyle = col;
-  ctx.strokeStyle = '#0d0f14';
-  ctx.lineWidth = 1;
-  // Base rectangle
-  ctx.fillRect(px - 6, py - 6, 12, 12);
-  ctx.strokeRect(px - 6, py - 6, 12, 12);
-  // Stack chimney
-  ctx.fillStyle = '#888';
-  ctx.fillRect(px - 2, py - 14, 4, 10);
-  // Smoke puff
-  ctx.fillStyle = 'rgba(200,200,200,0.4)';
-  ctx.beginPath(); ctx.arc(px, py - 18, 4, 0, Math.PI * 2); ctx.fill();
-  ctx.beginPath(); ctx.arc(px + 3, py - 22, 3, 0, Math.PI * 2); ctx.fill();
-  // Label
-  ctx.fillStyle = col;
-  ctx.font = 'bold 10px Space Mono';
-  ctx.textAlign = 'center';
-  ctx.fillText('PLANT', px, py + 20);
-}
-
-function drawLandmark(ctx, px, py, emoji, label, col, emojiSize) {
-  ctx.font = `${emojiSize}px serif`;
-  ctx.textAlign = 'center';
-  ctx.fillText(emoji, px, py + emojiSize * 0.4);
-  // Circle
-  ctx.beginPath();
-  ctx.arc(px, py, emojiSize * 0.7, 0, Math.PI * 2);
-  ctx.strokeStyle = col;
-  ctx.lineWidth = 1.5;
-  ctx.globalAlpha = 0.5;
-  ctx.stroke();
-  ctx.globalAlpha = 1;
-  // Label
-  ctx.fillStyle = col;
-  ctx.font = `bold 10px DM Sans`;
-  ctx.textAlign = 'center';
-  ctx.fillText(label, px, py + emojiSize + 6);
-}
-
-function drawMap() {
-  drawMapForType('map-coal',    'coal',    '#ff6b35');
-  drawMapForType('map-baghouse','baghouse','#ffcc00');
-  drawMapForType('map-gas',     'gas',     '#00e5ff');
-}
-
-// ══════════════════════════════════════════════
-//  DRAW PROFILE
-// ══════════════════════════════════════════════
-function drawProfile() {
-  const canvas = document.getElementById('profile-canvas');
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
-  clearCanvas(canvas, ctx);
-
-  const { H_eff, Q, types, colors } = compute();
-  const { windSpeed, stability, townDist } = state;
-
-  const padL=55, padB=40, padR=20, padT=20;
-  const maxX = Math.min(townDist * 2.5, 20000);
-  const nPts = 200;
-
-  // Compute all curves
-  const curves = {};
-  let maxC = 0;
-  types.forEach(t => {
-    curves[t] = [];
-    for (let i=1; i<=nPts; i++) {
-      const x = (i/nPts) * maxX;
-      const c = gaussian_conc_correct(x, 0, Q[t], H_eff, windSpeed, stability);
-      curves[t].push({ x, c });
-      if (c > maxC) maxC = c;
-    }
-  });
-
-  const yMax = Math.max(maxC * 1.15, NAAQS_ANNUAL * 2);
-  drawGrid(ctx, W, H, padL, padB, padR, padT, 0, maxX/1000, 0, yMax, 'Downwind distance (km)', 'PM₂.₅ (µg/m³)');
-
-  // NAAQS line
-  const naaqs_y = toCanvasXY(NAAQS_ANNUAL, 0, yMax, H-padB, padT);
-  ctx.strokeStyle = '#ff4444';
-  ctx.lineWidth = 1.5;
-  ctx.setLineDash([6,4]);
-  ctx.beginPath();
-  ctx.moveTo(padL, naaqs_y); ctx.lineTo(W-padR, naaqs_y);
-  ctx.stroke();
-  ctx.setLineDash([]);
-  ctx.fillStyle = '#ff4444';
-  ctx.font = '10px Space Mono';
-  ctx.textAlign = 'left';
-  ctx.fillText('NAAQS 9µg/m³', padL+4, naaqs_y-4);
-
-  // Town marker
-  const tx_px = toCanvasXY(townDist/1000, 0, maxX/1000, padL, W-padR);
-  ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-  ctx.lineWidth = 1;
-  ctx.setLineDash([3,3]);
-  ctx.beginPath(); ctx.moveTo(tx_px,padT); ctx.lineTo(tx_px,H-padB); ctx.stroke();
-  ctx.setLineDash([]);
-  ctx.fillStyle = '#8a90a8';
-  ctx.font = '10px Space Mono';
-  ctx.textAlign = 'center';
-  ctx.fillText('TOWN', tx_px, padT+10);
-
-  // Draw curves
-  types.forEach(t => {
-    ctx.strokeStyle = colors[t];
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    curves[t].forEach((pt, i) => {
-      const px = toCanvasXY(pt.x/1000, 0, maxX/1000, padL, W-padR);
-      const py = toCanvasXY(pt.c, 0, yMax, H-padB, padT);
-      i===0 ? ctx.moveTo(px,py) : ctx.lineTo(px,py);
-    });
-    ctx.stroke();
-  });
-}
-
-// ══════════════════════════════════════════════
-//  DRAW CROSS-SECTION
-// ══════════════════════════════════════════════
-function drawCrossSection() {
-  const canvas = document.getElementById('crosssection-canvas');
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
-  clearCanvas(canvas, ctx);
-
-  const { H_eff, Q, types, colors } = compute();
-  const { windSpeed, stability, townDist } = state;
-
-  const sy = sigma_y(townDist, stability);
-  const sz = sigma_z(townDist, stability);
-  const yRange = Math.max(sy * 3, 500);
-
-  const padL=55, padB=35, padR=20, padT=20;
-  drawGrid(ctx, W, H, padL, padB, padR, padT, -yRange/1000, yRange/1000, 0, null, 'Crosswind (km)', 'PM₂.₅ (µg/m³)');
-
-  let maxC = 0;
-  const nPts = 150;
-  types.forEach(t => {
-    for (let i=0; i<nPts; i++) {
-      const y = -yRange + i/nPts * yRange*2;
-      const c = gaussian_conc_correct(townDist, y, Q[t], H_eff, windSpeed, stability);
-      if (c > maxC) maxC = c;
-    }
-  });
-
-  const yMax_c = maxC * 1.15 || 1;
-  // Redraw grid with correct ymax
-  clearCanvas(canvas, ctx);
-  drawGrid(ctx, W, H, padL, padB, padR, padT, -yRange/1000, yRange/1000, 0, yMax_c, 'Crosswind (km)', 'PM₂.₅ (µg/m³)');
-
-  types.forEach(t => {
-    ctx.strokeStyle = colors[t];
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    for (let i=0; i<nPts; i++) {
-      const y = -yRange + i/nPts * yRange*2;
-      const c = gaussian_conc_correct(townDist, y, Q[t], H_eff, windSpeed, stability);
-      const px = toCanvasXY(y/1000, -yRange/1000, yRange/1000, padL, W-padR);
-      const py = toCanvasXY(c, 0, yMax_c, H-padB, padT);
-      i===0 ? ctx.moveTo(px,py) : ctx.lineTo(px,py);
-    }
-    ctx.stroke();
-  });
-
-  // Annotate sigma_y
-  ctx.fillStyle='#555e7a'; ctx.font='10px Space Mono'; ctx.textAlign='center';
-  ctx.fillText(`σ_y = ${sy.toFixed(0)} m  |  σ_z = ${sz.toFixed(0)} m  |  H_eff = ${compute().H_eff.toFixed(0)} m`, W/2, 14);
-}
-
-// ══════════════════════════════════════════════
-//  DRAW RADAR (simple polygon)
-// ══════════════════════════════════════════════
-function drawRadar(tech) {
-  const canvas = document.getElementById('radar-canvas');
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
-  clearCanvas(canvas, ctx);
-
-  const cx = W/2, cy = H/2 + 10;
-  const r = Math.min(W,H)*0.35;
-  const axes = ['Technical','Cost','Health','Environ.'];
-  const n = axes.length;
-  const scores = {
-    coal:     [tech.coal, MCDA_COST_BASE.coal, MCDA_HEALTH.coal, MCDA_ENV.coal],
-    baghouse: [tech.baghouse, MCDA_COST_BASE.baghouse, MCDA_HEALTH.baghouse, MCDA_ENV.baghouse],
-    gas:      [tech.gas, MCDA_COST_BASE.gas, MCDA_HEALTH.gas, MCDA_ENV.gas],
-  };
-  const colors = { coal:'#ff6b35', baghouse:'#ffcc00', gas:'#00e5ff' };
-
-  // Grid circles
-  for (let l=2;l<=10;l+=2) {
-    ctx.beginPath();
-    for (let i=0;i<n;i++) {
-      const ang = (2*Math.PI*i/n) - Math.PI/2;
-      const px = cx + Math.cos(ang)*r*l/10;
-      const py = cy + Math.sin(ang)*r*l/10;
-      i===0 ? ctx.moveTo(px,py) : ctx.lineTo(px,py);
-    }
-    ctx.closePath();
-    ctx.strokeStyle='#232840'; ctx.lineWidth=1; ctx.stroke();
-  }
-  // Axes
-  axes.forEach((a,i) => {
-    const ang = (2*Math.PI*i/n) - Math.PI/2;
-    ctx.strokeStyle='#2a3050'; ctx.lineWidth=1;
-    ctx.beginPath(); ctx.moveTo(cx,cy);
-    ctx.lineTo(cx+Math.cos(ang)*r, cy+Math.sin(ang)*r); ctx.stroke();
-    const lx = cx+Math.cos(ang)*(r+18);
-    const ly = cy+Math.sin(ang)*(r+18);
-    ctx.fillStyle='#8a90a8'; ctx.font='10px Space Mono';
-    ctx.textAlign='center'; ctx.fillText(a,lx,ly+4);
-  });
-
-  // Data polygons
-  Object.entries(scores).forEach(([t,vals]) => {
-    ctx.beginPath();
-    vals.forEach((v,i) => {
-      const ang = (2*Math.PI*i/n) - Math.PI/2;
-      const px = cx + Math.cos(ang)*r*(v/10);
-      const py = cy + Math.sin(ang)*r*(v/10);
-      i===0 ? ctx.moveTo(px,py) : ctx.lineTo(px,py);
-    });
-    ctx.closePath();
-    ctx.strokeStyle = colors[t];
-    ctx.lineWidth = 1.5;
-    ctx.globalAlpha = 0.15;
-    ctx.fillStyle = colors[t];
-    ctx.fill();
-    ctx.globalAlpha = 0.8;
-    ctx.stroke();
-    ctx.globalAlpha = 1;
-  });
-}
-
-// ══════════════════════════════════════════════
-//  DRAW COST BAR
-// ══════════════════════════════════════════════
-function drawCostBar() {
-  const canvas = document.getElementById('cost-canvas');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
-  clearCanvas(canvas, ctx);
-
-  // NPV ranges
-  const data = [
-    { label: 'Coal', low: 12, high: 20, color: '#ff6b35' },
-    { label: 'Coal+BH', low: 13, high: 23, color: '#ffcc00' },
-    { label: 'Nat Gas', low: 7, high: 14, color: '#00e5ff' },
-  ];
-  const maxV = 25;
-  const barH = 30, gap = 28;
-  const padL = 80, padR = 40;
-  const bW = W - padL - padR;
-
-  ctx.fillStyle='#8a90a8'; ctx.font='11px DM Sans'; ctx.textAlign='center';
-  ctx.fillText('20-Year NPV Cost Estimate (millions USD)', W/2, 16);
-
-  data.forEach((d,i) => {
-    const y = 35 + i*(barH+gap);
-    const x1 = padL + (d.low/maxV)*bW;
-    const x2 = padL + (d.high/maxV)*bW;
-    // Track
-    ctx.fillStyle='#232840';
-    ctx.fillRect(padL, y+4, bW, barH-8);
-    // Bar
-    ctx.fillStyle=d.color;
-    ctx.globalAlpha=0.8;
-    ctx.fillRect(x1, y, x2-x1, barH);
-    ctx.globalAlpha=1;
-    // Label
-    ctx.fillStyle=d.color; ctx.font='bold 12px Space Mono'; ctx.textAlign='right';
-    ctx.fillText(d.label, padL-8, y+barH/2+4);
-    // Value
-    ctx.fillStyle='#e8eaf0'; ctx.font='11px Space Mono'; ctx.textAlign='left';
-    ctx.fillText(`$${d.low}M–$${d.high}M`, x2+6, y+barH/2+4);
-  });
-
-  // x-axis
-  for (let v=0;v<=maxV;v+=5) {
-    const x = padL + (v/maxV)*bW;
-    ctx.strokeStyle='#2a3050'; ctx.lineWidth=1;
-    ctx.beginPath(); ctx.moveTo(x,30); ctx.lineTo(x,H-10); ctx.stroke();
-    ctx.fillStyle='#555e7a'; ctx.font='10px Space Mono'; ctx.textAlign='center';
-    ctx.fillText(`$${v}M`, x, H-2);
-  }
-}
-
-// ══════════════════════════════════════════════
-//  DRAW SENSITIVITY
-// ══════════════════════════════════════════════
-function drawSensitivity() {
-  const canvas = document.getElementById('sensitivity-canvas');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
-  clearCanvas(canvas, ctx);
-
-  // Tornado diagram: vary key params ±50%, show % change in coal concentration at town
-  const { H_eff: Hb, Q: Qb } = compute();
-  const { windSpeed, stability, townDist } = state;
-  const baseConc = gaussian_conc_correct(townDist, 0, Qb.coal, Hb, windSpeed, stability);
-
-  const params = [
-    { name: 'Wind speed ±50%', factor: v => {
-        const c1 = gaussian_conc_correct(townDist,0,Qb.coal,Hb, windSpeed*0.5, stability);
-        const c2 = gaussian_conc_correct(townDist,0,Qb.coal,Hb, windSpeed*1.5, stability);
-        return [c1,c2];
-    }},
-    { name: 'Stack height ±50%', factor: v => {
-        const H1 = state.stackH*0.5 + plume_rise(state.stackH*0.5,state.stackVs,state.stackD,state.stackTs+273,windSpeed,stability);
-        const H2 = state.stackH*1.5 + plume_rise(state.stackH*1.5,state.stackVs,state.stackD,state.stackTs+273,windSpeed,stability);
-        return [gaussian_conc_correct(townDist,0,Qb.coal,H1,windSpeed,stability),
-                gaussian_conc_correct(townDist,0,Qb.coal,H2,windSpeed,stability)];
-    }},
-    { name: 'Town distance ±50%', factor: v => [
-        gaussian_conc_correct(townDist*1.5,0,Qb.coal,Hb,windSpeed,stability),
-        gaussian_conc_correct(townDist*0.5,0,Qb.coal,Hb,windSpeed,stability),
-    ]},
-    { name: 'Emission rate ±50%', factor: v => [
-        gaussian_conc_correct(townDist,0,Qb.coal*0.5,Hb,windSpeed,stability),
-        gaussian_conc_correct(townDist,0,Qb.coal*1.5,Hb,windSpeed,stability),
-    ]},
-  ];
-
-  const padL=160, padR=60, padT=30, padB=20;
-  const cx = padL + (W-padL-padR)*0.5 + (W-padL-padR)*0.5*(0-baseConc)/(baseConc);
-
-  // Compute ranges as % deviation
-  const bars = params.map(p => {
-    const [c1,c2] = p.factor();
-    return { name: p.name, low: (c1-baseConc)/baseConc*100, high: (c2-baseConc)/baseConc*100 };
-  }).sort((a,b) => Math.max(Math.abs(b.low),Math.abs(b.high)) - Math.max(Math.abs(a.low),Math.abs(a.high)));
-
-  const maxAbs = Math.max(...bars.map(b=>Math.max(Math.abs(b.low),Math.abs(b.high))));
-  const bH = (H-padT-padB)/bars.length - 6;
-  const midX = padL + (W-padL-padR)/2;
-
-  // Zero line
-  ctx.strokeStyle='#555e7a'; ctx.lineWidth=1;
-  ctx.beginPath(); ctx.moveTo(midX,padT); ctx.lineTo(midX,H-padB); ctx.stroke();
-  ctx.fillStyle='#555e7a'; ctx.font='10px Space Mono'; ctx.textAlign='center';
-  ctx.fillText('±% change from baseline', midX, padT-6);
-
-  bars.forEach((b,i) => {
-    const y = padT + i*(bH+6);
-    const x1 = midX + (b.low/maxAbs)*(W-padL-padR)/2;
-    const x2 = midX + (b.high/maxAbs)*(W-padL-padR)/2;
-    ctx.fillStyle='rgba(0,229,255,0.5)';
-    ctx.fillRect(Math.min(x1,x2), y, Math.abs(x2-x1), bH);
-    ctx.fillStyle='#8a90a8'; ctx.font='11px DM Sans'; ctx.textAlign='right';
-    ctx.fillText(b.name, padL-6, y+bH/2+4);
-    ctx.fillStyle='#555e7a'; ctx.font='9px Space Mono'; ctx.textAlign='left';
-    ctx.fillText(`${b.low>0?'+':''}${b.low.toFixed(0)}%`, Math.min(x1,x2)-28, y+bH/2+4);
-    ctx.fillStyle='#555e7a'; ctx.textAlign='left';
-    ctx.fillText(`${b.high>0?'+':''}${b.high.toFixed(0)}%`, Math.max(x1,x2)+4, y+bH/2+4);
-  });
-}
-
-// ══════════════════════════════════════════════
-//  POPULATE SIGMA TABLE
-// ══════════════════════════════════════════════
-function populateSigmaTable() {
-  const tbody = document.getElementById('sigma-tbody');
-  if (!tbody) return;
-  tbody.innerHTML = '';
-  [0.5, 1, 2, 5, 10].forEach(d_km => {
-    const x = d_km * 1000;
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${d_km}</td>
-      <td>${sigma_y(x,'A').toFixed(1)}</td>
-      <td>${sigma_y(x,'D').toFixed(1)}</td>
-      <td>${sigma_z(x,'A').toFixed(1)}</td>
-      <td>${sigma_z(x,'D').toFixed(1)}</td>
-      <td style="color:var(--text3);font-size:11px;">Briggs (1973); EPA-454/B-03-001</td>
-    `;
-    tbody.appendChild(row);
-  });
-}
-
-// ══════════════════════════════════════════════
-//  POPULATE COST TABLE
-// ══════════════════════════════════════════════
-function populateCostTable() {
-  const tbody = document.getElementById('cost-tbody');
-  if (!tbody) return;
-  tbody.innerHTML = '';
-  COST_DATA.forEach(row => {
-    const tr = document.createElement('tr');
-    const isTotal = row.category.includes('Total');
-    const boldStyle = isTotal ? 'font-weight:600;' : '';
-    tr.innerHTML = `
-      <td style="${boldStyle}">${row.category}</td>
-      <td class="cost-coal" style="${boldStyle}">${row.coal}</td>
-      <td class="cost-bag" style="${boldStyle}">${row.baghouse}</td>
-      <td class="cost-gas" style="${boldStyle}">${row.gas}</td>
-      <td><div class="source-note">${row.basis}</div></td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-
-// ══════════════════════════════════════════════
-//  WEIGHT MANAGEMENT
-// ══════════════════════════════════════════════
-function getWeights() {
-  return {
-    tech:   parseFloat(document.getElementById('w-tech').value),
-    cost:   parseFloat(document.getElementById('w-cost').value),
-    health: parseFloat(document.getElementById('w-health').value),
-    env:    parseFloat(document.getElementById('w-env').value),
-  };
-}
-
-function normalizeWeights() {
-  const w = getWeights();
-  const sum = w.tech + w.cost + w.health + w.env;
-  if (sum === 0) return;
-  ['tech','cost','health','env'].forEach(k => {
-    const el = document.getElementById(`w-${k}`);
-    el.value = Math.round(w[k]/sum*100/5)*5;
-    document.getElementById(`wv-${k}`).textContent = el.value + '%';
-  });
-  refresh();
-}
-
-// ══════════════════════════════════════════════
-//  MAIN REFRESH
-// ══════════════════════════════════════════════
-function refresh() {
-  const { totalMW, coalCapMW, concTown, Q } = compute();
-
-  // Update labels
-  document.getElementById('pw-total').textContent = `${(state.dcMW+state.townMW).toFixed(0)} MW`;
-  document.getElementById('pw-coal-cap').textContent = `${(coalCapMW).toFixed(0)} MW`;
-
-  // Stats
-  const types = ['coal','baghouse','gas'];
-  const ids = { coal:'coal', baghouse:'bag', gas:'gas' };
-  types.forEach(t => {
-    const c = concTown[t];
-    document.getElementById(`stat-${ids[t]}-conc`).textContent = c.toFixed(2);
-    const el = document.getElementById(`naaqs-${ids[t]}`);
-    if (c > NAAQS_ANNUAL) {
-      el.textContent = 'EXCEEDS NAAQS';
-      el.className = 'naaqs-status exceed';
-    } else {
-      el.textContent = 'BELOW NAAQS';
-      el.className = 'naaqs-status comply';
-    }
-  });
-
-  // Update wind arrow
-  const wd = state.windDir;
-  const rad = (wd - 180) * Math.PI / 180; // arrow points in wind direction
-  const cx2 = 30, cy2 = 30, len = 18;
-  const ex = cx2 + Math.sin(rad)*len, ey = cy2 - Math.cos(rad)*len;
-  document.getElementById('wind-arrow').setAttribute('x2', ex.toFixed(1));
-  document.getElementById('wind-arrow').setAttribute('y2', ey.toFixed(1));
-
-  // Draw visuals
-  drawMap();
-  drawProfile();
-  drawCrossSection();
-
-  // MCDA
-  const tech = mcda_tech_score(concTown);
-  drawRadar(tech);
-
-  const weights = getWeights();
-  const wsum = weights.tech + weights.cost + weights.health + weights.env;
-  const warn = document.getElementById('weight-warning');
-  document.getElementById('weight-sum').textContent = wsum;
-  warn.style.display = Math.abs(wsum-100) > 1 ? 'block' : 'none';
-
-  const ws = weighted_score(tech, weights);
-  const plantNames = { coal: 'Coal (Uncontrolled)', baghouse: 'Coal + Baghouse', gas: 'Natural Gas CC' };
-  const colors2 = { coal: '#ff6b35', baghouse: '#ffcc00', gas: '#00e5ff' };
-  const maxWS = Math.max(ws.coal, ws.baghouse, ws.gas);
-
-  const scoreBars = document.getElementById('score-bars');
-  scoreBars.innerHTML = '';
-  ['coal','baghouse','gas'].forEach(t => {
-    const pct = (ws[t]/10*100).toFixed(1);
-    const row = document.createElement('div');
-    row.className = 'score-bar-row';
-    row.innerHTML = `
-      <span class="name">${t==='coal'?'COAL':t==='baghouse'?'BAG+COAL':'NAT GAS'}</span>
-      <div class="score-bar-track">
-        <div class="score-bar-fill" style="width:${pct}%;background:${colors2[t]};"></div>
-      </div>
-      <span class="sval" style="color:${colors2[t]};">${ws[t].toFixed(2)}</span>
-    `;
-    scoreBars.appendChild(row);
-  });
-
-  // Recommendation
-  const best = ['coal','baghouse','gas'].reduce((a,b) => ws[a]>ws[b]?a:b);
-  const recPlant = document.getElementById('rec-plant');
-  const recReason = document.getElementById('rec-reason');
-  recPlant.style.color = colors2[best];
-  recPlant.textContent = plantNames[best];
-
-  const reasons = {
-    coal: 'Coal (uncontrolled) is not recommended under current weights. High PM₂.₅ emissions and regulatory risk dominate. Consider only if current weights heavily favor raw capital cost.',
-    baghouse: 'Coal + Baghouse significantly reduces PM₂.₅ through fabric filtration (99.5% efficiency). Suitable where gas infrastructure is unavailable, but long-term regulatory risk from SO₂/NOₓ and CCR rules remains.',
-    gas: 'Natural gas combined-cycle offers the lowest PM₂.₅ emissions, fastest permitting timeline, and best lifecycle cost under current model conditions. Primary constraint is gas pipeline availability.'
-  };
-  recReason.textContent = reasons[best];
-
-  // Sensitivity
-  drawSensitivity();
-}
-
-// ══════════════════════════════════════════════
-//  TABS
-// ══════════════════════════════════════════════
-document.querySelectorAll('.tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-    tab.classList.add('active');
-    document.getElementById(`tab-${tab.dataset.tab}`).classList.add('active');
-    refresh();
-  });
-});
-
-// ══════════════════════════════════════════════
-//  BIND ALL INPUTS
-// ══════════════════════════════════════════════
-bindSlider('sl-dc','dcMW','lbl-dc', v=>`${v}`);
-bindSlider('sl-town','townMW','lbl-town', v=>`${v}`);
-bindSlider('sl-ws','windSpeed','lbl-ws', v=>parseFloat(v).toFixed(1));
-bindSlider('sl-wd','windDir','lbl-wd', v=>`${v}°`);
-bindSlider('sl-sh','stackH','lbl-sh', v=>`${v}`);
-bindSlider('sl-sd','stackD','lbl-sd', v=>parseFloat(v).toFixed(1));
-bindSlider('sl-sv','stackVs','lbl-sv', v=>`${v}`);
-bindSlider('sl-st','stackTs','lbl-st', v=>`${v}`);
-bindSlider('sl-td','townDist','lbl-td', v=>{
-  state.townDist = parseFloat(v)*1000;
-  return parseFloat(v).toFixed(1);
-});
-bindSelect('sel-stab','stability');
-
-// MCDA weight sliders
-['tech','cost','health','env'].forEach(k => {
-  document.getElementById(`w-${k}`).addEventListener('input', function() {
-    document.getElementById(`wv-${k}`).textContent = this.value + '%';
-    refresh();
-  });
-});
-
-// Init
-populateCostTable();
-populateSigmaTable();
-refresh();
+  // Initialize on load
+  updateTool();
 </script>
 </body>
 </html>
