@@ -1,722 +1,344 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>CIVE 442 — Tool 2: Emissions Reduction Design</title>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
-  :root {
-    --coal: #1a1a1a;
-    --coal-mid: #2e2e2e;
-    --coal-light: #4a4a4a;
-    --gas-blue: #1a4a6e;
-    --gas-mid: #1d6fa4;
-    --gas-light: #4fa3d1;
-    --accent: #c8882a;
-    --accent-light: #e8b468;
-    --bg: #f4f0e8;
-    --bg-warm: #ede8dc;
-    --bg-card: #faf8f4;
-    --text: #1c1c1c;
-    --text-mid: #4a4a4a;
-    --text-light: #7a7a7a;
-    --rule: #d0c8b8;
-    --pm25: #c0392b;
-    --pm10: #e67e22;
-    --serif: 'Libre Baskerville', Georgia, serif;
-    --mono: 'IBM Plex Mono', monospace;
-    --sans: 'IBM Plex Sans', sans-serif;
-  }
+:root {
+  --coal:#1a1a1a; --coal-mid:#2e2e2e; --coal-light:#4a4a4a;
+  --gas-mid:#1d6fa4; --gas-light:#4fa3d1;
+  --accent:#c8882a; --accent-light:#e8b468;
+  --green:#2a7a3a; --green-light:#3aaa5a;
+  --bg:#f4f0e8; --bg-warm:#ede8dc; --bg-card:#faf8f4;
+  --text:#1c1c1c; --text-mid:#4a4a4a; --text-light:#7a7a7a; --rule:#d0c8b8;
+  --pm25:#c0392b; --pm10:#e67e22;
+  --serif:'Libre Baskerville',Georgia,serif;
+  --mono:'IBM Plex Mono',monospace;
+  --sans:'IBM Plex Sans',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--serif);line-height:1.7;overflow-x:hidden;}
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+nav{position:sticky;top:0;z-index:100;background:var(--coal);display:flex;align-items:center;padding:0 2rem;height:52px;border-bottom:3px solid var(--accent);}
+.nav-brand{font-family:var(--mono);font-size:.7rem;color:#888;letter-spacing:.08em;margin-right:auto;text-transform:uppercase;}
+nav a{font-family:var(--sans);font-size:.72rem;font-weight:500;color:#aaa;text-decoration:none;letter-spacing:.06em;text-transform:uppercase;padding:0 1.1rem;height:52px;display:flex;align-items:center;border-bottom:3px solid transparent;margin-bottom:-3px;transition:color .2s,border-color .2s;}
+nav a:hover{color:#fff;border-color:var(--accent-light);}
 
-  html { scroll-behavior: smooth; }
+.hero{background:var(--coal);color:#f0ece4;padding:5rem 4rem 4rem;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(255,255,255,.018) 80px,rgba(255,255,255,.018) 81px);pointer-events:none;}
+.hero-tag{font-family:var(--mono);font-size:.68rem;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-bottom:1.2rem;}
+.hero h1{font-size:clamp(2rem,4vw,3.2rem);font-weight:700;line-height:1.2;max-width:720px;margin-bottom:1rem;}
+.hero h1 em{color:var(--accent-light);font-style:italic;}
+.hero-sub{font-family:var(--sans);font-weight:300;font-size:1rem;color:#b0a898;max-width:560px;}
+.hero-meta{display:flex;gap:2.5rem;margin-top:2.5rem;padding-top:2rem;border-top:1px solid #333;flex-wrap:wrap;}
+.hero-meta-item{display:flex;flex-direction:column;gap:.2rem;}
+.hero-meta-item span:first-child{font-family:var(--mono);font-size:.62rem;color:#666;letter-spacing:.1em;text-transform:uppercase;}
+.hero-meta-item span:last-child{font-family:var(--sans);font-size:.88rem;color:#d0c8b8;}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--serif);
-    line-height: 1.7;
-    overflow-x: hidden;
-  }
+.section{max-width:900px;margin:0 auto;padding:4.5rem 2rem;border-bottom:1px solid var(--rule);}
+.section:last-child{border-bottom:none;}
+.section-label{font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:.6rem;}
+.section h2{font-size:1.9rem;font-weight:700;margin-bottom:1.6rem;line-height:1.25;}
+.section p{font-size:.97rem;color:var(--text-mid);margin-bottom:1rem;max-width:680px;}
 
-  /* ── NAV ── */
-  nav {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: var(--coal);
-    display: flex;
-    align-items: center;
-    gap: 0;
-    padding: 0 2rem;
-    height: 52px;
-    border-bottom: 3px solid var(--accent);
-  }
-  nav .nav-brand {
-    font-family: var(--mono);
-    font-size: 0.7rem;
-    color: #888;
-    letter-spacing: 0.08em;
-    margin-right: auto;
-    text-transform: uppercase;
-  }
-  nav a {
-    font-family: var(--sans);
-    font-size: 0.72rem;
-    font-weight: 500;
-    color: #aaa;
-    text-decoration: none;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    padding: 0 1.1rem;
-    height: 52px;
-    display: flex;
-    align-items: center;
-    border-bottom: 3px solid transparent;
-    margin-bottom: -3px;
-    transition: color 0.2s, border-color 0.2s;
-  }
-  nav a:hover { color: #fff; border-color: var(--accent-light); }
+.annotation-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem;}
+@media(max-width:600px){.annotation-grid{grid-template-columns:1fr;}}
+.annotation-box{background:var(--bg-warm);border-left:3px solid var(--accent);padding:1rem 1.2rem;border-radius:0 4px 4px 0;}
+.annotation-box.full{grid-column:1/-1;}
+.annotation-box h4{font-family:var(--mono);font-size:.65rem;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem;}
+.annotation-box p,.annotation-box li{font-size:.92rem;color:var(--text-mid);margin-bottom:.3rem;}
+.annotation-box ul{padding-left:1.1rem;}
 
-  /* ── HERO ── */
-  .hero {
-    background: var(--coal);
-    color: #f0ece4;
-    padding: 5rem 4rem 4rem;
-    position: relative;
-    overflow: hidden;
-  }
-  .hero::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(
-      90deg,
-      transparent,
-      transparent 80px,
-      rgba(255,255,255,0.018) 80px,
-      rgba(255,255,255,0.018) 81px
-    );
-    pointer-events: none;
-  }
-  .hero-tag {
-    font-family: var(--mono);
-    font-size: 0.68rem;
-    color: var(--accent);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    margin-bottom: 1.2rem;
-  }
-  .hero h1 {
-    font-size: clamp(2rem, 4vw, 3.2rem);
-    font-weight: 700;
-    line-height: 1.2;
-    max-width: 720px;
-    margin-bottom: 1rem;
-  }
-  .hero h1 em { color: var(--accent-light); font-style: italic; }
-  .hero-sub {
-    font-family: var(--sans);
-    font-weight: 300;
-    font-size: 1rem;
-    color: #b0a898;
-    max-width: 560px;
-  }
-  .hero-meta {
-    display: flex;
-    gap: 2.5rem;
-    margin-top: 2.5rem;
-    padding-top: 2rem;
-    border-top: 1px solid #333;
-  }
-  .hero-meta-item { display: flex; flex-direction: column; gap: 0.2rem; }
-  .hero-meta-item span:first-child {
-    font-family: var(--mono);
-    font-size: 0.62rem;
-    color: #666;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-  .hero-meta-item span:last-child {
-    font-family: var(--sans);
-    font-size: 0.88rem;
-    color: #d0c8b8;
-  }
+.img-placeholder{background:var(--bg-warm);border:2px dashed var(--rule);border-radius:6px;height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6rem;color:var(--text-light);font-family:var(--sans);font-size:.85rem;margin-bottom:1rem;cursor:pointer;transition:border-color .2s,background .2s;position:relative;overflow:hidden;}
+.img-placeholder:hover{border-color:var(--accent);background:#ece5d4;}
+.upload-icon{font-size:2rem;opacity:.4;}
+.img-placeholder img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:.5rem;}
+.img-placeholder input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
 
-  /* ── SECTION WRAPPER ── */
-  .section {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 4.5rem 2rem;
-    border-bottom: 1px solid var(--rule);
-  }
-  .section:last-child { border-bottom: none; }
+.stages{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-top:.5rem;}
+@media(max-width:600px){.stages{grid-template-columns:1fr;}}
+.stage-box{border:1px solid var(--rule);border-radius:6px;overflow:hidden;}
+.stage-header{background:var(--coal);color:#d0c8b8;font-family:var(--mono);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;padding:.6rem 1rem;}
+.stage-body{padding:1rem;}
+.stage-caption{background:var(--bg-warm);border:1px solid var(--rule);border-radius:4px;padding:.8rem 1rem;font-family:var(--sans);font-size:.82rem;color:var(--text-mid);font-style:italic;margin-top:.8rem;}
 
-  .section-label {
-    font-family: var(--mono);
-    font-size: 0.64rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 0.6rem;
-  }
-  .section h2 {
-    font-size: 1.9rem;
-    font-weight: 700;
-    margin-bottom: 1.6rem;
-    line-height: 1.25;
-  }
-  .section p {
-    font-size: 0.97rem;
-    color: var(--text-mid);
-    margin-bottom: 1rem;
-    max-width: 680px;
-  }
+.tool-desc{background:var(--coal);color:#d0c8b8;border-radius:6px;padding:2rem 2.2rem;margin-bottom:2.4rem;position:relative;overflow:hidden;}
+.tool-desc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--gas-light));}
+.tool-desc h3{font-family:var(--sans);font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-light);margin-bottom:1rem;}
+.tool-desc p{font-size:.93rem;color:#b8b0a0;margin-bottom:.75rem;}
+.tool-desc p:last-child{margin-bottom:0;}
 
-  /* ── CARDS ── */
-  .card {
-    background: var(--bg-card);
-    border: 1px solid var(--rule);
-    border-radius: 6px;
-    padding: 1.6rem 1.8rem;
-    margin-bottom: 1.2rem;
-  }
-  .card h3 {
-    font-family: var(--sans);
-    font-size: 0.8rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--text-light);
-    margin-bottom: 0.7rem;
-  }
-  .card p, .card li {
-    font-size: 0.95rem;
-    color: var(--text-mid);
-    margin-bottom: 0.4rem;
-  }
-  .card ul { padding-left: 1.2rem; }
+.tool-instrument{background:var(--bg-card);border:1px solid var(--rule);border-radius:8px;overflow:hidden;}
+.tool-header{background:var(--bg-warm);padding:1.2rem 1.8rem;border-bottom:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;}
+.tool-header-title{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-light);}
+.tool-header-badge{font-family:var(--mono);font-size:.62rem;background:var(--coal);color:var(--accent-light);padding:.2rem .6rem;border-radius:3px;letter-spacing:.08em;}
+.tool-body{padding:2rem 1.8rem;}
 
-  /* annotation grid for Part 1 */
-  .annotation-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin-top: 1rem;
-  }
-  @media (max-width: 600px) { .annotation-grid { grid-template-columns: 1fr; } }
+.input-section-title{font-family:var(--sans);font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text-light);margin-bottom:1.2rem;padding-bottom:.5rem;border-bottom:1px solid var(--rule);}
+.input-block{max-width:460px;margin-bottom:1.4rem;}
+.input-group{display:flex;flex-direction:column;gap:.5rem;}
+.input-group label{font-family:var(--sans);font-size:.8rem;font-weight:500;color:var(--text);}
+.input-sub{font-family:var(--mono);font-size:.64rem;color:var(--text-light);line-height:1.5;}
+.slider-wrap{display:flex;align-items:center;gap:.8rem;}
+input[type=range]{flex:1;-webkit-appearance:none;height:4px;background:var(--rule);border-radius:2px;outline:none;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--accent);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2);cursor:pointer;transition:background .15s;}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent-light);}
+.slider-value{font-family:var(--mono);font-size:.88rem;font-weight:600;color:var(--accent);min-width:64px;text-align:right;}
 
-  .annotation-box {
-    background: var(--bg-warm);
-    border-left: 3px solid var(--accent);
-    padding: 1rem 1.2rem;
-    border-radius: 0 4px 4px 0;
-  }
-  .annotation-box.full { grid-column: 1 / -1; }
-  .annotation-box h4 {
-    font-family: var(--mono);
-    font-size: 0.65rem;
-    color: var(--accent);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-bottom: 0.5rem;
-  }
-  .annotation-box p, .annotation-box li {
-    font-size: 0.92rem;
-    color: var(--text-mid);
-    margin-bottom: 0.3rem;
-  }
-  .annotation-box ul { padding-left: 1.1rem; }
+.lit-panel{background:var(--bg-warm);border:1px solid var(--rule);border-radius:6px;padding:1.2rem 1.5rem;margin-bottom:2rem;}
+.lit-panel h4{font-family:var(--mono);font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-light);margin-bottom:.9rem;}
+.lit-table{width:100%;border-collapse:collapse;}
+.lit-table th{font-family:var(--sans);font-size:.72rem;font-weight:600;color:var(--text-light);text-align:left;padding:.35rem .6rem;border-bottom:1px solid var(--rule);}
+.lit-table td{font-family:var(--mono);font-size:.78rem;color:var(--text);padding:.4rem .6rem;border-bottom:1px solid #e8e0d0;}
+.lit-table tr:last-child td{border-bottom:none;}
+.coal-cell{color:var(--coal-light);font-weight:600;}
+.gas-cell{color:var(--gas-mid);font-weight:600;}
+.lit-cite{font-family:var(--sans);font-size:.68rem;color:var(--text-light);margin-top:.6rem;font-style:italic;}
 
-  /* image placeholder */
-  .img-placeholder {
-    background: var(--bg-warm);
-    border: 2px dashed var(--rule);
-    border-radius: 6px;
-    height: 280px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.6rem;
-    color: var(--text-light);
-    font-family: var(--sans);
-    font-size: 0.85rem;
-    margin-bottom: 1rem;
-    cursor: pointer;
-    transition: border-color 0.2s, background 0.2s;
-    position: relative;
-    overflow: hidden;
-  }
-  .img-placeholder:hover { border-color: var(--accent); background: #ece5d4; }
-  .img-placeholder .upload-icon { font-size: 2rem; opacity: 0.4; }
-  .img-placeholder img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    padding: 0.5rem;
-  }
-  .img-placeholder input[type="file"] {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    cursor: pointer;
-    width: 100%;
-    height: 100%;
-  }
+/* ── CONTROL SECTION ── */
+.ctrl-wrap{border:1px solid var(--rule);border-radius:8px;overflow:hidden;margin-bottom:2rem;}
+.ctrl-hdr{background:var(--coal);padding:1rem 1.6rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.8rem;}
+.ctrl-hdr-left{display:flex;flex-direction:column;gap:.25rem;}
+.ctrl-hdr-left .ct{font-family:var(--mono);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-light);}
+.ctrl-hdr-left .cs{font-family:var(--sans);font-size:.78rem;color:#777;}
+.ctrl-btns{display:flex;gap:.45rem;flex-wrap:wrap;}
+.cb{font-family:var(--mono);font-size:.67rem;letter-spacing:.05em;text-transform:uppercase;padding:.32rem .85rem;border-radius:4px;border:1px solid #555;background:transparent;color:#888;cursor:pointer;transition:all .18s;}
+.cb:hover{border-color:#aaa;color:#ccc;}
+.cb.on-none{border-color:#888;color:#ccc;}
+.cb.on-esp{border-color:var(--accent);background:rgba(200,136,42,.18);color:var(--accent-light);}
+.cb.on-bh{border-color:var(--gas-light);background:rgba(79,163,209,.14);color:var(--gas-light);}
+.cb.on-both{border-color:var(--green-light);background:rgba(58,170,90,.14);color:var(--green-light);}
 
-  /* Making Thinking Visible stages */
-  .stages {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.2rem;
-    margin-top: 0.5rem;
-  }
-  @media (max-width: 600px) { .stages { grid-template-columns: 1fr; } }
-  .stage-box {
-    border: 1px solid var(--rule);
-    border-radius: 6px;
-    overflow: hidden;
-  }
-  .stage-header {
-    background: var(--coal);
-    color: #d0c8b8;
-    font-family: var(--mono);
-    font-size: 0.65rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    padding: 0.6rem 1rem;
-  }
-  .stage-body { padding: 1rem; }
-  .stage-caption {
-    background: var(--bg-warm);
-    border: 1px solid var(--rule);
-    border-radius: 4px;
-    padding: 0.8rem 1rem;
-    font-family: var(--sans);
-    font-size: 0.82rem;
-    color: var(--text-mid);
-    font-style: italic;
-    margin-top: 0.8rem;
-  }
+.ctrl-body{padding:1.6rem 1.8rem;background:var(--bg-card);}
 
-  /* ── TOOL DESCRIPTION ── */
-  .tool-description {
-    background: var(--coal);
-    color: #d0c8b8;
-    border-radius: 6px;
-    padding: 2rem 2.2rem;
-    margin-bottom: 2.4rem;
-    position: relative;
-    overflow: hidden;
-  }
-  .tool-description::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--accent), var(--gas-light));
-  }
-  .tool-description h3 {
-    font-family: var(--sans);
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--accent-light);
-    margin-bottom: 1rem;
-  }
-  .tool-description p {
-    font-size: 0.93rem;
-    color: #b8b0a0;
-    margin-bottom: 0.75rem;
-    max-width: 100%;
-  }
-  .tool-description p:last-child { margin-bottom: 0; }
+.series-flow{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;background:var(--bg-warm);border:1px solid var(--rule);border-radius:6px;padding:.7rem 1rem;margin-bottom:1.4rem;font-family:var(--mono);font-size:.68rem;color:var(--text-light);}
+.fn{background:var(--bg-card);border:1px solid var(--rule);padding:.25rem .6rem;border-radius:3px;color:var(--text);font-weight:600;}
+.fn.esp-n{border-color:var(--accent);color:var(--accent);}
+.fn.bh-n{border-color:var(--gas-mid);color:var(--gas-mid);}
+.fa{color:#aaa;}
 
-  /* ── TOOL INSTRUMENT ── */
-  .tool-instrument {
-    background: var(--bg-card);
-    border: 1px solid var(--rule);
-    border-radius: 8px;
-    overflow: hidden;
-  }
-  .tool-header {
-    background: var(--bg-warm);
-    padding: 1.2rem 1.8rem;
-    border-bottom: 1px solid var(--rule);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-  .tool-header-title {
-    font-family: var(--mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-light);
-  }
-  .tool-header-badge {
-    font-family: var(--mono);
-    font-size: 0.62rem;
-    background: var(--coal);
-    color: var(--accent-light);
-    padding: 0.2rem 0.6rem;
-    border-radius: 3px;
-    letter-spacing: 0.08em;
-  }
+.dev-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;}
+@media(max-width:620px){.dev-grid{grid-template-columns:1fr;}}
+.dev-box{border:1px solid var(--rule);border-radius:6px;overflow:hidden;transition:opacity .25s;}
+.dev-box.esp-box{border-top:3px solid var(--accent);}
+.dev-box.bh-box{border-top:3px solid var(--gas-light);}
+.dev-box.inactive{opacity:.28;pointer-events:none;}
+.dev-hdr{padding:.6rem 1rem;font-family:var(--sans);font-size:.72rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;background:var(--bg-warm);border-bottom:1px solid var(--rule);}
+.dev-hdr.esp-h{color:var(--accent);}
+.dev-hdr.bh-h{color:var(--gas-mid);}
+.dev-body{padding:1rem;}
 
-  .tool-body { padding: 2rem 1.8rem; }
+.da-panel{background:var(--bg-warm);border:1px solid var(--rule);border-radius:5px;padding:.75rem 1rem;margin-top:.8rem;}
+.da-panel h5{font-family:var(--mono);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-light);margin-bottom:.45rem;}
+.da-vals{display:flex;flex-wrap:wrap;gap:.7rem;font-family:var(--mono);font-size:.74rem;color:var(--text-mid);}
+.da-vals strong{color:var(--text);}
+.da-note{font-family:var(--sans);font-size:.67rem;color:var(--text-light);font-style:italic;margin-top:.45rem;line-height:1.5;}
+.ctrl-note{font-family:var(--sans);font-size:.72rem;color:var(--text-light);font-style:italic;margin-top:1rem;line-height:1.5;}
 
-  /* inputs */
-  .input-section { margin-bottom: 2rem; }
-  .input-section-title {
-    font-family: var(--sans);
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-light);
-    margin-bottom: 1.2rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--rule);
-  }
+.output-divider{border:none;border-top:1px solid var(--rule);margin:2rem 0;}
+.output-section-title{font-family:var(--sans);font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text-light);margin-bottom:1.4rem;padding-bottom:.5rem;border-bottom:1px solid var(--rule);}
 
-  .input-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.4rem;
-    margin-bottom: 1.4rem;
-  }
-  @media (max-width: 580px) { .input-row { grid-template-columns: 1fr; } }
-  .input-row.single { grid-template-columns: 1fr; max-width: 460px; }
+.heat-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:2rem;}
+@media(max-width:540px){.heat-row{grid-template-columns:1fr;}}
+.heat-card{padding:1.2rem 1.4rem;border-radius:6px;border:1px solid var(--rule);}
+.heat-card.coal-card{border-top:3px solid var(--coal-light);}
+.heat-card.gas-card{border-top:3px solid var(--gas-mid);}
+.hcl{font-family:var(--sans);font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-light);margin-bottom:.3rem;}
+.coal-card .hcl{color:var(--coal-light);}
+.gas-card  .hcl{color:var(--gas-mid);}
+.hcv{font-family:var(--mono);font-size:1.35rem;font-weight:600;color:var(--text);}
+.hcu{font-family:var(--mono);font-size:.68rem;color:var(--text-light);margin-top:.1rem;}
 
-  .input-group { display: flex; flex-direction: column; gap: 0.5rem; }
-  .input-group label {
-    font-family: var(--sans);
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: var(--text);
-  }
-  .input-group .input-sub {
-    font-family: var(--mono);
-    font-size: 0.65rem;
-    color: var(--text-light);
-    margin-top: -0.3rem;
-  }
+.tbl-lbl{font-family:var(--sans);font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.7rem;}
+.tbl-lbl.c-lbl{color:var(--coal-light);}
+.tbl-lbl.g-lbl{color:var(--gas-mid);}
+.tbl-wrap{overflow-x:auto;margin-bottom:1.8rem;}
+table{width:100%;border-collapse:collapse;}
+th{font-family:var(--sans);font-size:.68rem;font-weight:600;letter-spacing:.04em;padding:.65rem .9rem;text-align:left;border-bottom:2px solid var(--rule);background:var(--bg-warm);color:var(--text-light);white-space:nowrap;}
+td{font-family:var(--mono);font-size:.82rem;padding:.7rem .9rem;border-bottom:1px solid #e8e0d0;vertical-align:middle;white-space:nowrap;}
+tr:last-child td{border-bottom:none;}
+.rl{font-family:var(--sans);font-size:.78rem;font-weight:500;color:var(--text);}
+.pm-tag{display:inline-block;font-family:var(--mono);font-size:.6rem;padding:.12rem .38rem;border-radius:3px;margin-left:.3rem;vertical-align:middle;}
+.pm25t{background:#fde8e6;color:var(--pm25);}
+.pm10t{background:#fef0e0;color:var(--pm10);}
+th.uth{color:var(--coal-light);}
+th.cth{color:var(--green);}
+th.pth{color:var(--accent);}
+th.ath{color:var(--accent);}
+th.gth{color:var(--gas-mid);}
+th.rth{color:var(--text-light);}
+th.crth{color:var(--green);}
+.uv{color:var(--coal-light);}
+.cv{color:var(--green);font-weight:600;}
+.pv{color:var(--accent);font-weight:600;}
+.av{color:var(--accent);}
+.an{color:#bbb;font-style:italic;}
+.gv{color:var(--gas-mid);}
+.rv{color:var(--text-light);}
+.crv{color:var(--green);}
 
-  .slider-wrap { display: flex; align-items: center; gap: 0.8rem; }
-  input[type=range] {
-    flex: 1;
-    -webkit-appearance: none;
-    height: 4px;
-    background: var(--rule);
-    border-radius: 2px;
-    outline: none;
-    cursor: pointer;
-  }
-  input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 16px; height: 16px;
-    border-radius: 50%;
-    background: var(--accent);
-    border: 2px solid #fff;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-  input[type=range]::-webkit-slider-thumb:hover { background: var(--accent-light); }
-  .slider-value {
-    font-family: var(--mono);
-    font-size: 0.88rem;
-    font-weight: 600;
-    color: var(--accent);
-    min-width: 52px;
-    text-align: right;
-  }
+.bar-section{margin-bottom:2rem;}
+.bar-chart-label{font-family:var(--sans);font-size:.72rem;font-weight:600;color:var(--text-light);letter-spacing:.08em;text-transform:uppercase;margin-bottom:1rem;}
+.bar-group{margin-bottom:1.1rem;}
+.bgl{font-family:var(--sans);font-size:.75rem;color:var(--text-light);margin-bottom:.4rem;}
+.bar-row{display:flex;align-items:center;gap:.8rem;margin-bottom:.45rem;}
+.brl{font-family:var(--sans);font-size:.73rem;width:120px;flex-shrink:0;color:var(--text-mid);}
+.bar-track{flex:1;height:22px;background:var(--bg-warm);border-radius:3px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:3px;transition:width .5s cubic-bezier(.4,0,.2,1);min-width:2px;}
+.bf-coal{background:var(--coal-light);}
+.bf-ctrl{background:var(--green);}
+.bf-gas{background:var(--gas-mid);}
+.bar-num{font-family:var(--mono);font-size:.74rem;width:98px;flex-shrink:0;color:var(--text);}
+.bar-legend{display:flex;gap:1.2rem;flex-wrap:wrap;margin-top:.8rem;}
+.leg-item{display:flex;align-items:center;gap:.4rem;font-family:var(--sans);font-size:.7rem;color:var(--text-light);}
+.leg-sw{display:inline-block;width:12px;height:12px;border-radius:2px;}
 
-  /* literature values panel */
-  .lit-panel {
-    background: var(--bg-warm);
-    border: 1px solid var(--rule);
-    border-radius: 6px;
-    padding: 1.2rem 1.5rem;
-    margin-bottom: 2rem;
-  }
-  .lit-panel h4 {
-    font-family: var(--mono);
-    font-size: 0.64rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--text-light);
-    margin-bottom: 0.9rem;
-  }
-  .lit-table { width: 100%; border-collapse: collapse; }
-  .lit-table th {
-    font-family: var(--sans);
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: var(--text-light);
-    text-align: left;
-    padding: 0.35rem 0.6rem;
-    border-bottom: 1px solid var(--rule);
-  }
-  .lit-table td {
-    font-family: var(--mono);
-    font-size: 0.78rem;
-    color: var(--text);
-    padding: 0.4rem 0.6rem;
-    border-bottom: 1px solid #e8e0d0;
-  }
-  .lit-table tr:last-child td { border-bottom: none; }
-  .lit-table .coal-cell { color: var(--coal-light); font-weight: 600; }
-  .lit-table .gas-cell { color: var(--gas-mid); font-weight: 600; }
-  .lit-cite {
-    font-family: var(--sans);
-    font-size: 0.68rem;
-    color: var(--text-light);
-    margin-top: 0.6rem;
-    font-style: italic;
-  }
+.ef-panel{background:var(--bg-warm);border:1px solid var(--rule);border-radius:6px;padding:1.2rem 1.5rem;margin-top:1rem;}
+.ef-panel h4{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-light);margin-bottom:.8rem;}
+.ef-row{display:flex;flex-wrap:wrap;gap:1.2rem;font-family:var(--mono);font-size:.78rem;color:var(--text-mid);}
+.ef-row strong{color:var(--text);}
+.ef-cite{font-family:var(--sans);font-size:.68rem;color:var(--text-light);margin-top:.6rem;font-style:italic;}
 
-  /* outputs */
-  .output-divider {
-    border: none;
-    border-top: 1px solid var(--rule);
-    margin: 2rem 0;
-  }
-  .output-section-title {
-    font-family: var(--sans);
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-light);
-    margin-bottom: 1.4rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--rule);
-  }
+/* ── EFFICIENCY WARNING BANNER ── */
+.eff-warning {
+  display:none; align-items:center; gap:.5rem;
+  margin-top:.5rem; padding:.45rem .75rem;
+  background:#fff8e6; border:1px solid #e6a817;
+  border-radius:4px; font-family:var(--sans);
+  font-size:.7rem; color:#7a5200; line-height:1.4;
+}
+.eff-warning.show { display:flex; }
 
-  /* heat input row */
-  .heat-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin-bottom: 2rem;
-  }
-  @media (max-width: 540px) { .heat-row { grid-template-columns: 1fr; } }
-  .heat-card {
-    padding: 1.2rem 1.4rem;
-    border-radius: 6px;
-    border: 1px solid var(--rule);
-  }
-  .heat-card.coal-card { border-top: 3px solid var(--coal-light); }
-  .heat-card.gas-card { border-top: 3px solid var(--gas-mid); }
-  .heat-card-label {
-    font-family: var(--sans);
-    font-size: 0.7rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text-light);
-    margin-bottom: 0.3rem;
-  }
-  .heat-card.coal-card .heat-card-label { color: var(--coal-light); }
-  .heat-card.gas-card .heat-card-label { color: var(--gas-mid); }
-  .heat-card-value {
-    font-family: var(--mono);
-    font-size: 1.35rem;
-    font-weight: 600;
-    color: var(--text);
-  }
-  .heat-card-unit {
-    font-family: var(--mono);
-    font-size: 0.68rem;
-    color: var(--text-light);
-    margin-top: 0.1rem;
-  }
+/* ── COST SECTION ── */
+.cost-section {
+  margin-top:2.8rem;
+  border:1px solid var(--rule);
+  border-radius:8px;
+  overflow:hidden;
+}
+.cost-hdr {
+  background:var(--coal);
+  padding:1rem 1.6rem;
+  display:flex; align-items:center;
+  justify-content:space-between; flex-wrap:wrap; gap:.6rem;
+}
+.cost-hdr-title {
+  font-family:var(--mono); font-size:.68rem;
+  letter-spacing:.12em; text-transform:uppercase; color:var(--accent-light);
+}
+.cost-hdr-badge {
+  font-family:var(--mono); font-size:.6rem;
+  background:rgba(255,255,255,.08); color:#aaa;
+  padding:.2rem .6rem; border-radius:3px; letter-spacing:.06em;
+}
+.cost-body { padding:1.6rem 1.8rem; background:var(--bg-card); }
 
-  /* pm comparison table */
-  .pm-table-wrap {
-    overflow-x: auto;
-    margin-bottom: 2rem;
-  }
-  .pm-table { width: 100%; border-collapse: collapse; }
-  .pm-table th {
-    font-family: var(--sans);
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    padding: 0.7rem 1rem;
-    text-align: left;
-    border-bottom: 2px solid var(--rule);
-    background: var(--bg-warm);
-    color: var(--text-light);
-  }
-  .pm-table th.coal-th { color: var(--coal-light); }
-  .pm-table th.gas-th { color: var(--gas-mid); }
-  .pm-table td {
-    font-family: var(--mono);
-    font-size: 0.85rem;
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid #e8e0d0;
-    vertical-align: middle;
-  }
-  .pm-table tr:last-child td { border-bottom: none; }
-  .pm-table .row-label {
-    font-family: var(--sans);
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: var(--text);
-  }
-  .pm-table .pm-tag {
-    display: inline-block;
-    font-family: var(--mono);
-    font-size: 0.62rem;
-    padding: 0.15rem 0.4rem;
-    border-radius: 3px;
-    margin-left: 0.4rem;
-    vertical-align: middle;
-  }
-  .pm-tag.pm25 { background: #fde8e6; color: var(--pm25); }
-  .pm-tag.pm10 { background: #fef0e0; color: var(--pm10); }
-  .coal-val { color: var(--coal-light); }
-  .gas-val { color: var(--gas-mid); }
-  .ratio-val { color: var(--text-light); font-size: 0.78rem; }
+.cost-intro {
+  font-family:var(--sans); font-size:.83rem; color:var(--text-mid);
+  margin-bottom:1.4rem; line-height:1.65; max-width:740px;
+}
 
-  /* bar chart viz */
-  .bar-section { margin-bottom: 2rem; }
-  .bar-chart-label {
-    font-family: var(--sans);
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: var(--text-light);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 1rem;
-  }
-  .bar-group { margin-bottom: 1rem; }
-  .bar-row { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.5rem; }
-  .bar-row-label {
-    font-family: var(--sans);
-    font-size: 0.75rem;
-    width: 110px;
-    flex-shrink: 0;
-    color: var(--text-mid);
-  }
-  .bar-track {
-    flex: 1;
-    height: 22px;
-    background: var(--bg-warm);
-    border-radius: 3px;
-    overflow: hidden;
-    position: relative;
-  }
-  .bar-fill {
-    height: 100%;
-    border-radius: 3px;
-    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    min-width: 2px;
-  }
-  .bar-fill.coal-pm25 { background: var(--coal-mid); }
-  .bar-fill.coal-pm10 { background: var(--coal-light); }
-  .bar-fill.gas-pm25 { background: var(--gas-mid); }
-  .bar-fill.gas-pm10 { background: var(--gas-light); }
-  .bar-number {
-    font-family: var(--mono);
-    font-size: 0.75rem;
-    width: 90px;
-    flex-shrink: 0;
-    color: var(--text);
-  }
+/* two-column plant comparison grid */
+.cost-grid {
+  display:grid;
+  grid-template-columns:180px 1fr 1fr;
+  border:1px solid var(--rule);
+  border-radius:6px; overflow:hidden;
+  margin-bottom:1.4rem;
+  font-size:.79rem;
+}
+.cg-head { display:contents; }
+.cg-head > div {
+  font-family:var(--sans); font-size:.68rem; font-weight:600;
+  letter-spacing:.06em; text-transform:uppercase;
+  padding:.6rem .9rem; background:var(--bg-warm);
+  border-bottom:2px solid var(--rule);
+}
+.cg-head > div.coal-hd { color:var(--coal-light); }
+.cg-head > div.gas-hd  { color:var(--gas-mid); }
 
-  /* ef reference */
-  .ef-panel {
-    background: var(--bg-warm);
-    border: 1px solid var(--rule);
-    border-radius: 6px;
-    padding: 1.2rem 1.5rem;
-    margin-top: 1rem;
-  }
-  .ef-panel h4 {
-    font-family: var(--mono);
-    font-size: 0.62rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--text-light);
-    margin-bottom: 0.8rem;
-  }
-  .ef-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.2rem;
-    font-family: var(--mono);
-    font-size: 0.78rem;
-    color: var(--text-mid);
-  }
-  .ef-item strong { color: var(--text); }
-  .ef-cite {
-    font-family: var(--sans);
-    font-size: 0.68rem;
-    color: var(--text-light);
-    margin-top: 0.6rem;
-    font-style: italic;
-  }
+.cg-row { display:contents; }
+.cg-row > div {
+  padding:.65rem .9rem;
+  border-bottom:1px solid #e8e0d0;
+  vertical-align:top;
+}
+.cg-row:last-child > div { border-bottom:none; }
+.cg-row > div:first-child {
+  font-family:var(--sans); font-size:.74rem; font-weight:600;
+  color:var(--text); background:var(--bg-warm);
+  border-right:1px solid var(--rule);
+}
+.cg-row > div:nth-child(2) { font-family:var(--mono); font-size:.74rem; color:var(--coal-light); }
+.cg-row > div:nth-child(3) { font-family:var(--mono); font-size:.74rem; color:var(--gas-mid); border-left:1px solid var(--rule);}
+.cg-row > div .cost-range { font-weight:600; display:block; margin-bottom:.15rem; }
+.cg-row > div .cost-basis { font-family:var(--sans); font-size:.64rem; color:var(--text-light); font-style:italic; line-height:1.45; }
+.cg-row > div .cost-dyn   { font-family:var(--mono); font-size:.68rem; color:var(--accent); margin-top:.2rem; display:block; }
 
-  /* ── REFLECTION ── */
-  .reflection-prompt {
-    background: var(--bg-warm);
-    border-left: 3px solid var(--accent);
-    padding: 0.8rem 1.2rem;
-    border-radius: 0 4px 4px 0;
-    margin-bottom: 0.8rem;
-    font-family: var(--sans);
-    font-size: 0.85rem;
-    color: var(--text-mid);
-    font-style: italic;
-  }
-  textarea {
-    width: 100%;
-    min-height: 130px;
-    background: var(--bg-card);
-    border: 1px solid var(--rule);
-    border-radius: 6px;
-    padding: 1rem 1.2rem;
-    font-family: var(--serif);
-    font-size: 0.93rem;
-    color: var(--text);
-    line-height: 1.7;
-    resize: vertical;
-    outline: none;
-    transition: border-color 0.2s;
-    margin-bottom: 1rem;
-  }
-  textarea:focus { border-color: var(--accent); }
-  textarea::placeholder { color: #b0a898; font-style: italic; }
+.cost-total-row { display:contents; }
+.cost-total-row > div {
+  padding:.7rem .9rem;
+  background:var(--bg-warm);
+  font-family:var(--mono); font-size:.82rem; font-weight:600;
+}
+.cost-total-row > div:first-child {
+  font-family:var(--sans); font-size:.74rem;
+  color:var(--text); border-right:1px solid var(--rule);
+}
+.cost-total-row > div:nth-child(2) { color:var(--coal-light); }
+.cost-total-row > div:nth-child(3) { color:var(--gas-mid); border-left:1px solid var(--rule); }
 
-  /* footer */
-  footer {
-    background: var(--coal);
-    color: #555;
-    text-align: center;
-    padding: 1.6rem 2rem;
-    font-family: var(--mono);
-    font-size: 0.65rem;
-    letter-spacing: 0.08em;
-  }
-  footer span { color: #777; }
+/* practicality notes */
+.prac-grid {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:1rem; margin-top:1.4rem;
+}
+@media(max-width:620px){ .prac-grid{grid-template-columns:1fr;} }
+.prac-box { border:1px solid var(--rule); border-radius:6px; overflow:hidden; }
+.prac-hdr {
+  padding:.5rem 1rem;
+  font-family:var(--sans); font-size:.7rem; font-weight:600;
+  letter-spacing:.06em; text-transform:uppercase; background:var(--bg-warm);
+  border-bottom:1px solid var(--rule);
+}
+.prac-hdr.coal-ph { color:var(--coal-light); }
+.prac-hdr.gas-ph  { color:var(--gas-mid); }
+.prac-body { padding:.9rem 1rem; }
+.prac-item {
+  display:flex; gap:.5rem; margin-bottom:.55rem;
+  font-family:var(--sans); font-size:.78rem; color:var(--text-mid); line-height:1.5;
+}
+.prac-item:last-child { margin-bottom:0; }
+.prac-dot {
+  width:6px; height:6px; border-radius:50%;
+  flex-shrink:0; margin-top:.52rem;
+}
+.coal-dot { background:var(--coal-light); }
+.gas-dot  { background:var(--gas-mid); }
+.prac-key {
+  font-weight:600; color:var(--text); display:block;
+  font-size:.74rem; margin-bottom:.05rem;
+}
+.cost-cite {
+  font-family:var(--sans); font-size:.68rem;
+  color:var(--text-light); font-style:italic;
+  margin-top:1.2rem; line-height:1.6;
+}
+
+.rp{background:var(--bg-warm);border-left:3px solid var(--accent);padding:.8rem 1.2rem;border-radius:0 4px 4px 0;margin-bottom:.8rem;font-family:var(--sans);font-size:.85rem;color:var(--text-mid);font-style:italic;}
+textarea{width:100%;min-height:130px;background:var(--bg-card);border:1px solid var(--rule);border-radius:6px;padding:1rem 1.2rem;font-family:var(--serif);font-size:.93rem;color:var(--text);line-height:1.7;resize:vertical;outline:none;transition:border-color .2s;margin-bottom:1rem;}
+textarea:focus{border-color:var(--accent);}
+textarea::placeholder{color:#b0a898;font-style:italic;}
+
+footer{background:var(--coal);color:#555;text-align:center;padding:1.6rem 2rem;font-family:var(--mono);font-size:.65rem;letter-spacing:.08em;}
+footer span{color:#777;}
 </style>
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
   <span class="nav-brand">CIVE 442 · Tool 2</span>
   <a href="#part1">Noticing</a>
@@ -725,30 +347,19 @@
   <a href="#part4">Reflection</a>
 </nav>
 
-<!-- HERO -->
 <div class="hero">
   <div class="hero-tag">CIVE 442 — Air Quality Modeling &amp; Comparative Engineering Design</div>
   <h1>Tool 2: <em>Emissions Reduction</em><br>Design</h1>
-  <p class="hero-sub">A comparative air quality tool evaluating coal vs. natural gas power generation for an AI data center, based on EPA AP-42 uncontrolled PM emission factors.</p>
+  <p class="hero-sub">A comparative PM emissions tool for coal vs. natural gas power generation, with optional ESP and baghouse control technology for the coal plant.</p>
   <div class="hero-meta">
-    <div class="hero-meta-item">
-      <span>Points</span><span>40</span>
-    </div>
-    <div class="hero-meta-item">
-      <span>Due</span><span>April 9, 2026</span>
-    </div>
-    <div class="hero-meta-item">
-      <span>Model</span><span>EPA AP-42 Emission Factors</span>
-    </div>
-    <div class="hero-meta-item">
-      <span>Pollutants</span><span>PM<sub>2.5</sub> &amp; PM<sub>10</sub></span>
-    </div>
+    <div class="hero-meta-item"><span>Points</span><span>40</span></div>
+    <div class="hero-meta-item"><span>Due</span><span>April 9, 2026</span></div>
+    <div class="hero-meta-item"><span>Model</span><span>EPA AP-42 + Deutsch-Anderson</span></div>
+    <div class="hero-meta-item"><span>Controls</span><span>ESP · Baghouse · ESP→BH</span></div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- PART 1: EMBODIED NOTICING -->
-<!-- ═══════════════════════════════════════════ -->
+<!-- PART 1 -->
 <section class="section" id="part1">
   <div class="section-label">Part 1 · 6 Points</div>
   <h2>Embodied Noticing</h2>
@@ -791,20 +402,17 @@
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- PART 2: MAKING THINKING VISIBLE -->
-<!-- ═══════════════════════════════════════════ -->
+<!-- PART 2 -->
 <section class="section" id="part2">
   <div class="section-label">Part 2 · 5 Points</div>
   <h2>Making Thinking Visible</h2>
-  <p>Show how you conceptualized the system before building the tool. Stage A is your initial sketch; Stage B is the AI-enhanced diagram.</p>
-
+  <p>Stage A is your initial sketch; Stage B is the AI-enhanced diagram.</p>
   <div class="stages">
     <div class="stage-box">
       <div class="stage-header">Stage A — Initial Representation</div>
       <div class="stage-body">
-        <div class="img-placeholder" id="stageABox" title="Upload hand-drawn sketch">
-          <input type="file" accept="image/*" onchange="loadImage(event,'stageAImg','stageABox')"/>
+        <div class="img-placeholder" id="stageABox">
+          <input type="file" accept="image/*" onchange="loadImg(event,'stageAImg','stageABox')"/>
           <div class="upload-icon">✏️</div>
           <span>Upload hand-drawn sketch or whiteboard diagram</span>
           <img id="stageAImg" style="display:none;"/>
@@ -814,372 +422,726 @@
     <div class="stage-box">
       <div class="stage-header">Stage B — AI-Assisted Enhancement</div>
       <div class="stage-body">
-        <div class="img-placeholder" id="stageBBox" title="Upload AI-enhanced diagram">
-          <input type="file" accept="image/*" onchange="loadImage(event,'stageBImg','stageBBox')"/>
+        <div class="img-placeholder" id="stageBBox">
+          <input type="file" accept="image/*" onchange="loadImg(event,'stageBImg','stageBBox')"/>
           <div class="upload-icon">🤖</div>
           <span>Upload AI-assisted enhanced diagram</span>
           <img id="stageBImg" style="display:none;"/>
         </div>
-        <div class="stage-caption">
-          <strong>Caption:</strong> [Describe what AI tool was used, what you changed, and how the enhanced version improves on the original sketch — 2–3 sentences.]
-        </div>
+        <div class="stage-caption"><strong>Caption:</strong> [What AI tool was used, what you changed, and how the enhanced version improves on the original — 2–3 sentences.]</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- PART 3: THE TOOL -->
-<!-- ═══════════════════════════════════════════ -->
+<!-- PART 3 -->
 <section class="section" id="part3">
   <div class="section-label">Part 3 · 24 Points</div>
   <h2>The Tool</h2>
 
-  <!-- TOOL DESCRIPTION -->
-  <div class="tool-description">
+  <div class="tool-desc">
     <h3>Tool Description</h3>
-    <p>
-      This tool estimates uncontrolled particulate matter (PM<sub>2.5</sub> and PM<sub>10</sub>) emission rates from two power plant alternatives — a pulverized coal (dry-bottom) plant and a natural gas combined-cycle (CCGT) plant — sized to meet a user-specified AI data center power demand.
-    </p>
-    <p>
-      The tool requires one primary user input: the data center's electrical power demand in megawatts (MW). Using fixed literature-based thermal efficiencies (heat rates) from the U.S. Energy Information Administration (EIA), the tool converts power demand into plant heat input (MMBtu/hr) for each plant type. For coal, the user may also adjust the coal ash content (weight %), which directly affects the PM emission factor per EPA AP-42 Section 1.1.
-    </p>
-    <p>
-      The modeling approach applies EPA AP-42 emission factors — the standard EPA compilation of air pollutant emission rates — to compute mass emission rates (lb/hr and g/s) for each plant and each pollutant. For coal, PM<sub>10</sub> is computed as 7 × ash fraction × heat input, and PM<sub>2.5</sub> as 25% of PM<sub>10</sub>, per AP-42 Table 1.1-4 size distribution data for dry-bottom PC boilers. For natural gas, all PM is assumed less than 1 µm in diameter (no coarse mineral ash fraction), so PM<sub>10</sub> = PM<sub>2.5</sub> = 0.0075 lb/MMBtu per AP-42 Section 1.4.
-    </p>
-    <p>
-      Outputs are presented as a side-by-side table and a proportional bar chart, allowing direct comparison of PM emission rates under identical power demand conditions. A coal-to-gas ratio is computed for each pollutant to quantify the relative emissions difference. The user should interpret these outputs as uncontrolled mass emission rates — the amount of PM exiting the stack before any control technology (e.g., baghouse, electrostatic precipitator) is applied. Future versions of this tool will add control efficiencies, Gaussian dispersion modeling, and MCDA comparison.
-    </p>
+    <p>This tool estimates uncontrolled and controlled PM<sub>2.5</sub> and PM<sub>10</sub> emission rates from two power plant alternatives — a pulverized coal (dry-bottom) plant and a natural gas combined-cycle (CCGT) plant — sized to meet a user-specified AI data center electrical demand. For the coal plant, three optional particulate control configurations are available: ESP only, baghouse only, or ESP followed by baghouse in series.</p>
+    <p>The user sets data center power demand (MW) and coal ash content (%), with thermal efficiencies fixed from EIA literature. EPA AP-42 emission factors yield uncontrolled mass emission rates for PM<sub>10</sub> and PM<sub>2.5</sub> in lb/hr and g/s. Control efficiencies are user-adjustable within EPA-sourced bounds. When ESP is active, the required collection plate area is calculated via the Deutsch-Anderson equation using a fixed drift velocity of 0.04 m/s for coal fly ash. For series operation, combined efficiency follows η = 1 − (1−η_ESP)(1−η_BH).</p>
+    <p>Outputs include side-by-side uncontrolled and controlled emission tables, percent reduction, ESP plate area (m²), and a proportional bar chart. Coal-to-gas ratios are shown both before and after controls, revealing how much the emissions gap narrows with control technology. Natural gas requires no particulate controls — all NG PM is below 1 µm and already orders of magnitude lower than uncontrolled coal. All outputs are stack-level mass emission rates, not ambient concentrations.</p>
   </div>
 
-  <!-- TOOL INSTRUMENT -->
   <div class="tool-instrument">
     <div class="tool-header">
       <span class="tool-header-title">PM Emissions Calculator — Coal vs. Natural Gas</span>
-      <span class="tool-header-badge">Uncontrolled · EPA AP-42</span>
+      <span class="tool-header-badge">EPA AP-42 + Deutsch-Anderson · Phase 1 &amp; 2</span>
     </div>
     <div class="tool-body">
 
       <!-- INPUTS -->
-      <div class="input-section">
-        <div class="input-section-title">User Inputs</div>
+      <div class="input-section-title">Inputs</div>
 
-        <div class="input-row single">
-          <div class="input-group">
-            <label>Data Center Power Demand</label>
-            <span class="input-sub">Primary sizing input. Determines heat input required for each plant.</span>
-            <div class="slider-wrap">
-              <input type="range" id="powerSlider" min="10" max="1000" step="5" value="100" oninput="updateTool()"/>
-              <span class="slider-value" id="powerVal">100 MW</span>
-            </div>
-            <span class="input-sub">Range: 10 MW (small facility) → 1,000 MW (hyperscale)</span>
-          </div>
-        </div>
-
-        <div class="input-row single">
-          <div class="input-group">
-            <label>Coal Ash Content (weight %)</label>
-            <span class="input-sub">Directly scales coal PM emission factor per AP-42. Applies to coal plant only.</span>
-            <div class="slider-wrap">
-              <input type="range" id="ashSlider" min="6" max="20" step="0.5" value="10" oninput="updateTool()"/>
-              <span class="slider-value" id="ashVal">10 %</span>
-            </div>
-            <span class="input-sub">Source: Typical U.S. coals range 6–20 wt% ash (EIA / USGS coal quality data; AP-42 example calculations).</span>
+      <div class="input-block">
+        <div class="input-group">
+          <label>Data Center Power Demand</label>
+          <span class="input-sub">Sizes both plants. Range: 10–1,000 MW.</span>
+          <div class="slider-wrap">
+            <input type="range" id="powerSlider" min="10" max="1000" step="5" value="100" oninput="calc()"/>
+            <span class="slider-value" id="pVal">100 MW</span>
           </div>
         </div>
       </div>
 
-      <!-- LITERATURE VALUES -->
+      <div class="input-block">
+        <div class="input-group">
+          <label>Coal Ash Content (weight %)</label>
+          <span class="input-sub">Scales coal PM emission factor. Bounds: 6–20 wt% (EIA / Springer Nature coal ash study, 2024; AP-42 §1.1 examples). U.S. mean ≈ 10%.</span>
+          <div class="slider-wrap">
+            <input type="range" id="ashSlider" min="6" max="20" step="0.5" value="10" oninput="calc()"/>
+            <span class="slider-value" id="aVal">10.0 %</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- LIT VALUES TABLE -->
       <div class="lit-panel">
-        <h4>Fixed Literature Values (displayed, not user-adjustable)</h4>
+        <h4>Fixed Literature Values</h4>
         <table class="lit-table">
-          <thead>
-            <tr>
-              <th>Parameter</th>
-              <th class="coal-cell">Coal Plant</th>
-              <th class="gas-cell">Nat. Gas Plant</th>
-              <th>Source</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Parameter</th><th>Coal Plant</th><th>Natural Gas Plant</th><th>Source</th></tr></thead>
           <tbody>
-            <tr>
-              <td>Plant Type</td>
-              <td class="coal-cell">Pulverized coal, dry-bottom</td>
-              <td class="gas-cell">Combined-cycle (CCGT)</td>
-              <td>—</td>
-            </tr>
-            <tr>
-              <td>Heat Rate</td>
-              <td class="coal-cell">10,500 Btu/kWh</td>
-              <td class="gas-cell">6,960 Btu/kWh</td>
-              <td>EIA (2022)</td>
-            </tr>
-            <tr>
-              <td>Thermal Efficiency</td>
-              <td class="coal-cell">~32.5%</td>
-              <td class="gas-cell">~49.0%</td>
-              <td>EIA FAQ</td>
-            </tr>
-            <tr>
-              <td>PM<sub>10</sub> EF (uncontrolled)</td>
-              <td class="coal-cell">7A lb/MMBtu <span style="font-size:0.7rem;color:#888">(A = ash fraction)</span></td>
-              <td class="gas-cell">0.0075 lb/MMBtu</td>
-              <td>EPA AP-42 §1.1, §1.4</td>
-            </tr>
-            <tr>
-              <td>PM<sub>2.5</sub> EF (uncontrolled)</td>
-              <td class="coal-cell">25% of PM<sub>10</sub></td>
-              <td class="gas-cell">= PM<sub>10</sub> (all &lt;1 µm)</td>
-              <td>EPA AP-42 §1.1, §1.4</td>
-            </tr>
-            <tr>
-              <td>Heating value (coal)</td>
-              <td class="coal-cell">20.71 MMBtu/ton</td>
-              <td class="gas-cell">—</td>
-              <td>EIA</td>
-            </tr>
-            <tr>
-              <td>Heating value (nat. gas)</td>
-              <td class="coal-cell">—</td>
-              <td class="gas-cell">1,020 Btu/scf</td>
-              <td>EIA</td>
-            </tr>
+            <tr><td>Plant type</td><td class="coal-cell">Pulverized coal, dry-bottom PC</td><td class="gas-cell">Combined-cycle (CCGT)</td><td>—</td></tr>
+            <tr><td>Heat rate</td><td class="coal-cell">10,500 Btu/kWh</td><td class="gas-cell">6,960 Btu/kWh</td><td>EIA (2022)</td></tr>
+            <tr><td>Thermal efficiency</td><td class="coal-cell">~32.5%</td><td class="gas-cell">~49.0%</td><td>EIA FAQ</td></tr>
+            <tr><td>PM<sub>10</sub> EF (uncontrolled)</td><td class="coal-cell">7A lb/MMBtu <small style="color:#888">(A = ash fraction)</small></td><td class="gas-cell">0.0075 lb/MMBtu</td><td>EPA AP-42 §1.1, §1.4</td></tr>
+            <tr><td>PM<sub>2.5</sub> EF (uncontrolled)</td><td class="coal-cell">25% of PM<sub>10</sub></td><td class="gas-cell">= PM<sub>10</sub> (all &lt;1 µm)</td><td>EPA AP-42 §1.1, §1.4</td></tr>
+            <tr><td>ESP drift velocity (w)</td><td class="coal-cell">0.04 m/s (coal fly ash)</td><td class="gas-cell">N/A</td><td>EPA APCC Manual §6 Ch.3</td></tr>
           </tbody>
         </table>
-        <div class="lit-cite">
-          References: U.S. EIA, "Heat Rate" FAQ (2022); EPA AP-42, Section 1.1 Table 1.1-4 (bituminous coal, dry-bottom PC boiler, 9/98 ed.); EPA AP-42, Section 1.4 Table 1.4-2 (natural gas, large wall-fired utility boiler).
-        </div>
+        <div class="lit-cite">EIA (2022) Heat Rate FAQ; EPA AP-42 §1.1 Table 1.1-4 (bituminous coal PC dry-bottom); EPA AP-42 §1.4 Table 1.4-2 (natural gas, large wall-fired utility boiler); EPA Air Pollution Control Cost Manual §6 Ch.3.</div>
       </div>
+
+      <!-- CONTROL TECHNOLOGY -->
+      <div class="ctrl-wrap">
+        <div class="ctrl-hdr">
+          <div class="ctrl-hdr-left">
+            <span class="ct">Coal Plant — Particulate Control Technology</span>
+            <span class="cs">Select a configuration. Natural gas requires no controls.</span>
+          </div>
+          <div class="ctrl-btns">
+            <button class="cb" id="btnNone" onclick="setCtrl('none')">None</button>
+            <button class="cb" id="btnESP"  onclick="setCtrl('esp')">ESP Only</button>
+            <button class="cb" id="btnBH"   onclick="setCtrl('bh')">Baghouse Only</button>
+            <button class="cb" id="btnBoth" onclick="setCtrl('both')">ESP → Baghouse</button>
+          </div>
+        </div>
+
+        <div class="ctrl-body">
+          <div class="series-flow" id="seriesFlow" style="display:none;">
+            <span class="fn">Uncontrolled PM</span><span class="fa">→</span>
+            <span class="fn esp-n">ESP</span><span class="fa">→</span>
+            <span class="fn">Intermediate PM</span><span class="fa">→</span>
+            <span class="fn bh-n">Baghouse</span><span class="fa">→</span>
+            <span class="fn">Final Stack PM</span>
+          </div>
+
+          <div class="dev-grid">
+            <!-- ESP -->
+            <div class="dev-box esp-box inactive" id="espBox">
+              <div class="dev-hdr esp-h">Electrostatic Precipitator (ESP)</div>
+              <div class="dev-body">
+                <div class="input-group" style="margin-bottom:.7rem;">
+                  <label>ESP Collection Efficiency</label>
+                  <span class="input-sub">Typical range: 90–99.9%. Extended to 50% to represent severely degraded or improperly operated units. Source: EPA Air Pollution Control Cost Manual §6 Ch.3; EPA ESP Monitoring Fact Sheet.</span>
+                  <div class="slider-wrap">
+                    <input type="range" id="espSlider" min="50" max="99.9" step="0.1" value="98" oninput="calc()"/>
+                    <span class="slider-value" id="eVal">98.0 %</span>
+                  </div>
+                  <div class="eff-warning" id="espWarn">⚠ Below typical lower bound (90%). This represents a severely degraded, malfunctioning, or improperly sized ESP — not representative of normal utility operation.</div>
+                </div>
+                <div class="da-panel">
+                  <h5>Deutsch-Anderson Plate Area — A = −(Q/w) × ln(1−η)</h5>
+                  <div class="da-vals">
+                    <span>w: <strong>0.04 m/s</strong> (fixed)</span>
+                    <span>Q: <strong id="daQ">—</strong> m³/s</span>
+                    <span>A: <strong id="daA">—</strong> m²</span>
+                  </div>
+                  <div class="da-note">Deutsch &amp; Anderson (1922). w = 0.04 m/s for coal fly ash per EPA APCC Manual §6 Ch.3 (Cooper &amp; Alley, 1994). Q = coal heat input × 10,000 m³/MMBtu at 150°C cold-side inlet. ⚠ D-A tends to overpredict at η &gt; 99.5% due to rapping reentrainment and gas sneakage.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Baghouse -->
+            <div class="dev-box bh-box inactive" id="bhBox">
+              <div class="dev-hdr bh-h">Baghouse (Fabric Filter)</div>
+              <div class="dev-body">
+                <div class="input-group">
+                  <label>Baghouse Collection Efficiency</label>
+                  <span class="input-sub">Typical range: 95–99.9%. Extended to 50% to represent severely degraded or failed units. Higher efficiency → lower air-to-cloth ratio → more cloth area → higher capital cost. Source: EPA Air Pollution Control Cost Manual §6 Ch.1 (2020); EPA Fabric Filter Fact Sheet.</span>
+                  <div class="slider-wrap">
+                    <input type="range" id="bhSlider" min="50" max="99.9" step="0.1" value="99" oninput="calc()"/>
+                    <span class="slider-value" id="bVal">99.0 %</span>
+                  </div>
+                  <div class="eff-warning" id="bhWarn">⚠ Below typical lower bound (95%). This represents a severely degraded or failing baghouse — not representative of normal utility operation. At this range, bag breakthrough or structural failure is likely.</div>
+                </div>
+              </div>
+            </div>
+          </div><!-- dev-grid -->
+
+          <div class="ctrl-note" id="ctrlNote">No control selected — showing uncontrolled coal emissions.</div>
+        </div>
+      </div><!-- ctrl-wrap -->
 
       <hr class="output-divider"/>
+      <div class="output-section-title">Outputs — PM Emission Rates</div>
 
-      <!-- OUTPUTS -->
-      <div class="output-section-title">Outputs — Uncontrolled PM Emission Rates</div>
-
-      <!-- Heat Input -->
+      <!-- Heat input -->
       <div class="heat-row">
         <div class="heat-card coal-card">
-          <div class="heat-card-label">Coal Plant — Heat Input</div>
-          <div class="heat-card-value" id="coalHeat">—</div>
-          <div class="heat-card-unit">MMBtu / hr</div>
+          <div class="hcl">Coal Plant — Heat Input</div>
+          <div class="hcv" id="coalHeat">—</div>
+          <div class="hcu">MMBtu / hr</div>
         </div>
         <div class="heat-card gas-card">
-          <div class="heat-card-label">Nat. Gas Plant — Heat Input</div>
-          <div class="heat-card-value" id="gasHeat">—</div>
-          <div class="heat-card-unit">MMBtu / hr</div>
+          <div class="hcl">Nat. Gas Plant — Heat Input</div>
+          <div class="hcv" id="gasHeat">—</div>
+          <div class="hcu">MMBtu / hr</div>
         </div>
       </div>
 
-      <!-- PM Table -->
-      <div class="pm-table-wrap">
-        <table class="pm-table">
+      <!-- Coal table: uncontrolled vs controlled -->
+      <div class="tbl-lbl c-lbl">Coal Plant PM — Uncontrolled vs. Controlled</div>
+      <div class="tbl-wrap">
+        <table>
           <thead>
             <tr>
               <th>Pollutant</th>
-              <th class="coal-th">Coal (lb/hr)</th>
-              <th class="coal-th">Coal (g/s)</th>
-              <th class="gas-th">Nat. Gas (lb/hr)</th>
-              <th class="gas-th">Nat. Gas (g/s)</th>
-              <th>Coal / Gas Ratio</th>
+              <th class="uth">Unctrl. (lb/hr)</th>
+              <th class="uth">Unctrl. (g/s)</th>
+              <th class="cth">Ctrl. (lb/hr)</th>
+              <th class="cth">Ctrl. (g/s)</th>
+              <th class="pth">% Reduction</th>
+              <th class="ath">ESP Plate Area (m²)</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td class="row-label">PM<sub>10</sub> <span class="pm-tag pm10">PM10</span></td>
-              <td class="coal-val" id="coalPM10_lbhr">—</td>
-              <td class="coal-val" id="coalPM10_gs">—</td>
-              <td class="gas-val" id="gasPM10_lbhr">—</td>
-              <td class="gas-val" id="gasPM10_gs">—</td>
-              <td class="ratio-val" id="ratioPM10">—</td>
+              <td class="rl">PM<sub>10</sub> <span class="pm-tag pm10t">PM10</span></td>
+              <td class="uv" id="cU10lb">—</td><td class="uv" id="cU10gs">—</td>
+              <td class="cv" id="cC10lb">—</td><td class="cv" id="cC10gs">—</td>
+              <td class="pv" id="pct10">—</td>
+              <td class="av" id="area10">—</td>
             </tr>
             <tr>
-              <td class="row-label">PM<sub>2.5</sub> <span class="pm-tag pm25">PM2.5</span></td>
-              <td class="coal-val" id="coalPM25_lbhr">—</td>
-              <td class="coal-val" id="coalPM25_gs">—</td>
-              <td class="gas-val" id="gasPM25_lbhr">—</td>
-              <td class="gas-val" id="gasPM25_gs">—</td>
-              <td class="ratio-val" id="ratioPM25">—</td>
+              <td class="rl">PM<sub>2.5</sub> <span class="pm-tag pm25t">PM2.5</span></td>
+              <td class="uv" id="cU25lb">—</td><td class="uv" id="cU25gs">—</td>
+              <td class="cv" id="cC25lb">—</td><td class="cv" id="cC25gs">—</td>
+              <td class="pv" id="pct25">—</td>
+              <td class="av" id="area25">—</td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <!-- Bar Chart -->
+      <!-- Gas table + ratios -->
+      <div class="tbl-lbl g-lbl">Natural Gas Plant PM — Uncontrolled (no controls required)</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Pollutant</th>
+              <th class="gth">NG (lb/hr)</th>
+              <th class="gth">NG (g/s)</th>
+              <th class="rth">Coal Unctrl / Gas</th>
+              <th class="crth">Coal Ctrl / Gas</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="rl">PM<sub>10</sub> <span class="pm-tag pm10t">PM10</span></td>
+              <td class="gv" id="gU10lb">—</td><td class="gv" id="gU10gs">—</td>
+              <td class="rv" id="r10">—</td>
+              <td class="crv" id="cr10">—</td>
+            </tr>
+            <tr>
+              <td class="rl">PM<sub>2.5</sub> <span class="pm-tag pm25t">PM2.5</span></td>
+              <td class="gv" id="gU25lb">—</td><td class="gv" id="gU25gs">—</td>
+              <td class="rv" id="r25">—</td>
+              <td class="crv" id="cr25">—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Bar chart -->
       <div class="bar-section">
-        <div class="bar-chart-label">Proportional Comparison (g/s)</div>
+        <div class="bar-chart-label">Proportional Comparison — all values (g/s)</div>
 
         <div class="bar-group">
-          <div style="font-family:var(--sans);font-size:0.75rem;color:var(--text-light);margin-bottom:0.4rem;">PM<sub>10</sub></div>
+          <div class="bgl">PM<sub>10</sub></div>
           <div class="bar-row">
-            <span class="bar-row-label">Coal</span>
-            <div class="bar-track"><div class="bar-fill coal-pm10" id="barCoalPM10" style="width:0%"></div></div>
-            <span class="bar-number" id="barCoalPM10Lbl">—</span>
+            <span class="brl">Coal (unctrl.)</span>
+            <div class="bar-track"><div class="bar-fill bf-coal" id="bU10" style="width:0%"></div></div>
+            <span class="bar-num" id="bU10L">—</span>
+          </div>
+          <div class="bar-row" id="bC10row" style="display:none;">
+            <span class="brl">Coal (ctrl.)</span>
+            <div class="bar-track"><div class="bar-fill bf-ctrl" id="bC10" style="width:0%"></div></div>
+            <span class="bar-num" id="bC10L">—</span>
           </div>
           <div class="bar-row">
-            <span class="bar-row-label">Nat. Gas</span>
-            <div class="bar-track"><div class="bar-fill gas-pm10" id="barGasPM10" style="width:0%"></div></div>
-            <span class="bar-number" id="barGasPM10Lbl">—</span>
+            <span class="brl">Nat. Gas</span>
+            <div class="bar-track"><div class="bar-fill bf-gas" id="bG10" style="width:0%"></div></div>
+            <span class="bar-num" id="bG10L">—</span>
           </div>
         </div>
 
         <div class="bar-group">
-          <div style="font-family:var(--sans);font-size:0.75rem;color:var(--text-light);margin-bottom:0.4rem;">PM<sub>2.5</sub></div>
+          <div class="bgl">PM<sub>2.5</sub></div>
           <div class="bar-row">
-            <span class="bar-row-label">Coal</span>
-            <div class="bar-track"><div class="bar-fill coal-pm25" id="barCoalPM25" style="width:0%"></div></div>
-            <span class="bar-number" id="barCoalPM25Lbl">—</span>
+            <span class="brl">Coal (unctrl.)</span>
+            <div class="bar-track"><div class="bar-fill bf-coal" id="bU25" style="width:0%"></div></div>
+            <span class="bar-num" id="bU25L">—</span>
+          </div>
+          <div class="bar-row" id="bC25row" style="display:none;">
+            <span class="brl">Coal (ctrl.)</span>
+            <div class="bar-track"><div class="bar-fill bf-ctrl" id="bC25" style="width:0%"></div></div>
+            <span class="bar-num" id="bC25L">—</span>
           </div>
           <div class="bar-row">
-            <span class="bar-row-label">Nat. Gas</span>
-            <div class="bar-track"><div class="bar-fill gas-pm25" id="barGasPM25" style="width:0%"></div></div>
-            <span class="bar-number" id="barGasPM25Lbl">—</span>
+            <span class="brl">Nat. Gas</span>
+            <div class="bar-track"><div class="bar-fill bf-gas" id="bG25" style="width:0%"></div></div>
+            <span class="bar-num" id="bG25L">—</span>
           </div>
+        </div>
+
+        <div class="bar-legend">
+          <div class="leg-item"><span class="leg-sw" style="background:var(--coal-light)"></span>Coal uncontrolled</div>
+          <div class="leg-item" id="legCtrl" style="display:none;"><span class="leg-sw" style="background:var(--green)"></span>Coal controlled</div>
+          <div class="leg-item"><span class="leg-sw" style="background:var(--gas-mid)"></span>Natural gas</div>
         </div>
       </div>
 
-      <!-- EF reference -->
+      <!-- EF panel -->
       <div class="ef-panel">
         <h4>Active Emission Factors (current inputs)</h4>
         <div class="ef-row">
-          <span class="ef-item">Coal PM<sub>10</sub> EF: <strong id="efCoalPM10">—</strong> lb/MMBtu</span>
-          <span class="ef-item">Coal PM<sub>2.5</sub> EF: <strong id="efCoalPM25">—</strong> lb/MMBtu</span>
-          <span class="ef-item">NG PM<sub>10</sub> EF: <strong>0.00750</strong> lb/MMBtu</span>
-          <span class="ef-item">NG PM<sub>2.5</sub> EF: <strong>0.00750</strong> lb/MMBtu</span>
+          <span>Coal PM<sub>10</sub> EF: <strong id="efC10">—</strong> lb/MMBtu</span>
+          <span>Coal PM<sub>2.5</sub> EF: <strong id="efC25">—</strong> lb/MMBtu</span>
+          <span>NG PM<sub>10</sub> EF: <strong>0.00750</strong> lb/MMBtu</span>
+          <span>NG PM<sub>2.5</sub> EF: <strong>0.00750</strong> lb/MMBtu</span>
         </div>
-        <div class="ef-cite">All emission factors uncontrolled. Coal EF = 7 × (ash wt% / 100) lb/MMBtu for PM<sub>10</sub>; PM<sub>2.5</sub> = 25% of PM<sub>10</sub>. Natural gas EF from EPA AP-42 Table 1.4-2; all NG PM assumed &lt;1 µm diameter.</div>
+        <div class="ef-cite">Uncontrolled factors. Coal: EF = 7 × (ash%/100) lb/MMBtu for PM<sub>10</sub>; PM<sub>2.5</sub> = 25% of PM<sub>10</sub> (AP-42 §1.1 Table 1.1-4, dry-bottom PC). NG: 0.0075 lb/MMBtu; all NG PM &lt;1 µm so PM<sub>10</sub> = PM<sub>2.5</sub> = total PM (AP-42 §1.4 Table 1.4-2).</div>
       </div>
 
-    </div><!-- end tool-body -->
-  </div><!-- end tool-instrument -->
+    </div><!-- tool-body -->
+  </div><!-- tool-instrument -->
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- PHASE 3 — COST COMPARISON                   -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="cost-section">
+    <div class="cost-hdr">
+      <span class="cost-hdr-title">Cost Comparison — Coal vs. Natural Gas Power Plant</span>
+      <span class="cost-hdr-badge">ROM Estimates · Updates with Slider Inputs</span>
+    </div>
+    <div class="cost-body">
+      <p class="cost-intro">
+        All figures are rough order-of-magnitude (ROM) estimates scaled to the user's power demand input. Cost categories follow the assignment requirement of 3–5 major cost lines per alternative, with ranges rather than single values. Coal PM control costs (ESP plate area, baghouse cloth area) update live from the model outputs above. Sources are cited inline.
+      </p>
+
+      <!-- COST GRID TABLE -->
+      <div class="cost-grid" id="costGrid">
+
+        <!-- Header row -->
+        <div class="cg-head">
+          <div>Cost Category</div>
+          <div class="coal-hd">⬛ Coal Plant (PC Dry-Bottom)</div>
+          <div class="gas-hd">🔵 Natural Gas CCGT</div>
+        </div>
+
+        <!-- Row 1: Plant Capital -->
+        <div class="cg-row">
+          <div>Plant Capital<br><small style="font-weight:400;color:var(--text-light);font-size:.68rem;">Overnight, pre-construction</small></div>
+          <div>
+            <span class="cost-range" id="cCoalCap">—</span>
+            <span class="cost-basis">$4,507/kW × MW capacity (EIA AEO2023, ultra-supercritical coal, 2022$)</span>
+          </div>
+          <div>
+            <span class="cost-range" id="cGasCap">—</span>
+            <span class="cost-basis">$1,176/kW × MW capacity (EIA AEO2023, multi-shaft CCGT, 2022$)</span>
+          </div>
+        </div>
+
+        <!-- Row 2: PM Control Capital -->
+        <div class="cg-row">
+          <div>PM Control Equipment<br><small style="font-weight:400;color:var(--text-light);font-size:.68rem;">ESP &amp; baghouse only</small></div>
+          <div>
+            <span class="cost-range" id="cCoalCtrl">—</span>
+            <span class="cost-basis" id="cCoalCtrlBasis">Depends on control mode selected above.</span>
+            <span class="cost-dyn" id="cCoalCtrlDyn"></span>
+          </div>
+          <div>
+            <span class="cost-range">Not required</span>
+            <span class="cost-basis">NG PM emissions are orders of magnitude below coal; no control technology needed for PM compliance.</span>
+          </div>
+        </div>
+
+        <!-- Row 3: Installation & Construction -->
+        <div class="cg-row">
+          <div>Installation &amp; Construction<br><small style="font-weight:400;color:var(--text-light);font-size:.68rem;">Site prep, erection, civils</small></div>
+          <div>
+            <span class="cost-range" id="cCoalInst">—</span>
+            <span class="cost-basis">35–50% of plant + control equipment cost (EPA Air Pollution Control Cost Manual §2, direct/indirect installation factors)</span>
+          </div>
+          <div>
+            <span class="cost-range" id="cGasInst">—</span>
+            <span class="cost-basis">20–35% of plant capital cost. CCGT modular design reduces site civil work vs. coal.</span>
+          </div>
+        </div>
+
+        <!-- Row 4: Annual O&M -->
+        <div class="cg-row">
+          <div>Annual O&amp;M<br><small style="font-weight:400;color:var(--text-light);font-size:.68rem;">Fixed + variable, per year</small></div>
+          <div>
+            <span class="cost-range" id="cCoalOM">—</span>
+            <span class="cost-basis">$45.68/kW·yr fixed O&amp;M (EIA AEO2023); coal handling, ash disposal, and control device maintenance add $5–10/kW·yr variable.</span>
+          </div>
+          <div>
+            <span class="cost-range" id="cGasOM">—</span>
+            <span class="cost-basis">$13.73/kW·yr fixed O&amp;M (EIA AEO2023); lower maintenance burden — no ash handling, simpler emissions controls.</span>
+          </div>
+        </div>
+
+        <!-- Row 5: Permitting & Compliance -->
+        <div class="cg-row">
+          <div>Permitting &amp; Compliance<br><small style="font-weight:400;color:var(--text-light);font-size:.68rem;">One-time regulatory costs</small></div>
+          <div>
+            <span class="cost-range">$2M – $8M</span>
+            <span class="cost-basis">New Source Review (NSR/PSD), MATS, state Title V permit. Timeline: 2–5 years. Engineering assumption based on industry cost data for new coal permitting in U.S.</span>
+          </div>
+          <div>
+            <span class="cost-range">$500K – $2M</span>
+            <span class="cost-basis">PSD permit for NOx and CO; fewer criteria pollutants than coal. Simpler MATS pathway. Timeline: 1–3 years. Engineering assumption.</span>
+          </div>
+        </div>
+
+        <!-- Total row -->
+        <div class="cost-total-row">
+          <div>Total ROM Estimate<br><small style="font-weight:400;font-size:.65rem;color:var(--text-light);">(Capital + Install + 20-yr O&amp;M)</small></div>
+          <div id="cCoalTotal">—</div>
+          <div id="cGasTotal">—</div>
+        </div>
+
+      </div><!-- cost-grid -->
+
+      <!-- PRACTICALITY NOTES -->
+      <div style="font-family:var(--sans);font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-light);margin-bottom:.8rem;">Practicality Assessment</div>
+      <div class="prac-grid">
+        <div class="prac-box">
+          <div class="prac-hdr coal-ph">⬛ Coal Plant — Implementation Constraints</div>
+          <div class="prac-body">
+            <div class="prac-item">
+              <div class="prac-dot coal-dot"></div>
+              <div><span class="prac-key">Permitting timeline (2–5 years)</span>New Source Review under CAA §165 requires Best Available Control Technology (BACT) analysis and public comment. Most likely to prevent timely implementation given data center demand urgency.</div>
+            </div>
+            <div class="prac-item">
+              <div class="prac-dot coal-dot"></div>
+              <div><span class="prac-key">Rail &amp; fuel supply infrastructure</span>Continuous coal delivery requires dedicated rail spur or barge access. Site must accommodate multi-day coal storage (~30–60 days supply). Significant if site is remote.</div>
+            </div>
+            <div class="prac-item">
+              <div class="prac-dot coal-dot"></div>
+              <div><span class="prac-key">Water supply for cooling</span>PC steam cycle requires large once-through or recirculating cooling. Flat terrain sites may lack adequate water access — requires water rights permitting.</div>
+            </div>
+            <div class="prac-item">
+              <div class="prac-dot coal-dot"></div>
+              <div><span class="prac-key">Fly ash disposal</span>Baghouse and ESP generate significant fly ash volume requiring on-site impoundment or off-site disposal. EPA Coal Combustion Residuals (CCR) rule adds regulatory burden.</div>
+            </div>
+          </div>
+        </div>
+        <div class="prac-box">
+          <div class="prac-hdr gas-ph">🔵 Natural Gas CCGT — Implementation Constraints</div>
+          <div class="prac-body">
+            <div class="prac-item">
+              <div class="prac-dot gas-dot"></div>
+              <div><span class="prac-key">Pipeline access &amp; capacity</span>CCGT requires firm gas supply contract and pipeline interconnect. If no existing pipeline is adjacent, lateral extension costs can be $1–5M/mile. Most likely single constraint to prevent implementation.</div>
+            </div>
+            <div class="prac-item">
+              <div class="prac-dot gas-dot"></div>
+              <div><span class="prac-key">Fuel price exposure</span>Unlike coal (stable long-term contracts), gas prices fluctuate with market. Data center operators need fuel cost certainty for long-term budgeting — financial risk, not technical.</div>
+            </div>
+            <div class="prac-item">
+              <div class="prac-dot gas-dot"></div>
+              <div><span class="prac-key">NOx permitting in non-attainment areas</span>If the project site falls within a NOx non-attainment area, CCGT permitting may require offsets or SCR installation, adding $20–50M to capital cost and 6–18 months to timeline.</div>
+            </div>
+            <div class="prac-item">
+              <div class="prac-dot gas-dot"></div>
+              <div><span class="prac-key">Water for cooling (minor)</span>CCGT cycle still requires cooling water, though significantly less than a coal steam cycle. Air-cooled condensers are an option that eliminates water dependency at cost of ~3–5% efficiency penalty.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cost-cite">
+        Sources: EIA AEO2023, "Cost and Performance Characteristics of New Generating Technologies" (March 2023) — plant capital and O&amp;M figures. EPA Air Pollution Control Cost Manual, 6th Ed., §6 Ch.1 (Baghouse, 2020) and §6 Ch.3 (ESP) — control device capital cost basis and installation factors. EPA APTI Lesson 4 (ESP Design Review) — plate area cost reference ($470K per 40,800 ft² in 2002$, inflated ~1.7× to 2023$). Air-to-cloth ratio cost linkage: EPA APCC Manual §6 Ch.1 updated draft (2023) — "the lower the A/C ratio the higher the cost because more filter media are required." Permitting cost ranges are engineering assumptions based on industry experience with U.S. new source permitting.
+      </div>
+    </div><!-- cost-body -->
+  </div><!-- cost-section -->
+
 </section>
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- PART 4: REFLECTION -->
-<!-- ═══════════════════════════════════════════ -->
+<!-- PART 4 -->
 <section class="section" id="part4">
   <div class="section-label">Part 4 · 5 Points</div>
   <h2>Reflection</h2>
-  <p>~300 words. Make your judgment visible. Address all three prompts below.</p>
-
-  <div class="reflection-prompt">Which design choice would you defend, and why?</div>
-  <textarea placeholder="Write your response here — defend a specific recommendation based on what the model shows..."></textarea>
-
-  <div class="reflection-prompt">Where does your comparison break down? What would you need to know to be more confident?</div>
+  <p>~300 words. Make your judgment visible.</p>
+  <div class="rp">Which design choice would you defend, and why?</div>
+  <textarea placeholder="Defend a specific recommendation based on what the model shows..."></textarea>
+  <div class="rp">Where does your comparison break down? What would you need to know to be more confident?</div>
   <textarea placeholder="Identify the assumptions that most limit confidence in the comparison..."></textarea>
-
-  <div class="reflection-prompt">How did AI help you, and where did you intervene, revise, or override it?</div>
+  <div class="rp">How did AI help you, and where did you intervene, revise, or override it?</div>
   <textarea placeholder="Describe the AI collaboration process — what it generated, what you changed, and why..."></textarea>
 </section>
 
 <footer>
   CIVE 442 · Air Quality Modeling &amp; Comparative Engineering Design · Tool 2 · Due April 9, 2026
-  <br/><span>EPA AP-42 §1.1 (Coal) · EPA AP-42 §1.4 (Natural Gas) · EIA Heat Rate Data (2022)</span>
+  <br/><span>EPA AP-42 §1.1 (Coal) · AP-42 §1.4 (Nat. Gas) · EIA Heat Rate (2022) · EPA APCC Manual §6 Ch.1 (Baghouse) · Ch.3 (ESP) · Deutsch-Anderson (1922)</span>
 </footer>
 
 <script>
-  // Image upload handler
-  function loadImage(event, imgId, boxId) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const img = document.getElementById(imgId);
-      img.src = e.target.result;
-      img.style.display = 'block';
-      const box = document.getElementById(boxId);
-      const icon = box.querySelector('.upload-icon');
-      const text = box.querySelector('span:not(.upload-icon)');
-      if (icon) icon.style.display = 'none';
-      if (text) text.style.display = 'none';
-    };
-    reader.readAsDataURL(file);
+// ── IMAGE UPLOAD ──
+function loadImg(ev, imgId, boxId) {
+  const f = ev.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = e => {
+    const img = document.getElementById(imgId);
+    img.src = e.target.result; img.style.display = 'block';
+    const box = document.getElementById(boxId);
+    const ic = box.querySelector('.upload-icon');
+    const tx = box.querySelector('span:not(.upload-icon)');
+    if (ic) ic.style.display = 'none';
+    if (tx) tx.style.display = 'none';
+  };
+  r.readAsDataURL(f);
+}
+
+// ── CONSTANTS ──
+const COAL_HR   = 10500;    // Btu/kWh  (EIA 2022)
+const GAS_HR    =  6960;    // Btu/kWh  (EIA 2022, CCGT)
+const LB2GS     = 0.125998; // lb/hr → g/s
+const GAS_EF    = 0.0075;   // lb/MMBtu (AP-42 §1.4)
+const PM25F     = 0.25;     // coal PM2.5 fraction of PM10 (AP-42 §1.1)
+const W_DRIFT   = 0.04;     // m/s, coal fly ash (EPA APCC §6 Ch.3)
+const FG_FACT   = 10000;    // m³ flue gas per MMBtu at 150°C cold-side
+
+// Cost constants (EIA AEO2023)
+const COAL_CAP_PER_KW  = 4507;   // $/kW overnight (ultra-supercritical coal)
+const GAS_CAP_PER_KW   = 1176;   // $/kW overnight (multi-shaft CCGT)
+const COAL_OM_PER_KW   = 45.68;  // $/kW·yr fixed O&M
+const GAS_OM_PER_KW    = 13.73;  // $/kW·yr fixed O&M
+const PROJ_YEARS        = 20;     // years for lifecycle O&M
+// ESP cost: ~$170–340/m² plate area (EPA APTI Lesson 4, 2002$ inflated ~1.7× to 2023$)
+const ESP_COST_LO = 170; const ESP_COST_HI = 340; // $/m²
+// Baghouse cost: ~$25–45/m² cloth area (EPA APCC Manual §6 Ch.1, 2023$)
+const BH_COST_LO  = 25;  const BH_COST_HI  = 45;  // $/m²
+
+// Baghouse A/C ratio (m/s) as function of efficiency — higher efficiency → lower ratio → more cloth → more cost
+// Based on: EPA APCC Manual §6 Ch.1 — "lower A/C ratio = higher cost = more filter media required"
+// Primary source: EPA Air Pollution Control Cost Manual §6 Ch.1 updated draft (2023)
+function bhACRatio(eta) {
+  // eta: 0.50–0.9999
+  // A/C ratio interpolated: 0.10 m/s at 50%, 0.06 m/s at 95%, 0.04 m/s at 99%, 0.025 m/s at 99.9%
+  // Inverse relationship: higher efficiency requires lower A/C ratio (more cloth area)
+  if (eta <= 0.50)  return 0.10;
+  if (eta <= 0.95)  return 0.10 - (eta - 0.50) / (0.95 - 0.50) * (0.10 - 0.06);
+  if (eta <= 0.99)  return 0.06 - (eta - 0.95) / (0.99 - 0.95) * (0.06 - 0.04);
+  return              0.04 - (eta - 0.99) / (0.999 - 0.99) * (0.04 - 0.025);
+}
+
+// ── STATE ──
+let mode = 'none';
+
+function setCtrl(m) {
+  mode = m;
+  ['btnNone','btnESP','btnBH','btnBoth'].forEach(id => {
+    document.getElementById(id).className = 'cb';
+  });
+  const cls = { none:'on-none', esp:'on-esp', bh:'on-bh', both:'on-both' };
+  document.getElementById({ none:'btnNone', esp:'btnESP', bh:'btnBH', both:'btnBoth' }[m]).classList.add(cls[m]);
+  document.getElementById('seriesFlow').style.display = m === 'both' ? 'flex' : 'none';
+  const espOn = m === 'esp' || m === 'both';
+  const bhOn  = m === 'bh'  || m === 'both';
+  document.getElementById('espBox').classList.toggle('inactive', !espOn);
+  document.getElementById('bhBox' ).classList.toggle('inactive', !bhOn);
+  calc();
+}
+
+const fmt  = (v, d) => v.toLocaleString('en-US', { minimumFractionDigits:d, maximumFractionDigits:d });
+const fmtM = (v) => {
+  // format millions with M suffix
+  if (v >= 1e9)  return '$' + fmt(v/1e9, 2) + 'B';
+  if (v >= 1e6)  return '$' + fmt(v/1e6, 1) + 'M';
+  return '$' + fmt(v/1000, 0) + 'K';
+};
+const s    = id => document.getElementById(id);
+const pct  = (v, mx) => mx > 0 ? (Math.min(v/mx, 1)*100).toFixed(2)+'%' : '0%';
+
+function calc() {
+  const pw  = parseFloat(s('powerSlider').value);
+  const ash = parseFloat(s('ashSlider').value);
+  const espPct = parseFloat(s('espSlider').value);
+  const bhPct  = parseFloat(s('bhSlider').value);
+  const esp = espPct / 100;
+  const bh  = bhPct  / 100;
+
+  s('pVal').textContent = pw + ' MW';
+  s('aVal').textContent = ash.toFixed(1) + ' %';
+  s('eVal').textContent = espPct.toFixed(1) + ' %';
+  s('bVal').textContent = bhPct.toFixed(1)  + ' %';
+
+  // ── Phase 3: warning banners ──
+  s('espWarn').classList.toggle('show', espPct < 90);
+  s('bhWarn' ).classList.toggle('show', bhPct  < 95);
+
+  // heat inputs
+  const kW  = pw * 1000;
+  const cHI = kW * COAL_HR / 1e6;
+  const gHI = kW * GAS_HR  / 1e6;
+  s('coalHeat').textContent = fmt(cHI, 1);
+  s('gasHeat' ).textContent = fmt(gHI, 1);
+
+  // uncontrolled emissions
+  const ashF   = ash / 100;
+  const cEF10  = 7 * ashF;
+  const cEF25  = cEF10 * PM25F;
+  const cU10lb = cHI * cEF10;
+  const cU25lb = cHI * cEF25;
+  const cU10gs = cU10lb * LB2GS;
+  const cU25gs = cU25lb * LB2GS;
+  const gU10lb = gHI * GAS_EF;
+  const gU25lb = gHI * GAS_EF;
+  const gU10gs = gU10lb * LB2GS;
+  const gU25gs = gU25lb * LB2GS;
+
+  // control efficiency
+  let eta = 0;
+  if      (mode === 'esp')  eta = esp;
+  else if (mode === 'bh')   eta = bh;
+  else if (mode === 'both') eta = 1 - (1-esp)*(1-bh);
+
+  const cC10lb = cU10lb*(1-eta), cC10gs = cC10lb*LB2GS;
+  const cC25lb = cU25lb*(1-eta), cC25gs = cC25lb*LB2GS;
+  const pr     = eta*100;
+  const hasC   = mode !== 'none';
+
+  // Deutsch-Anderson: ESP plate area
+  const Q     = cHI * FG_FACT / 3600;
+  const espC  = Math.min(esp, 0.9999);
+  const A     = -(Q / W_DRIFT) * Math.log(1 - espC);
+  const espOn = mode === 'esp' || mode === 'both';
+  const bhOn  = mode === 'bh'  || mode === 'both';
+
+  // Baghouse cloth area from A/C ratio
+  const ac       = bhACRatio(bh);
+  const clothArea = Q / ac; // m²
+
+  // ── Emission DOM ──
+  s('cU10lb').textContent = fmt(cU10lb, 2);
+  s('cU10gs').textContent = fmt(cU10gs, 3);
+  s('cU25lb').textContent = fmt(cU25lb, 2);
+  s('cU25gs').textContent = fmt(cU25gs, 3);
+
+  s('cC10lb').textContent = hasC ? fmt(cC10lb, 3) : '—';
+  s('cC10gs').textContent = hasC ? fmt(cC10gs, 4) : '—';
+  s('cC25lb').textContent = hasC ? fmt(cC25lb, 3) : '—';
+  s('cC25gs').textContent = hasC ? fmt(cC25gs, 4) : '—';
+  s('pct10').textContent  = hasC ? fmt(pr, 2)+'%'  : '—';
+  s('pct25').textContent  = hasC ? fmt(pr, 2)+'%'  : '—';
+
+  ['area10','area25'].forEach(id => {
+    const el = s(id);
+    if (espOn) { el.textContent = fmt(A,0)+' m²'; el.className='av'; }
+    else       { el.textContent = 'N/A';           el.className='an'; }
+  });
+
+  s('daQ').textContent = fmt(Q, 1);
+  s('daA').textContent = espOn ? fmt(A, 0) : '—';
+
+  s('gU10lb').textContent = fmt(gU10lb, 3);
+  s('gU10gs').textContent = fmt(gU10gs, 4);
+  s('gU25lb').textContent = fmt(gU25lb, 3);
+  s('gU25gs').textContent = fmt(gU25gs, 4);
+
+  s('r10').textContent  = gU10gs>0 ? fmt(cU10gs/gU10gs,0)+'×' : '—';
+  s('r25').textContent  = gU25gs>0 ? fmt(cU25gs/gU25gs,0)+'×' : '—';
+  s('cr10').textContent = (hasC && gU10gs>0) ? fmt(cC10gs/gU10gs,1)+'×' : '—';
+  s('cr25').textContent = (hasC && gU25gs>0) ? fmt(cC25gs/gU25gs,1)+'×' : '—';
+
+  const notes = {
+    none: 'No control selected — showing uncontrolled coal emissions only.',
+    esp:  `ESP only · η = ${espPct.toFixed(1)}% · Plate area = ${fmt(A,0)} m² (Deutsch-Anderson, w = 0.04 m/s)`,
+    bh:   `Baghouse only · η = ${bhPct.toFixed(1)}% · A/C ratio = ${ac.toFixed(3)} m/s · Cloth area = ${fmt(clothArea,0)} m²`,
+    both: `ESP → Baghouse · η_ESP = ${espPct.toFixed(1)}% · η_BH = ${bhPct.toFixed(1)}% · Combined η = ${(eta*100).toFixed(2)}% · ESP plate area = ${fmt(A,0)} m² · BH cloth area = ${fmt(clothArea,0)} m²`
+  };
+  s('ctrlNote').textContent = notes[mode];
+
+  s('efC10').textContent = cEF10.toFixed(4);
+  s('efC25').textContent = cEF25.toFixed(4);
+
+  // bars
+  const cc10 = hasC ? cC10gs : 0, cc25 = hasC ? cC25gs : 0;
+  const mx = Math.max(cU10gs, cU25gs, gU10gs, gU25gs, cc10, cc25, 1e-15);
+  s('bU10').style.width = pct(cU10gs, mx); s('bU10L').textContent = fmt(cU10gs, 2)+' g/s';
+  s('bU25').style.width = pct(cU25gs, mx); s('bU25L').textContent = fmt(cU25gs, 2)+' g/s';
+  s('bG10').style.width = pct(gU10gs, mx); s('bG10L').textContent = fmt(gU10gs, 3)+' g/s';
+  s('bG25').style.width = pct(gU25gs, mx); s('bG25L').textContent = fmt(gU25gs, 3)+' g/s';
+  s('bC10' ).style.width = pct(cc10, mx); s('bC10L').textContent = fmt(cc10, 4)+' g/s';
+  s('bC25' ).style.width = pct(cc25, mx); s('bC25L').textContent = fmt(cc25, 4)+' g/s';
+  s('bC10row').style.display = hasC ? 'flex' : 'none';
+  s('bC25row').style.display = hasC ? 'flex' : 'none';
+  s('legCtrl').style.display = hasC ? 'flex' : 'none';
+
+  // ══════════════════════════════════════════════
+  // PHASE 3 — COST CALCULATIONS
+  // ══════════════════════════════════════════════
+
+  // Plant capital ($)
+  const coalCap = pw * 1000 * COAL_CAP_PER_KW;
+  const gasCap  = pw * 1000 * GAS_CAP_PER_KW;
+
+  // Control device capital ($)
+  let espCapLo = 0, espCapHi = 0;
+  let bhCapLo  = 0, bhCapHi  = 0;
+  let ctrlLabel = 'No PM control selected.';
+  let ctrlDyn   = '';
+
+  if (espOn) {
+    espCapLo = A * ESP_COST_LO;
+    espCapHi = A * ESP_COST_HI;
+    ctrlLabel = `ESP: ${fmtM(espCapLo)}–${fmtM(espCapHi)} ($${ESP_COST_LO}–$${ESP_COST_HI}/m² × ${fmt(A,0)} m² plate area)`;
+    ctrlDyn = `Deutsch-Anderson: A = ${fmt(A,0)} m²`;
   }
-
-  // ── EMISSION CALCULATION ENGINE ──
-  // Constants
-  const COAL_HEAT_RATE   = 10500;   // Btu/kWh  (EIA 2022)
-  const GAS_HEAT_RATE    =  6960;   // Btu/kWh  (EIA 2022, CCGT)
-  const LB_TO_GS         = 0.125998; // 1 lb/hr → g/s
-  const GAS_PM_EF        = 0.0075;  // lb/MMBtu, both PM10 and PM2.5 (AP-42 §1.4)
-  const COAL_PM25_FRAC   = 0.25;    // PM2.5 as fraction of PM10 (AP-42 §1.1 size dist.)
-
-  function fmt(val, decimals) {
-    return val.toLocaleString('en-US', {
-      minimumFractionDigits: decimals,
-      maximumFractionDigits: decimals
-    });
+  if (bhOn) {
+    bhCapLo = clothArea * BH_COST_LO;
+    bhCapHi = clothArea * BH_COST_HI;
+    const bhLine = `Baghouse: ${fmtM(bhCapLo)}–${fmtM(bhCapHi)} ($${BH_COST_LO}–$${BH_COST_HI}/m² × ${fmt(clothArea,0)} m² cloth area, A/C = ${ac.toFixed(3)} m/s at η=${bhPct.toFixed(1)}%)`;
+    ctrlLabel = espOn ? ctrlLabel + '; ' + bhLine : bhLine;
+    ctrlDyn   = espOn ? ctrlDyn + ` | BH cloth: ${fmt(clothArea,0)} m²` : `BH cloth area: ${fmt(clothArea,0)} m² (A/C = ${ac.toFixed(3)} m/s)`;
   }
+  if (!espOn && !bhOn) { ctrlLabel = 'No PM control selected — no control capital cost.'; ctrlDyn = ''; }
 
-  function updateTool() {
-    const powerMW = parseFloat(document.getElementById('powerSlider').value);
-    const ashPct  = parseFloat(document.getElementById('ashSlider').value);
+  const coalCtrlCapLo = espCapLo + bhCapLo;
+  const coalCtrlCapHi = espCapHi + bhCapHi;
 
-    document.getElementById('powerVal').textContent = powerMW + ' MW';
-    document.getElementById('ashVal').textContent   = ashPct.toFixed(1) + ' %';
+  // Installation ($): applied to plant + control equipment
+  const coalInstLo = (coalCap + coalCtrlCapLo) * 0.35;
+  const coalInstHi = (coalCap + coalCtrlCapHi) * 0.50;
+  const gasInstLo  = gasCap * 0.20;
+  const gasInstHi  = gasCap * 0.35;
 
-    // Heat input (MMBtu/hr) = power_kW × heat_rate_Btu_per_kWh / 1,000,000
-    const powerKW     = powerMW * 1000;
-    const coalHeatIn  = powerKW * COAL_HEAT_RATE / 1e6;
-    const gasHeatIn   = powerKW * GAS_HEAT_RATE  / 1e6;
+  // 20-year O&M ($)
+  const coalOM = pw * 1000 * COAL_OM_PER_KW * PROJ_YEARS;
+  const gasOM  = pw * 1000 * GAS_OM_PER_KW  * PROJ_YEARS;
 
-    // Coal emission factors
-    const ashFrac       = ashPct / 100;
-    const coalEF_PM10   = 7 * ashFrac;          // lb/MMBtu  (AP-42 §1.1)
-    const coalEF_PM25   = coalEF_PM10 * COAL_PM25_FRAC;
+  // Lifecycle totals (capital + install lo/hi + O&M)
+  const coalTotalLo = coalCap + coalCtrlCapLo + coalInstLo + coalOM + 2e6;
+  const coalTotalHi = coalCap + coalCtrlCapHi + coalInstHi + coalOM + 8e6;
+  const gasTotalLo  = gasCap  + gasInstLo  + gasOM + 5e5;
+  const gasTotalHi  = gasCap  + gasInstHi  + gasOM + 2e6;
 
-    // Emission rates (lb/hr)
-    const coalPM10_lbhr = coalHeatIn * coalEF_PM10;
-    const coalPM25_lbhr = coalHeatIn * coalEF_PM25;
-    const gasPM10_lbhr  = gasHeatIn  * GAS_PM_EF;
-    const gasPM25_lbhr  = gasHeatIn  * GAS_PM_EF;
+  // ── Update cost DOM ──
+  s('cCoalCap').textContent  = `${fmtM(coalCap * 0.9)}–${fmtM(coalCap * 1.1)}`;
+  s('cGasCap').textContent   = `${fmtM(gasCap  * 0.9)}–${fmtM(gasCap  * 1.1)}`;
 
-    // Convert to g/s
-    const coalPM10_gs = coalPM10_lbhr * LB_TO_GS;
-    const coalPM25_gs = coalPM25_lbhr * LB_TO_GS;
-    const gasPM10_gs  = gasPM10_lbhr  * LB_TO_GS;
-    const gasPM25_gs  = gasPM25_lbhr  * LB_TO_GS;
+  s('cCoalCtrl').textContent      = (coalCtrlCapLo > 0) ? `${fmtM(coalCtrlCapLo)}–${fmtM(coalCtrlCapHi)}` : 'Not applicable';
+  s('cCoalCtrlBasis').textContent = ctrlLabel;
+  s('cCoalCtrlDyn').textContent   = ctrlDyn;
 
-    // Ratios
-    const ratioPM10 = gasPM10_gs > 0 ? (coalPM10_gs / gasPM10_gs) : 0;
-    const ratioPM25 = gasPM25_gs > 0 ? (coalPM25_gs / gasPM25_gs) : 0;
+  s('cCoalInst').textContent = `${fmtM(coalInstLo)}–${fmtM(coalInstHi)}`;
+  s('cGasInst' ).textContent = `${fmtM(gasInstLo)}–${fmtM(gasInstHi)}`;
 
-    // ── Update DOM ──
-    document.getElementById('coalHeat').textContent = fmt(coalHeatIn, 1);
-    document.getElementById('gasHeat').textContent  = fmt(gasHeatIn, 1);
+  s('cCoalOM').textContent = `${fmtM(coalOM * 0.95)}–${fmtM(coalOM * 1.15)}/yr`;
+  s('cGasOM' ).textContent = `${fmtM(gasOM  * 0.95)}–${fmtM(gasOM  * 1.15)}/yr`;
 
-    document.getElementById('coalPM10_lbhr').textContent = fmt(coalPM10_lbhr, 2);
-    document.getElementById('coalPM10_gs').textContent   = fmt(coalPM10_gs, 3);
-    document.getElementById('gasPM10_lbhr').textContent  = fmt(gasPM10_lbhr, 3);
-    document.getElementById('gasPM10_gs').textContent    = fmt(gasPM10_gs, 4);
-    document.getElementById('ratioPM10').textContent     = fmt(ratioPM10, 0) + '× more';
+  s('cCoalTotal').textContent = `${fmtM(coalTotalLo)}–${fmtM(coalTotalHi)}`;
+  s('cGasTotal' ).textContent = `${fmtM(gasTotalLo)}–${fmtM(gasTotalHi)}`;
+}
 
-    document.getElementById('coalPM25_lbhr').textContent = fmt(coalPM25_lbhr, 2);
-    document.getElementById('coalPM25_gs').textContent   = fmt(coalPM25_gs, 3);
-    document.getElementById('gasPM25_lbhr').textContent  = fmt(gasPM25_lbhr, 3);
-    document.getElementById('gasPM25_gs').textContent    = fmt(gasPM25_gs, 4);
-    document.getElementById('ratioPM25').textContent     = fmt(ratioPM25, 0) + '× more';
-
-    document.getElementById('efCoalPM10').textContent = coalEF_PM10.toFixed(4);
-    document.getElementById('efCoalPM25').textContent = coalEF_PM25.toFixed(4);
-
-    // Bar chart — scale relative to max value across all four
-    const maxGs = Math.max(coalPM10_gs, coalPM25_gs, gasPM10_gs, gasPM25_gs);
-
-    function pct(val) { return maxGs > 0 ? Math.min((val / maxGs) * 100, 100) : 0; }
-
-    document.getElementById('barCoalPM10').style.width = pct(coalPM10_gs) + '%';
-    document.getElementById('barGasPM10').style.width  = pct(gasPM10_gs)  + '%';
-    document.getElementById('barCoalPM25').style.width = pct(coalPM25_gs) + '%';
-    document.getElementById('barGasPM25').style.width  = pct(gasPM25_gs)  + '%';
-
-    document.getElementById('barCoalPM10Lbl').textContent = fmt(coalPM10_gs, 2) + ' g/s';
-    document.getElementById('barGasPM10Lbl').textContent  = fmt(gasPM10_gs, 3)  + ' g/s';
-    document.getElementById('barCoalPM25Lbl').textContent = fmt(coalPM25_gs, 2) + ' g/s';
-    document.getElementById('barGasPM25Lbl').textContent  = fmt(gasPM25_gs, 3)  + ' g/s';
-  }
-
-  // Initialize on load
-  updateTool();
+setCtrl('none');
 </script>
 </body>
 </html>
