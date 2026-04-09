@@ -333,6 +333,53 @@ textarea{width:100%;min-height:130px;background:var(--bg-card);border:1px solid 
 textarea:focus{border-color:var(--accent);}
 textarea::placeholder{color:#b0a898;font-style:italic;}
 
+/* ── MCDA ── */
+.mcda-section{border:1px solid var(--rule);border-radius:8px;overflow:hidden;margin-top:2.8rem;}
+.mcda-hdr{background:var(--coal);padding:1rem 1.6rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.6rem;}
+.mcda-hdr-title{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-light);}
+.mcda-hdr-badge{font-family:var(--mono);font-size:.6rem;background:rgba(255,255,255,.08);color:#aaa;padding:.2rem .6rem;border-radius:3px;letter-spacing:.06em;}
+.mcda-body{padding:1.6rem 1.8rem;background:var(--bg-card);}
+.weight-bar{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.6rem;padding:1rem 1.2rem;background:var(--bg-warm);border:1px solid var(--rule);border-radius:6px;align-items:center;}
+.weight-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-light);margin-right:.3rem;}
+.wchip{font-family:var(--mono);font-size:.72rem;padding:.28rem .75rem;border-radius:20px;font-weight:600;white-space:nowrap;}
+.wc-tech{background:#e8f0fe;color:#1a56b0;}
+.wc-health{background:#fde8e6;color:#a02020;}
+.wc-env{background:#e8f5ea;color:#1e6b2e;}
+.wc-cost{background:#fff4e0;color:#8a5200;}
+.mcda-tbl-wrap{overflow-x:auto;margin-bottom:1.6rem;}
+.mcda-tbl{width:100%;border-collapse:collapse;font-size:.79rem;}
+.mcda-tbl th{font-family:var(--sans);font-size:.67rem;font-weight:600;letter-spacing:.04em;padding:.6rem .85rem;text-align:left;border-bottom:2px solid var(--rule);background:var(--bg-warm);color:var(--text-light);white-space:nowrap;}
+.mcda-tbl th.mh-tech{color:#1a56b0;} .mcda-tbl th.mh-hlth{color:#a02020;} .mcda-tbl th.mh-env{color:#1e6b2e;} .mcda-tbl th.mh-cost{color:#8a5200;} .mcda-tbl th.mh-total{color:var(--text);}
+.mcda-tbl td{font-family:var(--mono);font-size:.79rem;padding:.65rem .85rem;border-bottom:1px solid #e8e0d0;vertical-align:middle;white-space:nowrap;}
+.mcda-tbl tr:last-child td{border-bottom:none;} .mcda-tbl tr.winner-row td{background:#f0f7f1;}
+.alt-label{font-family:var(--sans);font-size:.78rem;font-weight:500;color:var(--text);}
+.alt-sub{font-family:var(--mono);font-size:.63rem;color:var(--text-light);display:block;}
+.sc{display:inline-flex;align-items:center;gap:.35rem;}
+.sc-bar{display:inline-block;height:8px;border-radius:4px;min-width:2px;transition:width .4s ease;}
+.sc-num{font-size:.75rem;}
+.sc-tech .sc-bar{background:#4a80e0;} .sc-hlth .sc-bar{background:#d04040;} .sc-env .sc-bar{background:#3aaa5a;} .sc-cost .sc-bar{background:#e0a030;} .sc-total .sc-bar{background:var(--coal-mid);}
+.winner-badge{display:inline-block;font-family:var(--sans);font-size:.62rem;font-weight:700;background:var(--green);color:#fff;padding:.1rem .45rem;border-radius:3px;margin-left:.4rem;letter-spacing:.04em;text-transform:uppercase;}
+.mcda-visuals{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;margin-bottom:1.4rem;}
+@media(max-width:680px){.mcda-visuals{grid-template-columns:1fr;}}
+.radar-wrap,.hbar-wrap{background:var(--bg-warm);border:1px solid var(--rule);border-radius:6px;padding:1rem;}
+.mcda-chart-title{font-family:var(--sans);font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-light);margin-bottom:.8rem;}
+.hbar-group{margin-bottom:.8rem;}
+.hbar-alt{font-family:var(--sans);font-size:.73rem;color:var(--text-mid);margin-bottom:.25rem;display:flex;justify-content:space-between;}
+.hbar-alt span:last-child{font-family:var(--mono);font-size:.72rem;font-weight:600;color:var(--text);}
+.hbar-track{height:18px;background:#e8e0d0;border-radius:3px;overflow:hidden;}
+.hbar-fill{height:100%;border-radius:3px;transition:width .5s cubic-bezier(.4,0,.2,1);}
+.winner-card{background:var(--coal);color:#f0ece4;border-radius:6px;padding:1.2rem 1.5rem;margin-bottom:1rem;position:relative;overflow:hidden;}
+.winner-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),var(--accent));}
+.winner-card-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:#666;margin-bottom:.3rem;}
+.winner-card-name{font-size:1.2rem;font-weight:700;color:var(--accent-light);margin-bottom:.5rem;}
+.winner-card-body{font-family:var(--sans);font-size:.82rem;color:#b0a898;line-height:1.6;}
+.winner-card-caveat{font-family:var(--sans);font-size:.72rem;color:#666;margin-top:.6rem;font-style:italic;}
+.mcda-legend{display:flex;gap:1rem;flex-wrap:wrap;margin-top:.8rem;}
+.mleg{display:flex;align-items:center;gap:.35rem;font-family:var(--sans);font-size:.68rem;color:var(--text-light);}
+.mleg-sw{width:24px;height:3px;border-radius:2px;}
+.mcda-method{background:var(--bg-warm);border:1px solid var(--rule);border-radius:6px;padding:1rem 1.2rem;font-family:var(--sans);font-size:.73rem;color:var(--text-mid);line-height:1.65;}
+.mcda-method strong{color:var(--text);}
+
 footer{background:var(--coal);color:#555;text-align:center;padding:1.6rem 2rem;font-family:var(--mono);font-size:.65rem;letter-spacing:.08em;}
 footer span{color:#777;}
 </style>
@@ -862,6 +909,80 @@ footer span{color:#777;}
     </div><!-- cost-body -->
   </div><!-- cost-section -->
 
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- PHASE 4 — MCDA                              -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="mcda-section">
+    <div class="mcda-hdr">
+      <span class="mcda-hdr-title">Multi-Criteria Decision Analysis (MCDA) — All 5 Alternatives</span>
+      <span class="mcda-hdr-badge">Updates Live with Slider Inputs</span>
+    </div>
+    <div class="mcda-body">
+
+      <!-- Weight display -->
+      <div class="weight-bar">
+        <span class="weight-label">Fixed Weights:</span>
+        <span class="wchip wc-tech">Technical Effectiveness 35%</span>
+        <span class="wchip wc-health">Public Health &amp; Safety 25%</span>
+        <span class="wchip wc-env">Environmental Health 25%</span>
+        <span class="wchip wc-cost">Cost 15%</span>
+      </div>
+
+      <!-- Winner callout -->
+      <div class="winner-card" id="mcdaWinner">
+        <div class="winner-card-label">Highest Weighted Score</div>
+        <div class="winner-card-name" id="mcdaWinnerName">—</div>
+        <div class="winner-card-body" id="mcdaWinnerBody">Calculating…</div>
+        <div class="winner-card-caveat">⚠ Result is sensitive to weight assumptions. Adjust ESP/baghouse efficiencies and power demand above to see how scores shift.</div>
+      </div>
+
+      <!-- Visualizations -->
+      <div class="mcda-visuals">
+        <!-- Radar chart -->
+        <div class="radar-wrap">
+          <div class="mcda-chart-title">Radar — Criteria Profile per Alternative</div>
+          <canvas id="radarCanvas" width="340" height="300"></canvas>
+          <div class="mcda-legend" id="radarLegend"></div>
+        </div>
+        <!-- Weighted score bar chart -->
+        <div class="hbar-wrap">
+          <div class="mcda-chart-title">Weighted Total Score (0–10)</div>
+          <div id="hbarChart"></div>
+        </div>
+      </div>
+
+      <!-- Score matrix table -->
+      <div class="mcda-tbl-wrap">
+        <table class="mcda-tbl" id="mcdaTable">
+          <thead>
+            <tr>
+              <th style="min-width:160px;">Alternative</th>
+              <th class="mh-tech">Technical<br>Effectiveness<br><small style="font-weight:400;color:#999;">(35%)</small></th>
+              <th class="mh-hlth">Public Health<br>&amp; Safety<br><small style="font-weight:400;color:#999;">(25%)</small></th>
+              <th class="mh-env">Environmental<br>Health<br><small style="font-weight:400;color:#999;">(25%)</small></th>
+              <th class="mh-cost">Cost<br><small style="font-weight:400;color:#999;">(15%)</small></th>
+              <th class="mh-total">Weighted<br>Total</th>
+            </tr>
+          </thead>
+          <tbody id="mcdaTbody">
+            <!-- populated by JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Scoring methodology note -->
+      <div class="mcda-method">
+        <strong>Scoring methodology:</strong>
+        <strong>Technical Effectiveness</strong> — fully quantitative. Score = 10 × (1 − Q_PM10_alt / Q_PM10_worst), where Q_worst = Coal Uncontrolled. Higher PM10 reduction → higher score.
+        <strong>Public Health &amp; Safety</strong> — hybrid. 60% weight: PM2.5 emission rate normalized same as Technical Effectiveness. 40% weight: qualitative score (1–10) for secondary risks (fly ash toxicity, NOx/CO co-exposure, coal combustion byproducts), hardcoded per engineering judgment.
+        <strong>Environmental Health</strong> — hybrid. 50% weight: total PM (PM10 + PM2.5) emission rate normalized. 50% weight: qualitative score (1–10) for solid waste generation, water use, and ecosystem effects.
+        <strong>Cost</strong> — fully quantitative. Score = 10 × (1 − (C_alt − C_min) / (C_max − C_min)), using 20-year lifecycle cost (low estimate). Natural Gas is cheapest; Coal + ESP→Baghouse is most expensive.
+        All quantitative sub-scores update live as sliders change. Qualitative sub-scores are fixed engineering judgment values.
+      </div>
+
+    </div><!-- mcda-body -->
+  </div><!-- mcda-section -->
+
 </section>
 
 <!-- PART 4 -->
@@ -1139,6 +1260,250 @@ function calc() {
 
   s('cCoalTotal').textContent = `${fmtM(coalTotalLo)}–${fmtM(coalTotalHi)}`;
   s('cGasTotal' ).textContent = `${fmtM(gasTotalLo)}–${fmtM(gasTotalHi)}`;
+
+  // ══════════════════════════════════════════════
+  // PHASE 4 — MCDA (called at end of every calc)
+  // ══════════════════════════════════════════════
+  const mcdaResults = calcMCDA(cU10gs, cU25gs, gU10gs, gU25gs, esp, bh, pw);
+  renderMCDA(mcdaResults);
+}
+
+// ══════════════════════════════════════════════
+// PHASE 4 — MCDA ENGINE
+// ══════════════════════════════════════════════
+
+// Qualitative sub-scores (fixed, engineering judgment)
+// Public Health Sub-B: secondary risks — fly ash toxicity, NOx/CO co-exposure, combustion byproducts
+const PH_QUAL  = { unc:1, esp:4, bh:5, both:7, gas:9 };
+// Environmental Sub-B: solid waste, water use, ecosystem effects
+const ENV_QUAL = { unc:1, esp:4, bh:4, both:5, gas:8 };
+
+// Fixed MCDA weights
+const W_TECH = 0.35, W_HLTH = 0.25, W_ENV = 0.25, W_COST = 0.15;
+
+// Alternative metadata
+const ALTS = [
+  { id:'unc',  label:'Coal — Uncontrolled',   sub:'Baseline, no PM controls',   color:'#6b6b6b' },
+  { id:'esp',  label:'Coal + ESP',             sub:'Electrostatic precipitator', color:'#c8882a' },
+  { id:'bh',   label:'Coal + Baghouse',        sub:'Fabric filter',              color:'#4a80e0' },
+  { id:'both', label:'Coal + ESP → Baghouse',  sub:'Series: ESP then baghouse',  color:'#9b59b6' },
+  { id:'gas',  label:'Natural Gas CCGT',       sub:'No PM controls needed',      color:'#1d6fa4' },
+];
+
+// ── Radar canvas draw ──
+function drawRadar(results) {
+  const canvas = document.getElementById('radarCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const cx = W / 2, cy = H / 2 + 14;
+  const R = Math.min(W, H) * 0.36;
+  const axes = ['Technical\nEffectiveness', 'Public\nHealth', 'Environmental\nHealth', 'Cost'];
+  const N = axes.length;
+  const angleStep = (2 * Math.PI) / N;
+  const startAngle = -Math.PI / 2;
+
+  // grid rings
+  ctx.strokeStyle = '#d0c8b8'; ctx.lineWidth = 0.8;
+  [2, 4, 6, 8, 10].forEach(ring => {
+    const r = (ring / 10) * R;
+    ctx.beginPath();
+    for (let i = 0; i < N; i++) {
+      const x = cx + r * Math.cos(startAngle + i * angleStep);
+      const y = cy + r * Math.sin(startAngle + i * angleStep);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.closePath(); ctx.stroke();
+    ctx.fillStyle = '#bbb'; ctx.font = '8px IBM Plex Mono,monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText(ring, cx + 3, cy - r + 3);
+  });
+
+  // spokes
+  ctx.strokeStyle = '#c0b8a8'; ctx.lineWidth = 1;
+  for (let i = 0; i < N; i++) {
+    ctx.beginPath(); ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + R * Math.cos(startAngle + i * angleStep),
+               cy + R * Math.sin(startAngle + i * angleStep));
+    ctx.stroke();
+  }
+
+  // axis labels
+  ctx.fillStyle = '#4a4a4a'; ctx.font = '9.5px IBM Plex Sans,sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  axes.forEach((label, i) => {
+    const pad = 20;
+    const lx = cx + (R + pad) * Math.cos(startAngle + i * angleStep);
+    const ly = cy + (R + pad) * Math.sin(startAngle + i * angleStep);
+    const lines = label.split('\n');
+    lines.forEach((line, li) => {
+      ctx.fillText(line, lx, ly + (li - (lines.length - 1) / 2) * 12);
+    });
+  });
+
+  // polygons: [tech, health, env, cost] must match axes order
+  results.forEach(alt => {
+    const vals = [alt.tech, alt.health, alt.env, alt.cost];
+    ctx.beginPath();
+    vals.forEach((v, i) => {
+      const r2 = (v / 10) * R;
+      const x = cx + r2 * Math.cos(startAngle + i * angleStep);
+      const y = cy + r2 * Math.sin(startAngle + i * angleStep);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.closePath();
+    ctx.strokeStyle = alt.color; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = alt.color + '20'; ctx.fill();
+  });
+
+  // legend
+  const leg = document.getElementById('radarLegend');
+  if (leg) {
+    leg.innerHTML = results.map(a =>
+      `<div class="mleg"><div class="mleg-sw" style="background:${a.color}"></div>${a.label.replace(' — Uncontrolled','')}</div>`
+    ).join('');
+  }
+}
+
+// ── MCDA calculation ──
+function calcMCDA(cU10gs, cU25gs, gU10gs, gU25gs, espEta, bhEta, pw) {
+  const etaBoth = 1 - (1 - espEta) * (1 - bhEta);
+
+  // PM10 emission rates (g/s) per alternative
+  const em10 = {
+    unc:  cU10gs,
+    esp:  cU10gs * (1 - espEta),
+    bh:   cU10gs * (1 - bhEta),
+    both: cU10gs * (1 - etaBoth),
+    gas:  gU10gs,
+  };
+  // PM2.5 emission rates (g/s) per alternative
+  const em25 = {
+    unc:  cU25gs,
+    esp:  cU25gs * (1 - espEta),
+    bh:   cU25gs * (1 - bhEta),
+    both: cU25gs * (1 - etaBoth),
+    gas:  gU25gs,
+  };
+
+  // Technical Effectiveness: normalized PM10 reduction (lower PM10 = higher score)
+  const worst10 = Math.max(...Object.values(em10));
+  const techSc = id => worst10 > 0 ? Math.max(1, 10 * (1 - em10[id] / worst10)) : 5;
+
+  // Public Health Sub-A: PM2.5 normalized (60%) + qualitative (40%)
+  const worst25 = Math.max(...Object.values(em25));
+  const phA  = id => worst25 > 0 ? Math.max(1, 10 * (1 - em25[id] / worst25)) : 5;
+  const hlthSc = id => 0.6 * phA(id) + 0.4 * PH_QUAL[id];
+
+  // Environmental Health Sub-A: total PM normalized (50%) + qualitative (50%)
+  const totalPM = id => em10[id] + em25[id];
+  const worstPM = Math.max(...Object.keys(em10).map(id => totalPM(id)));
+  const envA = id => worstPM > 0 ? Math.max(1, 10 * (1 - totalPM(id) / worstPM)) : 5;
+  const envSc  = id => 0.5 * envA(id) + 0.5 * ENV_QUAL[id];
+
+  // Cost: 20-yr lifecycle (low estimate), cheapest = highest score
+  const kW = pw * 1000;
+  const coalBase = kW * 4507;
+  const gasCap2  = kW * 1176;
+  const coalOM20 = kW * 45.68 * 20;
+  const gasOM20  = kW * 13.73 * 20;
+  const cHI2     = kW * 10500 / 1e6;
+  const Q2       = cHI2 * 10000 / 3600;
+  const espC2    = Math.min(espEta, 0.9999);
+  const A2       = -(Q2 / 0.04) * Math.log(1 - espC2);
+  const bhE      = bhEta;
+  let ac2;
+  if (bhE <= 0.50)      ac2 = 0.10;
+  else if (bhE <= 0.95) ac2 = 0.10 - (bhE - 0.50) / 0.45 * 0.04;
+  else if (bhE <= 0.99) ac2 = 0.06 - (bhE - 0.95) / 0.04 * 0.02;
+  else                  ac2 = 0.04 - (bhE - 0.99) / 0.009 * 0.015;
+  const cloth2 = Q2 / ac2;
+  const espCap2 = A2 * 170;
+  const bhCap2  = cloth2 * 25;
+  const iF = 0.35;
+
+  const lc = {
+    unc:  (coalBase)                    * (1 + iF) + coalOM20 + 2e6,
+    esp:  (coalBase + espCap2)          * (1 + iF) + coalOM20 + 2e6,
+    bh:   (coalBase + bhCap2)           * (1 + iF) + coalOM20 + 2e6,
+    both: (coalBase + espCap2 + bhCap2) * (1 + iF) + coalOM20 + 2e6,
+    gas:  gasCap2 * (1 + 0.20)         + gasOM20  + 5e5,
+  };
+  const minC = Math.min(...Object.values(lc));
+  const maxC = Math.max(...Object.values(lc));
+  const costSc = id => maxC > minC ? Math.max(1, 10 * (1 - (lc[id] - minC) / (maxC - minC))) : 5;
+
+  // Weighted total
+  const total = id => W_TECH * techSc(id) + W_HLTH * hlthSc(id) + W_ENV * envSc(id) + W_COST * costSc(id);
+
+  return ALTS.map(a => ({
+    ...a,
+    tech:   techSc(a.id),
+    health: hlthSc(a.id),
+    env:    envSc(a.id),
+    cost:   costSc(a.id),
+    total:  total(a.id),
+  }));
+}
+
+// ── Render MCDA results ──
+function renderMCDA(results) {
+  const sel = id => document.getElementById(id);
+  const winner = results.reduce((a, b) => a.total > b.total ? a : b);
+
+  // Winner card
+  sel('mcdaWinnerName').textContent = winner.label;
+  const winDesc = {
+    gas:  'Natural gas dominates on both PM emissions and lifecycle cost — its CCGT efficiency means far less fuel burned per MW, and with no ash or fly-ash disposal burden, environmental and health scores are highest. Under these weights it is the clear preferred alternative.',
+    both: 'The combined ESP + Baghouse series achieves the deepest PM reductions of any coal option. Though more expensive than standalone controls, it nearly closes the health and environmental gap with natural gas. Preferred when coal is the only viable fuel option.',
+    esp:  'ESP alone offers a strong PM reduction at moderate cost. Under the current efficiency settings and weights, it outscores the baghouse on technical effectiveness due to the Deutsch-Anderson plate area scaling.',
+    bh:   'Baghouse alone scores well on fine-particle (PM2.5) capture, particularly for health criteria. Its qualitative environmental score is slightly penalized by fabric media disposal requirements.',
+    unc:  'Coal Uncontrolled scores highest only when cost weight dominates significantly. This outcome signals that the weight assumptions may not reflect health or environmental priorities.',
+  };
+  sel('mcdaWinnerBody').textContent =
+    `Weighted score: ${winner.total.toFixed(2)}/10 — ` +
+    `Tech: ${winner.tech.toFixed(1)}, Health: ${winner.health.toFixed(1)}, ` +
+    `Env: ${winner.env.toFixed(1)}, Cost: ${winner.cost.toFixed(1)}. ` +
+    (winDesc[winner.id] || '');
+
+  // Score matrix table
+  const tbody = sel('mcdaTbody');
+  tbody.innerHTML = '';
+  const maxT = Math.max(...results.map(r => r.total));
+
+  const bar = (val, cls, scale = 80) => {
+    const w = Math.round((val / 10) * scale);
+    return `<div class="sc ${cls}"><div class="sc-bar" style="width:${w}px"></div><span class="sc-num">${val.toFixed(1)}</span></div>`;
+  };
+
+  results.forEach(r => {
+    const isW = Math.abs(r.total - maxT) < 0.001;
+    const tr = document.createElement('tr');
+    if (isW) tr.className = 'winner-row';
+    tr.innerHTML = `
+      <td><span class="alt-label">${r.label}${isW ? '<span class="winner-badge">Top</span>' : ''}</span><span class="alt-sub">${r.sub}</span></td>
+      <td>${bar(r.tech,   'sc-tech')}</td>
+      <td>${bar(r.health, 'sc-hlth')}</td>
+      <td>${bar(r.env,    'sc-env')}</td>
+      <td>${bar(r.cost,   'sc-cost')}</td>
+      <td>${bar(r.total,  'sc-total')}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Horizontal bar chart (sorted descending)
+  const sorted = [...results].sort((a, b) => b.total - a.total);
+  sel('hbarChart').innerHTML = sorted.map(r =>
+    `<div class="hbar-group">
+      <div class="hbar-alt"><span>${r.label.replace(' — Uncontrolled','')}</span><span>${r.total.toFixed(2)}</span></div>
+      <div class="hbar-track"><div class="hbar-fill" style="width:${(r.total/10*100).toFixed(1)}%;background:${r.color}"></div></div>
+    </div>`
+  ).join('');
+
+  // Radar
+  drawRadar(results);
 }
 
 setCtrl('none');
