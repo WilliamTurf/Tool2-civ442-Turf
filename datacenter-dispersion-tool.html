@@ -329,8 +329,9 @@ th.crth{color:var(--green);}
 }
 
 .rp{background:var(--bg-warm);border-left:3px solid var(--accent);padding:.8rem 1.2rem;border-radius:0 4px 4px 0;margin-bottom:.8rem;font-family:var(--sans);font-size:.85rem;color:var(--text-mid);font-style:italic;}
-textarea{width:100%;min-height:130px;background:var(--bg-card);border:1px solid var(--rule);border-radius:6px;padding:1rem 1.2rem;font-family:var(--serif);font-size:.93rem;color:var(--text);line-height:1.7;resize:vertical;outline:none;transition:border-color .2s;margin-bottom:1rem;}
-textarea:focus{border-color:var(--accent);}
+textarea, div[contenteditable]{width:100%;min-height:130px;background:var(--bg-card);border:1px solid var(--rule);border-radius:6px;padding:1rem 1.2rem;font-family:var(--serif);font-size:.93rem;color:var(--text);line-height:1.7;outline:none;transition:border-color .2s;margin-bottom:1rem;}
+textarea{resize:vertical;}
+textarea:focus, div[contenteditable]:focus{border-color:var(--accent);}
 textarea::placeholder{color:#b0a898;font-style:italic;}
 
 /* ── MCDA ── */
@@ -469,7 +470,7 @@ footer span{color:#777;}
         <div class="img-placeholder" id="stageBBox">
           <img id="stageBImg" src="Gemini_flow1.png" style="display:block;"/>
         </div>
-        <div class="stage-caption"><strong>Caption:</strong> [What AI tool was used, what you changed, and how the enhanced version improves on the original — 2–3 sentences.]</div>
+        <div class="stage-caption"><strong>Caption:</strong> [Gemini was used to enhance my diagram. The overall quality of the diagram was improved by adding illustrations. It also cleaned up my flowchat into a more appealing format that is interesting to look at.]</div>
       </div>
     </div>
   </div>
@@ -985,11 +986,11 @@ footer span{color:#777;}
   <h2>Reflection</h2>
   <p>~300 words. Make your judgment visible.</p>
   <div class="rp">Which design choice would you defend, and why?</div>
-  <textarea placeholder="Defend a specific recommendation based on what the model shows..."></textarea>
+  <div contenteditable="true">Based on the results of the tool, the best possible design for the power plant to power the data center is a natural gas combined cycle plant. This design is chosen because it is the most environmentally friendly, cheapest, and most technically efficient power generator. The natural gas power plant has low emissions of PM10 and PM2.5 due to the low nucleation of matter of the combusted fuel. As a result, the power plant produces pollutants less than one micron in diameter. Furthermore, the pollutants it does produce are still far less than coal with reasonable control technologies. Coal, on the other hand, was a huge emitter and was extremely costly with the addition of the control technologies. I cannot, in good confidence, recommend coal due to its environmental risks and its huge cost.</div>
   <div class="rp">Where does your comparison break down? What would you need to know to be more confident?</div>
-  <textarea placeholder="Identify the assumptions that most limit confidence in the comparison..."></textarea>
+  <div contenteditable="true">A potential area that limits the confidence of the results is how temperature affects the control technologies and the potential damages to control technologies. With high temperatures, the fabric of the baghouse can be damaged or rendered useless. Temperatures can also affect the ability of the ESP to collect particulate matter by reducing the amount of electrostatic interactions with the plate. In order to be more confident, I'd need to model temperature based on the amount of fuel combusted. The effects of temperature would affect my MCDA scoring for the Technical Effectiveness by decreasing their scores due to the potential damages, maintenance, and cost. Another factor that limits my confidence in the results is that I assumed that the conditions in the power plant were ideal during the combustion phase. I did not consider power plant startup or shutdown which could have increased the amount of PM due to inefficient combustion. Inefficient combustion would lead to greater environmental and public health risks. This would considerably affect my MCDA scores by reducing the scores for those categories. Lastly, and probably the most important, dispersion. Dispersion was not modeled but could have large consequences on environmental and public health if the power plant was located in a populated area. To get around this in my tool, I weighted Public Health and Environmental Health categories higher than cost. I'd rather select a design that minimizes health risks associated with greater pollutant concentrations of PM.</div>
   <div class="rp">How did AI help you, and where did you intervene, revise, or override it?</div>
-  <textarea placeholder="Describe the AI collaboration process — what it generated, what you changed, and why..."></textarea>
+  <div contenteditable="true">AI was used differently in this tool than it was in the last tool. I used AI as a collaborator for this project rather than a one-off tool designer. I spent many hours discussing with Claude over design ideas and vision of what I wanted to accomplish for this tool. I discussed with Claude in phases where each phase was a functional unit of the tool. I made sure to ask Claude for sources it used as well as clarifying questions towards specific design aspects. One example of this was when we discussed natural gas emissions of PM 2.5. Claude determined that we shouldn't include PM of those scales because it claimed natural gas didn't produce PM 2.5. While this is accurate for ideal NG combustion, it still makes particulate matter less than 1 micron. For comparison's sake, I wanted NG pollutants to be in a form of total PM. The total amount of PM generated by NG was estimated through emission factors via the AP-42 Section 1.4 where 0.0075 lb/MMBtu of PM is produced in combustion. This was applied to both PM10 and PM 2.5 to achieve a comparable result to the coal combustion calculations. The approach of using Claude as a collaborator exemplified my ideas into a more refined product. Being able to discuss and challenge Claude was fun and allowed me to better understand AI as a work companion. I also believe working in phases helped Claude and I produce a more comprehensive and informative tool. Doing this reduced the number of iterations and increased the amount of times I was able to ask Claude questions before being timed out.</div>
 </section>
 
 <footer>
