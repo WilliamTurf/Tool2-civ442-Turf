@@ -381,6 +381,75 @@ textarea::placeholder{color:#b0a898;font-style:italic;}
 .mcda-method{background:var(--bg-warm);border:1px solid var(--rule);border-radius:6px;padding:1rem 1.2rem;font-family:var(--sans);font-size:.73rem;color:var(--text-mid);line-height:1.65;}
 .mcda-method strong{color:var(--text);}
 
+/* ── PHASE 5: GAUSSIAN DISPERSION ── */
+.disp-section{border:1px solid var(--rule);border-radius:8px;overflow:hidden;margin-top:2.8rem;}
+.disp-hdr{background:var(--coal);padding:1rem 1.6rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.6rem;}
+.disp-hdr-title{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-light);}
+.disp-hdr-badge{font-family:var(--mono);font-size:.6rem;background:rgba(255,255,255,.08);color:#aaa;padding:.2rem .6rem;border-radius:3px;letter-spacing:.06em;}
+.disp-body{padding:1.6rem 1.8rem;background:var(--bg-card);}
+.disp-intro{font-family:var(--sans);font-size:.83rem;color:var(--text-mid);line-height:1.65;margin-bottom:1.4rem;max-width:740px;}
+
+/* dispersion inputs */
+.disp-inputs{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.4rem;}
+@media(max-width:620px){.disp-inputs{grid-template-columns:1fr;}}
+.disp-input-box{background:var(--bg-warm);border:1px solid var(--rule);border-radius:6px;padding:1rem 1.2rem;}
+.disp-input-box label{font-family:var(--sans);font-size:.8rem;font-weight:500;color:var(--text);display:block;margin-bottom:.3rem;}
+.disp-input-box .input-sub{font-family:var(--mono);font-size:.63rem;color:var(--text-light);line-height:1.5;display:block;margin-bottom:.55rem;}
+
+/* stability class selector */
+.stab-grid{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.3rem;}
+.stab-btn{font-family:var(--mono);font-size:.7rem;font-weight:600;padding:.3rem .7rem;border-radius:4px;border:1.5px solid var(--rule);background:var(--bg-card);color:var(--text-mid);cursor:pointer;transition:all .15s;letter-spacing:.04em;}
+.stab-btn:hover{border-color:var(--accent);color:var(--text);}
+.stab-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.stab-desc{font-family:var(--sans);font-size:.68rem;color:var(--text-light);margin-top:.5rem;font-style:italic;}
+
+/* stack parameters display */
+.stack-params{display:flex;gap:1.5rem;flex-wrap:wrap;background:var(--bg-warm);border:1px solid var(--rule);border-radius:6px;padding:.85rem 1.1rem;margin-bottom:1.4rem;font-family:var(--mono);font-size:.75rem;color:var(--text-mid);}
+.stack-param-item{display:flex;flex-direction:column;gap:.1rem;}
+.stack-param-item span:first-child{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-light);}
+.stack-param-item span:last-child{font-weight:600;color:var(--text);}
+
+/* concentration output cards */
+.conc-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.4rem;}
+@media(max-width:540px){.conc-grid{grid-template-columns:1fr;}}
+.conc-card{border-radius:6px;border:1px solid var(--rule);padding:1.1rem 1.3rem;}
+.conc-card.coal-conc{border-top:3px solid var(--coal-light);}
+.conc-card.gas-conc{border-top:3px solid var(--gas-mid);}
+.conc-card-lbl{font-family:var(--sans);font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text-light);margin-bottom:.5rem;}
+.coal-conc .conc-card-lbl{color:var(--coal-light);}
+.gas-conc  .conc-card-lbl{color:var(--gas-mid);}
+.conc-pm-row{display:flex;align-items:baseline;gap:.4rem;margin-bottom:.3rem;}
+.conc-val{font-family:var(--mono);font-size:1.3rem;font-weight:600;color:var(--text);}
+.conc-unit{font-family:var(--mono);font-size:.7rem;color:var(--text-light);}
+.conc-tag{font-family:var(--mono);font-size:.62rem;padding:.1rem .35rem;border-radius:3px;margin-left:.2rem;}
+.ctag10{background:#fef0e0;color:var(--pm10);}
+.ctag25{background:#fde8e6;color:var(--pm25);}
+
+/* NAAQS compliance banner */
+.naaqs-row{display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:1.4rem;}
+.naaqs-chip{display:flex;align-items:center;gap:.5rem;padding:.45rem .9rem;border-radius:5px;font-family:var(--sans);font-size:.75rem;font-weight:500;border:1.5px solid transparent;}
+.naaqs-chip.compliant{background:#e8f5ea;border-color:#3aaa5a;color:#1e5e28;}
+.naaqs-chip.exceed{background:#fde8e6;border-color:#d04040;color:#7a1a1a;}
+.naaqs-chip.na{background:var(--bg-warm);border-color:var(--rule);color:var(--text-light);}
+.naaqs-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.dot-ok{background:#3aaa5a;} .dot-ex{background:#d04040;} .dot-na{background:#bbb;}
+
+/* plume canvas */
+.plume-wrap{background:var(--bg-warm);border:1px solid var(--rule);border-radius:6px;padding:1rem;margin-bottom:1.4rem;}
+.plume-title{font-family:var(--sans);font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-light);margin-bottom:.7rem;}
+.plume-canvases{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+@media(max-width:600px){.plume-canvases{grid-template-columns:1fr;}}
+canvas.plume-cv{width:100%;border-radius:4px;background:#fff;border:1px solid var(--rule);}
+
+/* sigma table */
+.sigma-panel{background:var(--bg-warm);border:1px solid var(--rule);border-radius:6px;padding:.85rem 1.1rem;margin-bottom:1rem;font-family:var(--mono);font-size:.74rem;}
+.sigma-panel h5{font-family:var(--sans);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-light);margin-bottom:.5rem;}
+.sigma-row{display:flex;flex-wrap:wrap;gap:1.2rem;color:var(--text-mid);}
+.sigma-row strong{color:var(--text);}
+
+.disp-method-note{background:var(--bg-warm);border:1px solid var(--rule);border-radius:6px;padding:1rem 1.2rem;font-family:var(--sans);font-size:.72rem;color:var(--text-mid);line-height:1.65;margin-top:.8rem;}
+.disp-method-note strong{color:var(--text);}
+
 footer{background:var(--coal);color:#555;text-align:center;padding:1.6rem 2rem;font-family:var(--mono);font-size:.65rem;letter-spacing:.08em;}
 footer span{color:#777;}
 </style>
@@ -414,7 +483,7 @@ footer span{color:#777;}
   <p>Ground your design problem in a real air quality situation.</p>
 
   <div class="img-placeholder" id="scenarioImgBox" title="Click to upload scenario image">
-    <input type="file" accept="image/*" onchange="loadImage(event,'scenarioImg','scenarioImgBox')"/>
+    <input type="file" accept="image/*" onchange="loadImg(event,'scenarioImg','scenarioImgBox')"/>
     <div class="upload-icon" style="display:none;">🏭</div>
     <span style="display:none;">Click to upload scenario photo or sketch</span>
     <img id="scenarioImg" src="Gemini_Generated_Image_gdnubagdnubagdnu.png" alt="Gemini generated scenario" style="display:block;"/>
@@ -754,6 +823,152 @@ footer span{color:#777;}
   </div><!-- tool-instrument -->
 
   <!-- ═══════════════════════════════════════════ -->
+  <!-- PHASE 5 — GAUSSIAN DISPERSION               -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="disp-section">
+    <div class="disp-hdr">
+      <span class="disp-hdr-title">Phase 5 — Simplified Gaussian Plume Dispersion Model</span>
+      <span class="disp-hdr-badge">Pasquill-Gifford · Flat Terrain · Centerline Ground-Level</span>
+    </div>
+    <div class="disp-body">
+      <p class="disp-intro">
+        This module applies the simplified Gaussian plume equation to convert stack-level PM emission rates (g/s, from Phase 1) into ground-level centerline concentrations (µg/m³) at any downwind distance. Outputs are compared against EPA NAAQS standards. Model assumes flat terrain, steady-state meteorology, and a single stability class. Stack heights and exit parameters are literature defaults for each plant type.
+      </p>
+
+      <!-- Dispersion Inputs -->
+      <div class="input-section-title">Dispersion Inputs</div>
+      <div class="disp-inputs">
+
+        <div class="disp-input-box">
+          <label>Wind Speed (u)</label>
+          <span class="input-sub">Typical range 1–10 m/s. Higher wind → greater dilution → lower concentrations. Source: NOAA typical flat-terrain conditions.</span>
+          <div class="slider-wrap">
+            <input type="range" id="windSlider" min="1" max="10" step="0.5" value="3" oninput="calcDisp()"/>
+            <span class="slider-value" id="windVal">3.0 m/s</span>
+          </div>
+        </div>
+
+        <div class="disp-input-box">
+          <label>Receptor Distance (x)</label>
+          <span class="input-sub">Downwind distance to receptor (e.g., nearest community). Range: 0.5–50 km.</span>
+          <div class="slider-wrap">
+            <input type="range" id="distSlider" min="0.5" max="50" step="0.5" value="5" oninput="calcDisp()"/>
+            <span class="slider-value" id="distVal">5.0 km</span>
+          </div>
+        </div>
+
+        <div class="disp-input-box" style="grid-column:1/-1;">
+          <label>Atmospheric Stability Class (Pasquill-Gifford)</label>
+          <span class="input-sub">Determines how quickly the plume spreads laterally (σy) and vertically (σz). Class A = most unstable (daytime, strong sun); Class F = most stable (calm nights).</span>
+          <div class="stab-grid">
+            <button class="stab-btn" id="stabA" onclick="setStab('A')">A</button>
+            <button class="stab-btn" id="stabB" onclick="setStab('B')">B</button>
+            <button class="stab-btn" id="stabC" onclick="setStab('C')">C</button>
+            <button class="stab-btn active" id="stabD" onclick="setStab('D')">D</button>
+            <button class="stab-btn" id="stabE" onclick="setStab('E')">E</button>
+            <button class="stab-btn" id="stabF" onclick="setStab('F')">F</button>
+          </div>
+          <div class="stab-desc" id="stabDesc">Class D — Neutral: overcast day or night, moderate wind. Most common condition used in regulatory screening.</div>
+        </div>
+      </div>
+
+      <!-- Stack Parameters -->
+      <div class="stack-params">
+        <div class="stack-param-item"><span>Coal Stack Height</span><span>150 m</span></div>
+        <div class="stack-param-item"><span>NG Stack Height</span><span>80 m</span></div>
+        <div class="stack-param-item"><span>Plume Rise ΔH</span><span>Neglected (conservative)</span></div>
+        <div class="stack-param-item"><span>σy Formula</span><span>Pasquill-Gifford power law</span></div>
+        <div class="stack-param-item"><span>σz Formula</span><span>Pasquill-Gifford power law</span></div>
+        <div class="stack-param-item"><span>Terrain</span><span>Flat (assumed)</span></div>
+        <div style="font-family:var(--sans);font-size:.65rem;color:var(--text-light);font-style:italic;width:100%;margin-top:.3rem;">
+          Stack heights: coal ~150 m (EPA typical for utility PC boiler); NG ~80 m (typical CCGT). Plume rise neglected for conservative (worst-case) screening. Source: EPA AP-42 §1.1, §1.4; Wark, Warner & Davis, Air Pollution: Its Origin and Control, 3rd ed.
+        </div>
+      </div>
+
+      <!-- Sigma values display -->
+      <div class="sigma-panel">
+        <h5>Active Dispersion Coefficients (at receptor distance x)</h5>
+        <div class="sigma-row">
+          <span>Class: <strong id="dispClass">D</strong></span>
+          <span>x: <strong id="dispX">—</strong> m</span>
+          <span>σy: <strong id="dispSy">—</strong> m</span>
+          <span>σz: <strong id="dispSz">—</strong> m</span>
+          <span>u: <strong id="dispU">—</strong> m/s</span>
+          <span>Equation: <strong>C = Q / (π·σy·σz·u) × exp(−H²/2σz²)</strong></span>
+        </div>
+      </div>
+
+      <hr class="output-divider"/>
+      <div class="output-section-title">Ground-Level Centerline Concentration at Receptor</div>
+
+      <!-- Concentration output cards -->
+      <div class="conc-grid">
+        <div class="conc-card coal-conc">
+          <div class="conc-card-lbl">Coal Plant — Ground-Level PM</div>
+          <div class="conc-pm-row">
+            <span class="conc-val" id="coalConcPM10">—</span>
+            <span class="conc-unit">µg/m³</span>
+            <span class="conc-tag ctag10">PM₁₀</span>
+          </div>
+          <div class="conc-pm-row">
+            <span class="conc-val" id="coalConcPM25">—</span>
+            <span class="conc-unit">µg/m³</span>
+            <span class="conc-tag ctag25">PM₂.₅</span>
+          </div>
+          <div style="font-family:var(--mono);font-size:.65rem;color:var(--text-light);margin-top:.4rem;" id="coalConcCtrl"></div>
+        </div>
+        <div class="conc-card gas-conc">
+          <div class="conc-card-lbl">Natural Gas CCGT — Ground-Level PM</div>
+          <div class="conc-pm-row">
+            <span class="conc-val" id="gasConcPM10">—</span>
+            <span class="conc-unit">µg/m³</span>
+            <span class="conc-tag ctag10">PM₁₀</span>
+          </div>
+          <div class="conc-pm-row">
+            <span class="conc-val" id="gasConcPM25">—</span>
+            <span class="conc-unit">µg/m³</span>
+            <span class="conc-tag ctag25">PM₂.₅</span>
+          </div>
+          <div style="font-family:var(--mono);font-size:.65rem;color:var(--text-light);margin-top:.4rem;">No controls — NG PM already orders of magnitude below coal</div>
+        </div>
+      </div>
+
+      <!-- NAAQS Compliance -->
+      <div class="output-section-title">NAAQS Compliance Check</div>
+      <div class="naaqs-row" id="naaqsRow">
+        <!-- populated by JS -->
+      </div>
+
+      <!-- Plume profile charts -->
+      <div class="plume-wrap">
+        <div class="plume-title">Centerline Ground-Level Concentration vs. Downwind Distance</div>
+        <div class="plume-canvases">
+          <div>
+            <div style="font-family:var(--sans);font-size:.68rem;font-weight:600;color:var(--coal-light);text-align:center;margin-bottom:.3rem;">Coal Plant — PM₂.₅ (µg/m³)</div>
+            <canvas class="plume-cv" id="plumeCCoal" height="180"></canvas>
+          </div>
+          <div>
+            <div style="font-family:var(--sans);font-size:.68rem;font-weight:600;color:var(--gas-mid);text-align:center;margin-bottom:.3rem;">Natural Gas — PM₂.₅ (µg/m³)</div>
+            <canvas class="plume-cv" id="plumeCGas" height="180"></canvas>
+          </div>
+        </div>
+        <div style="font-family:var(--sans);font-size:.67rem;color:var(--text-light);font-style:italic;margin-top:.6rem;text-align:center;">
+          Red dashed line = EPA NAAQS annual PM₂.₅ standard (12 µg/m³). Vertical marker = current receptor distance. Concentration shown for active control configuration on coal.
+        </div>
+      </div>
+
+      <!-- Methodology note -->
+      <div class="disp-method-note">
+        <strong>Gaussian Plume Equation:</strong> C(x,0,0) = Q / (π·σy·σz·u) × exp(−H²/2σz²) &nbsp;|&nbsp;
+        <strong>σy and σz</strong> from Pasquill-Gifford power-law coefficients (Slade 1968; Wark, Warner & Davis, 3rd ed. Table 3-2). &nbsp;|&nbsp;
+        <strong>Key assumptions:</strong> flat terrain; no plume rise (physical stack height = effective height, conservative); steady-state meteorology; single stability class; centerline receptor (y=0, z=0). &nbsp;|&nbsp;
+        <strong>Limitations:</strong> Does not account for building wake effects, terrain, calm winds (u→0 is undefined), or chemical transformation of PM in transit. Not a substitute for a full regulatory dispersion model (e.g., AERMOD). Results are screening-level estimates appropriate for comparative analysis.
+      </div>
+
+    </div><!-- disp-body -->
+  </div><!-- disp-section -->
+
+  <!-- ═══════════════════════════════════════════ -->
   <!-- PHASE 3 — COST COMPARISON                   -->
   <!-- ═══════════════════════════════════════════ -->
   <div class="cost-section">
@@ -988,7 +1203,7 @@ footer span{color:#777;}
   <div class="rp">Which design choice would you defend, and why?</div>
   <div contenteditable="true">Based on the results of the tool, the best possible design for the power plant to power the data center is a natural gas combined cycle plant. This design is chosen because it is the most environmentally friendly, cheapest, and most technically efficient power generator. The natural gas power plant has low emissions of PM10 and PM2.5 due to the low nucleation of matter of the combusted fuel. As a result, the power plant produces pollutants less than one micron in diameter. Furthermore, the pollutants it does produce are still far less than coal with reasonable control technologies. Coal, on the other hand, was a huge emitter and was extremely costly with the addition of the control technologies. I cannot, in good confidence, recommend coal due to its environmental risks and its huge cost.</div>
   <div class="rp">Where does your comparison break down? What would you need to know to be more confident?</div>
-  <div contenteditable="true">A potential area that limits the confidence of the results is how temperature affects the control technologies and the potential damages to control technologies. With high temperatures, the fabric of the baghouse can be damaged or rendered useless. Temperatures can also affect the ability of the ESP to collect particulate matter by reducing the amount of electrostatic interactions with the plate. In order to be more confident, I'd need to model temperature based on the amount of fuel combusted. The effects of temperature would affect my MCDA scoring for the Technical Effectiveness by decreasing their scores due to the potential damages, maintenance, and cost. Another factor that limits my confidence in the results is that I assumed that the conditions in the power plant were ideal during the combustion phase. I did not consider power plant startup or shutdown which could have increased the amount of PM due to inefficient combustion. Inefficient combustion would lead to greater environmental and public health risks. This would considerably affect my MCDA scores by reducing the scores for those categories. Lastly, and probably the most important, dispersion. Dispersion was not modeled but could have large consequences on environmental and public health if the power plant was located in a populated area. To get around this in my tool, I weighted Public Health and Environmental Health categories higher than cost. I'd rather select a design that minimizes health risks associated with greater pollutant concentrations of PM.</div>
+  <div contenteditable="true">A potential area that limits the confidence of the results is how temperature affects the control technologies and the potential damages to control technologies. With high temperatures, the fabric of the baghouse can be damaged or rendered useless. Temperatures can also affect the ability of the ESP to collect particulate matter by reducing the amount of electrostatic interactions with the plate. In order to be more confident, I'd need to model temperature based on the amount of fuel combusted. The effects of temperature would affect my MCDA scoring for the Technical Effectiveness by decreasing their scores due to the potential damages, maintenance, and cost. Another factor that limits my confidence in the results is that I assumed that the conditions in the power plant were ideal during the combustion phase. I did not consider power plant startup or shutdown which could have increased the amount of PM due to inefficient combustion. Inefficient combustion would lead to greater environmental and public health risks. This would considerably affect my MCDA scores by reducing the scores for those categories.</div>
   <div class="rp">How did AI help you, and where did you intervene, revise, or override it?</div>
   <div contenteditable="true">AI was used differently in this tool than it was in the last tool. I used AI as a collaborator for this project rather than a one-off tool designer. I spent many hours discussing with Claude over design ideas and vision of what I wanted to accomplish for this tool. I discussed with Claude in phases where each phase was a functional unit of the tool. I made sure to ask Claude for sources it used as well as clarifying questions towards specific design aspects. One example of this was when we discussed natural gas emissions of PM 2.5. Claude determined that we shouldn't include PM of those scales because it claimed natural gas didn't produce PM 2.5. While this is accurate for ideal NG combustion, it still makes particulate matter less than 1 micron. For comparison's sake, I wanted NG pollutants to be in a form of total PM. The total amount of PM generated by NG was estimated through emission factors via the AP-42 Section 1.4 where 0.0075 lb/MMBtu of PM is produced in combustion. This was applied to both PM10 and PM 2.5 to achieve a comparable result to the coal combustion calculations. The approach of using Claude as a collaborator turned my ideas into a more refined product. Being able to discuss and challenge Claude was fun and allowed me to better understand AI as a work companion. I also believe working in phases helped Claude and me produce a more comprehensive and informative tool. Doing this reduced the number of iterations and increased the number of times I was able to ask Claude questions before being timed out. Gemini was also used to enhance my flowchart and it made me an image of an AI data center with an on-site power plant.</div>
 </section>
@@ -1261,6 +1476,7 @@ function calc() {
   // ══════════════════════════════════════════════
   const mcdaResults = calcMCDA(cU10gs, cU25gs, gU10gs, gU25gs, esp, bh, pw);
   renderMCDA(mcdaResults);
+  calcDisp();
 }
 
 // ══════════════════════════════════════════════
@@ -1499,6 +1715,238 @@ function renderMCDA(results) {
 
   // Radar
   drawRadar(results);
+}
+
+// ══════════════════════════════════════════════
+// PHASE 5 — GAUSSIAN DISPERSION (called at end of calc)
+// ══════════════════════════════════════════════
+
+// ── PHASE 5: GAUSSIAN PLUME ENGINE ──
+
+// Pasquill-Gifford σy and σz power-law coefficients
+// Source: Slade (1968) as tabulated in Wark, Warner & Davis (3rd ed.) Table 3-2
+// σy = ay * x^by  (x in km, σ in m)
+// σz = az * x^bz
+const PG_COEFFS = {
+  A: { ay:0.22, by:0.894, az:0.20, bz:0.950 },
+  B: { ay:0.16, by:0.894, az:0.12, bz:0.926 },
+  C: { ay:0.11, by:0.894, az:0.08, bz:0.850 },
+  D: { ay:0.08, by:0.894, az:0.06, bz:0.750 },
+  E: { ay:0.06, by:0.894, az:0.03, bz:0.730 },
+  F: { ay:0.04, by:0.894, az:0.016,bz:0.700 },
+};
+
+const STAB_DESCS = {
+  A: 'Class A — Very Unstable: strong solar heating, wind < 2 m/s. Produces rapid vertical mixing and widest plume spread.',
+  B: 'Class B — Moderately Unstable: moderate solar insolation, wind 2–3 m/s.',
+  C: 'Class C — Slightly Unstable: weak solar insolation or partly cloudy, wind 3–5 m/s.',
+  D: 'Class D — Neutral: overcast day or night, moderate wind. Most common condition used in regulatory screening.',
+  E: 'Class E — Slightly Stable: thin overcast, low wind at night.',
+  F: 'Class F — Moderately Stable: clear sky, calm night. Produces narrow, concentrated plume with minimal vertical mixing.',
+};
+
+// Stack heights (m) — physical, no plume rise (conservative)
+const H_COAL = 150; // EPA typical utility PC boiler
+const H_GAS  =  80; // typical CCGT
+
+let stabClass = 'D'; // default
+
+function setStab(cls) {
+  stabClass = cls;
+  ['A','B','C','D','E','F'].forEach(c => {
+    document.getElementById('stab'+c).classList.toggle('active', c === cls);
+  });
+  document.getElementById('stabDesc').textContent = STAB_DESCS[cls];
+  document.getElementById('dispClass').textContent = cls;
+  calcDisp();
+}
+
+// Pasquill-Gifford sigma at distance x (km)
+function sigmaY(x_km) {
+  const c = PG_COEFFS[stabClass];
+  return c.ay * Math.pow(x_km, c.by) * 1000; // convert km→m input, output in m
+}
+function sigmaZ(x_km) {
+  const c = PG_COEFFS[stabClass];
+  // cap σz at mixing height 1500m for stability classes A-D; 800m for E-F
+  const mixH = (stabClass <= 'D') ? 1500 : 800;
+  return Math.min(c.az * Math.pow(x_km, c.bz) * 1000, mixH);
+}
+
+// Gaussian centerline ground-level concentration (µg/m³)
+// Q in g/s, u in m/s, H in m, x_km in km
+// Returns µg/m³
+function gaussConc(Q_gs, u, H, x_km) {
+  if (x_km <= 0 || u <= 0 || Q_gs <= 0) return 0;
+  const sy = sigmaY(x_km);
+  const sz = sigmaZ(x_km);
+  // C = Q/(π·sy·sz·u) * exp(-H²/(2·sz²))   [g/m³] → ×1e6 → µg/m³
+  const C = (Q_gs / (Math.PI * sy * sz * u)) * Math.exp(-(H * H) / (2 * sz * sz));
+  return C * 1e6;
+}
+
+function calcDisp() {
+  const windEl = document.getElementById('windSlider');
+  const distEl = document.getElementById('distSlider');
+  if (!windEl || !distEl) return;
+
+  const u     = parseFloat(windEl.value);
+  const x_km  = parseFloat(distEl.value);
+
+  document.getElementById('windVal').textContent = u.toFixed(1) + ' m/s';
+  document.getElementById('distVal').textContent = x_km.toFixed(1) + ' km';
+
+  const sy = sigmaY(x_km);
+  const sz = sigmaZ(x_km);
+  document.getElementById('dispX').textContent  = (x_km * 1000).toLocaleString();
+  document.getElementById('dispSy').textContent = sy.toFixed(1);
+  document.getElementById('dispSz').textContent = sz.toFixed(1);
+  document.getElementById('dispU').textContent  = u.toFixed(1);
+
+  // Pull emission rates from existing calc() results via DOM
+  // Use controlled coal PM if controls are active, otherwise uncontrolled
+  const getGs = id => {
+    const el = document.getElementById(id);
+    if (!el || el.textContent === '—') return 0;
+    return parseFloat(el.textContent.replace(/,/g,'')) || 0;
+  };
+
+  // Coal: use controlled if available, else uncontrolled
+  const hasCtrl = document.getElementById('cC10gs') &&
+                  document.getElementById('cC10gs').textContent !== '—';
+  const coalQ10 = hasCtrl ? getGs('cC10gs') : getGs('cU10gs');
+  const coalQ25 = hasCtrl ? getGs('cC25gs') : getGs('cU25gs');
+  const gasQ10  = getGs('gU10gs');
+  const gasQ25  = getGs('gU25gs');
+
+  // Concentrations
+  const coalC10 = gaussConc(coalQ10, u, H_COAL, x_km);
+  const coalC25 = gaussConc(coalQ25, u, H_COAL, x_km);
+  const gasC10  = gaussConc(gasQ10,  u, H_GAS,  x_km);
+  const gasC25  = gaussConc(gasQ25,  u, H_GAS,  x_km);
+
+  const fmtC = v => v >= 100 ? v.toFixed(1) : v >= 10 ? v.toFixed(2) : v >= 1 ? v.toFixed(3) : v.toFixed(4);
+
+  document.getElementById('coalConcPM10').textContent = fmtC(coalC10);
+  document.getElementById('coalConcPM25').textContent = fmtC(coalC25);
+  document.getElementById('gasConcPM10').textContent  = fmtC(gasC10);
+  document.getElementById('gasConcPM25').textContent  = fmtC(gasC25);
+
+  // Control mode note on coal card
+  const ctrlEl = document.getElementById('coalConcCtrl');
+  if (ctrlEl) {
+    const modeEl = document.getElementById('ctrlNote');
+    ctrlEl.textContent = modeEl ? 'Using: ' + modeEl.textContent : '';
+  }
+
+  // NAAQS compliance
+  // Standards: PM2.5 annual = 12 µg/m³; PM2.5 24-hr = 35 µg/m³; PM10 24-hr = 150 µg/m³
+  const naaqs = [
+    { label:'Coal PM₂.₅ vs. Annual (12 µg/m³)',  val: coalC25, lim: 12  },
+    { label:'Coal PM₂.₅ vs. 24-hr (35 µg/m³)',   val: coalC25, lim: 35  },
+    { label:'Coal PM₁₀ vs. 24-hr (150 µg/m³)',   val: coalC10, lim: 150 },
+    { label:'NG PM₂.₅ vs. Annual (12 µg/m³)',     val: gasC25,  lim: 12  },
+  ];
+  const naaqsRow = document.getElementById('naaqsRow');
+  if (naaqsRow) {
+    naaqsRow.innerHTML = naaqs.map(n => {
+      const ok = n.val <= n.lim;
+      const cls = ok ? 'compliant' : 'exceed';
+      const dot = ok ? 'dot-ok' : 'dot-ex';
+      const icon = ok ? '✓' : '✗';
+      const pct = ((n.val / n.lim) * 100).toFixed(1);
+      return `<div class="naaqs-chip ${cls}">
+        <div class="naaqs-dot ${dot}"></div>
+        ${icon} ${n.label} — ${fmtC(n.val)} µg/m³ (${pct}% of limit)
+      </div>`;
+    }).join('');
+  }
+
+  // Draw plume profile charts
+  drawPlumeChart('plumeCCoal', coalQ25, H_COAL, u, x_km, '#4a4a4a');
+  drawPlumeChart('plumeCGas',  gasQ25,  H_GAS,  u, x_km, '#1d6fa4');
+}
+
+function drawPlumeChart(canvasId, Q_gs, H, u, markerKm, lineColor) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || canvas.width;
+  const pH = canvas.height;
+  canvas.width = W;
+  ctx.clearRect(0, 0, W, pH);
+
+  const PAD_L = 48, PAD_R = 12, PAD_T = 12, PAD_B = 30;
+  const plotW = W - PAD_L - PAD_R;
+  const plotH = pH - PAD_T - PAD_B;
+
+  // Generate concentration profile 0.1 km to 50 km
+  const xs = [];
+  for (let i = 1; i <= 200; i++) xs.push(i * 0.25); // 0.25 to 50 km
+  const ys = xs.map(x => gaussConc(Q_gs, u, H, x));
+
+  const maxY = Math.max(...ys, 12, 0.001);
+  const maxX = 50;
+
+  const toCanvasX = x  => PAD_L + (x  / maxX) * plotW;
+  const toCanvasY = y  => PAD_T + plotH - (y / maxY) * plotH;
+
+  // Background
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, pH);
+
+  // Grid lines
+  ctx.strokeStyle = '#e8e0d0'; ctx.lineWidth = 0.8;
+  [0.25, 0.5, 0.75, 1.0].forEach(f => {
+    const cy2 = PAD_T + plotH - f * plotH;
+    ctx.beginPath(); ctx.moveTo(PAD_L, cy2); ctx.lineTo(PAD_L + plotW, cy2); ctx.stroke();
+  });
+
+  // NAAQS line at 12 µg/m³
+  const naaqsY = toCanvasY(12);
+  if (naaqsY >= PAD_T && naaqsY <= PAD_T + plotH) {
+    ctx.setLineDash([5, 3]); ctx.strokeStyle = '#d04040'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(PAD_L, naaqsY); ctx.lineTo(PAD_L + plotW, naaqsY); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#d04040'; ctx.font = '8px IBM Plex Mono,monospace';
+    ctx.fillText('12 µg/m³', PAD_L + 2, naaqsY - 3);
+  }
+
+  // Concentration curve
+  ctx.strokeStyle = lineColor; ctx.lineWidth = 2; ctx.setLineDash([]);
+  ctx.beginPath();
+  xs.forEach((x, i) => {
+    const cx2 = toCanvasX(x);
+    const cy2 = toCanvasY(Math.min(ys[i], maxY));
+    i === 0 ? ctx.moveTo(cx2, cy2) : ctx.lineTo(cx2, cy2);
+  });
+  ctx.stroke();
+
+  // Receptor marker
+  const mX = toCanvasX(markerKm);
+  ctx.strokeStyle = '#c8882a'; ctx.lineWidth = 1.5; ctx.setLineDash([4, 3]);
+  ctx.beginPath(); ctx.moveTo(mX, PAD_T); ctx.lineTo(mX, PAD_T + plotH); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Axes
+  ctx.strokeStyle = '#aaa'; ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(PAD_L, PAD_T); ctx.lineTo(PAD_L, PAD_T + plotH);
+  ctx.lineTo(PAD_L + plotW, PAD_T + plotH);
+  ctx.stroke();
+
+  // Y axis labels
+  ctx.fillStyle = '#777'; ctx.font = '8px IBM Plex Mono,monospace'; ctx.textAlign = 'right';
+  [0, 0.25, 0.5, 0.75, 1.0].forEach(f => {
+    const v = f * maxY;
+    const cy2 = PAD_T + plotH - f * plotH;
+    ctx.fillText(v >= 10 ? v.toFixed(0) : v.toFixed(2), PAD_L - 3, cy2 + 3);
+  });
+
+  // X axis labels
+  ctx.textAlign = 'center';
+  [0, 10, 20, 30, 40, 50].forEach(x => {
+    ctx.fillText(x + 'km', toCanvasX(x), PAD_T + plotH + 12);
+  });
 }
 
 setCtrl('none');
